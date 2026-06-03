@@ -3442,7 +3442,7 @@
                     ? 'Data jurnal belum terbaca dari Google Sheet. Klik Sinkron Sheet / refresh ARIKA.'
                     : (samePersonRows === 0
                         ? 'Data jurnal sudah terbaca, tetapi belum ada baris yang cocok dengan nama/NIP akun ini. Pastikan baris Sheet Jurnal memiliki kolom Pelaksana/NIP berisi nama atau NIP pegawai yang sama.'
-                        : 'Ada data jurnal untuk akun ini, tetapi tidak cocok dengan filter rentang/kategori/status saat ini. Klik Semua Waktu atau bersihkan filter.');
+                        : 'Ada data jurnal untuk akun ini, tetapi tidak cocok dengan filter bulan/kategori/status saat ini. Klik Semua Bulan atau bersihkan filter.');
                 tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-[9px] uppercase font-black">${msg}</td></tr>`;
                 if(pagination) {
                     pagination.classList.add('hidden');
@@ -3526,8 +3526,8 @@
             const searchKeyword = normalize(document.getElementById('search-keyword')?.value || '');
             const categorySelect = document.getElementById('filter-rekap-cat')?.value || 'Semua';
             const statusSelect = document.getElementById('filter-rekap-status')?.value || 'Semua';
-            const { start: rangeStart, end: rangeEnd } = getDateRangeValues('filter-rekap-start', 'filter-rekap-end');
-            const signature = `${targetName}|${targetNip}|${searchKeyword}|${categorySelect}|${statusSelect}|${rangeStart}|${rangeEnd}`;
+            const monthSelect = getRekapMonthValue();
+            const signature = `${targetName}|${targetNip}|${searchKeyword}|${categorySelect}|${statusSelect}|${monthSelect}`;
 
             if(!options.keepPage && window.personalHistorySignature !== signature) {
                 window.personalHistoryPage = 1;
@@ -3540,8 +3540,8 @@
                     const matchesKeyword = !searchKeyword || normalize(d.desc).includes(searchKeyword);
                     const matchesCategory = categorySelect === 'Semua' || d.cat === categorySelect;
                     const matchesStatus = statusSelect === 'Semua' || d.status === statusSelect;
-                    const matchesRange = dateInRange(d.date, rangeStart, rangeEnd);
-                    return matchesUser && matchesKeyword && matchesCategory && matchesStatus && matchesRange;
+                    const matchesMonth = dateInMonth(d.date, monthSelect);
+                    return matchesUser && matchesKeyword && matchesCategory && matchesStatus && matchesMonth;
                 })
                 .sort((a,b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
@@ -3713,9 +3713,8 @@
             const grid = document.getElementById('calendar-grid');
             if(!grid) return;
 
-            const rangeStart = document.getElementById('filter-rekap-start')?.value || '';
-            const rangeEnd = document.getElementById('filter-rekap-end')?.value || '';
-            const filterMonthVal = (rangeStart || rangeEnd || getTodayKey()).substring(0, 7);
+            const monthFilter = getRekapMonthValue();
+            const filterMonthVal = monthFilter || getCurrentMonth();
             const [year, month] = filterMonthVal.split('-').map(Number);
             const monthTitle = document.getElementById('calendar-month-title');
             if(monthTitle) monthTitle.innerText = `Kalender ${formatBulanIndonesia(filterMonthVal)} • Klik tanggal untuk melihat detail aktivitas`;
@@ -3829,17 +3828,16 @@
             }
 
             const rows = Array.isArray(filtered) ? filtered : [];
-            const startFilter = document.getElementById('filter-rekap-start')?.value || '';
-            const endFilter = document.getElementById('filter-rekap-end')?.value || '';
+            const monthFilter = getRekapMonthValue();
             const catFilter = document.getElementById('filter-rekap-cat')?.value || 'Semua';
             const statusFilter = document.getElementById('filter-rekap-status')?.value || 'Semua';
-            const periode = startFilter || endFilter ? `${startFilter || 'awal'} s.d. ${endFilter || 'akhir'}` : 'Semua waktu';
+            const periode = monthFilter ? formatBulanIndonesia(monthFilter) : 'Semua Bulan';
             const safeName = String(window.currentUser.nama || 'pegawai')
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '') || 'pegawai';
             const tanggalUnduh = formatDateIndo(new Date());
-            const filename = `riwayat-jurnal-${safeName}-${startFilter || 'awal'}-${endFilter || 'akhir'}.xls`;
+            const filename = `riwayat-jurnal-${safeName}-${monthFilter || 'semua-bulan'}.xls`;
 
             const cellStyle = 'border:1px solid #999;padding:7px;vertical-align:top;';
             const headStyle = cellStyle + 'background:#e2e8f0;font-weight:bold;text-align:center;';
@@ -3859,7 +3857,7 @@
                     `;
                 });
             } else {
-                bodyRows = `<tr><td colspan="6" style="${cellStyle}text-align:center;">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>`;
+                bodyRows = `<tr><td colspan="6" style="${cellStyle}text-align:center;">Belum ada riwayat jurnal pada filter bulan yang dipilih.</td></tr>`;
             }
 
             const tableHtml = `
@@ -4882,6 +4880,32 @@
             return true;
         }
 
+        function getRekapMonthValue() {
+            const monthEl = document.getElementById('filter-rekap-month');
+            return monthEl?.value || '';
+        }
+
+        function dateInMonth(dateValue, monthValue) {
+            const dateKey = String(dateValue || '').slice(0, 10);
+            if(!dateKey) return false;
+            if(!monthValue) return true;
+            return dateKey.startsWith(monthValue);
+        }
+
+        window.setRekapMonthToCurrent = function() {
+            const monthEl = document.getElementById('filter-rekap-month');
+            if(monthEl) monthEl.value = getCurrentMonth();
+            if(typeof window.runFilter === 'function') window.runFilter({ deferHeavy: true });
+            if(typeof window.renderVisualCalendar === 'function') window.renderVisualCalendar();
+        };
+
+        window.clearRekapMonth = function() {
+            const monthEl = document.getElementById('filter-rekap-month');
+            if(monthEl) monthEl.value = '';
+            if(typeof window.runFilter === 'function') window.runFilter({ deferHeavy: true });
+            if(typeof window.renderVisualCalendar === 'function') window.renderVisualCalendar();
+        };
+
         function setRangeToToday(startId, endId, callbackName) {
             const today = getTodayKey();
             const startEl = document.getElementById(startId);
@@ -5565,9 +5589,49 @@
             }
         };
 
+        const ARIKA_JURNAL_CATEGORIES = ['Teknis Laboratorium', 'Rapat/Workshop', 'Administrasi', 'Lainnya'];
+
+        function updateJurnalCategoryVisual(value) {
+            const safeValue = String(value || '').trim();
+            const input = document.getElementById('in-cat');
+            if(input) input.value = safeValue;
+            const label = document.getElementById('in-cat-label');
+            if(label) {
+                label.textContent = safeValue ? safeValue : 'Belum dipilih';
+                label.classList.toggle('text-emerald-600', !!safeValue);
+                label.classList.toggle('text-slate-400', !safeValue);
+            }
+            document.querySelectorAll('#jurnal-category-options .jurnal-cat-option').forEach(btn => {
+                const active = String(btn.dataset.cat || '').trim() === safeValue;
+                btn.classList.toggle('active', active);
+                btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+        }
+
+        window.setJurnalCategory = function(value) {
+            const safeValue = String(value || '').trim();
+            const finalValue = ARIKA_JURNAL_CATEGORIES.includes(safeValue) ? safeValue : (safeValue || '');
+            updateJurnalCategoryVisual(finalValue);
+        };
+
+        function initJurnalCategoryCards() {
+            document.querySelectorAll('#jurnal-category-options .jurnal-cat-option').forEach(btn => {
+                if(btn.dataset.boundCategoryCard === 'true') return;
+                btn.dataset.boundCategoryCard = 'true';
+                btn.addEventListener('click', () => window.setJurnalCategory(btn.dataset.cat || ''));
+                btn.addEventListener('keydown', ev => {
+                    if(ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        window.setJurnalCategory(btn.dataset.cat || '');
+                    }
+                });
+            });
+            updateJurnalCategoryVisual(document.getElementById('in-cat')?.value || '');
+        }
+
         function buildJurnalPayload() {
             const date = document.getElementById('in-date')?.value || getTodayKey();
-            const cat = document.getElementById('in-cat')?.value || 'Lainnya';
+            const cat = document.getElementById('in-cat')?.value.trim() || '';
             const desc = document.getElementById('in-desc')?.value.trim() || '';
             const status = document.getElementById('in-status')?.value || 'Selesai';
             const isLembur = Boolean(document.getElementById('in-is-lembur')?.checked);
@@ -5632,6 +5696,7 @@
                 if(dStatus) dStatus.value = window.currentUser.status || '-';
             }
             setJurnalEditMode(false);
+            if(window.setJurnalCategory) window.setJurnalCategory('');
         }
 
         function setJurnalEditMode(active, item = null) {
@@ -5687,6 +5752,7 @@
             const form = document.getElementById('form-arika');
             if(form) form.reset();
             setDefaultDates();
+            if(window.setJurnalCategory) window.setJurnalCategory('');
             setJurnalEditMode(false);
             window.toggleLemburFields();
         };
@@ -5697,7 +5763,8 @@
             window.nav('jurnal');
             setTimeout(() => {
                 document.getElementById('in-date').value = target.date || getTodayKey();
-                document.getElementById('in-cat').value = target.cat || 'Lainnya';
+                if(window.setJurnalCategory) window.setJurnalCategory(target.cat || 'Lainnya');
+                else document.getElementById('in-cat').value = target.cat || 'Lainnya';
                 document.getElementById('in-desc').value = target.desc || '';
                 document.getElementById('in-status').value = target.status || 'Selesai';
                 const lemburCheck = document.getElementById('in-is-lembur');
@@ -8366,6 +8433,7 @@
             try {
                 setDefaultDates();
                 setMotivation();
+                initJurnalCategoryCards();
 
                 const formJurnal = document.getElementById('form-arika');
                 if(formJurnal && !formJurnal.dataset.listenerAttached) {
