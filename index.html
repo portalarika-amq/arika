@@ -4622,7 +4622,6 @@
 <strong>🔊 Suara Alarm</strong>
 <span class="reminder-sound-status-pill" id="reminder-sound-status">Belum aktif</span>
 </div>
-<p class="reminder-sound-card-desc">Untuk alarm MP3 custom dan suara pengingat dari ARIKA. Aktifkan sekali setelah login.</p>
 <div class="reminder-sound-actions">
 <button class="reminder-sound-btn reminder-sound-active" id="arika-sound-enable-btn" onclick="window.enableArikaReminderSound(true)" type="button">🔔 Aktifkan Suara</button>
 <button class="reminder-sound-btn reminder-sound-muted" onclick="window.testArikaReminderSound()" type="button">Tes Suara</button>
@@ -4634,7 +4633,6 @@
 <strong>🔔 Pusat Reminder</strong>
 <span class="reminder-sound-status-pill active" id="reminder-center-mini-status">Siap dipakai</span>
 </div>
-<p class="reminder-sound-card-desc">Semua pengingat aktif dikumpulkan di Pusat Reminder. Gunakan tombol ini atau tombol melayang kiri bawah agar mudah dibuka kapan saja.</p>
 <div class="reminder-sound-actions">
 <button class="reminder-sound-btn reminder-sound-active" id="arika-open-reminder-center-btn" onclick="(window.openArikaReminderCenterFromCard || window.openArikaReminderCenter || window.toggleArikaReminderCenter || function(){var p=document.getElementById('arika-reminder-center-panel'); if(p){p.classList.add('arika-open-from-card'); p.classList.remove('hidden');}})()" type="button">🔔 Buka Pusat Reminder</button>
 <button class="reminder-sound-btn reminder-sound-muted" onclick="window.markArikaReminderCenterRead &amp;&amp; window.markArikaReminderCenterRead()" type="button">✓ Tandai Dibaca</button>
@@ -6567,7 +6565,7 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
 </footer>
-<script src="app-v221.js?v=221"></script>
+<script src="app-v222.js?v=222"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -7006,7 +7004,7 @@
     var toggle = document.createElement('div');
     toggle.id = 'arika-reminder-compact-toggle';
     toggle.className = 'no-print';
-    toggle.innerHTML = '<div class="title"><strong>🔔 Suara & Reminder</strong><span>Ketuk untuk mengatur suara dan Pusat Reminder.</span></div><div class="chev">⌄</div>';
+    toggle.innerHTML = '<div class="title"><strong>🔔 Suara & Reminder</strong></div><div class="chev">⌄</div>';
     toggle.addEventListener('click', function(){
       panel.classList.toggle('arika-compact-open');
     });
