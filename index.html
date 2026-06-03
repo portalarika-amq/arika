@@ -8134,7 +8134,7 @@
             const out = { ...cache };
             // Batasi agar tidak melewati kuota localStorage Google Sites/iframe.
             out.jurnal = (out.jurnal || []).slice(0, 900);
-            out.rencana = (out.rencana || []).slice(0, 600);
+            out.rencana = applyRencanaDeleteTombstones(out.rencana || []).slice(0, 600);
             out.survei = (out.survei || []).slice(0, 600);
             out.agenda = (out.agenda || []).slice(0, 500);
             out.pengumuman = (out.pengumuman || []).slice(0, 300);
@@ -8226,7 +8226,7 @@
             fillIfEmpty('arikaData', cache.jurnal);
             fillIfEmpty('pengumumanData', cache.pengumuman || loadLocalPengumuman());
             const cacheRencana = cache.rencanaCloudAuthority === true ? (cache.rencana || []) : [];
-            fillIfEmpty('rencanaData', dedupeRencanaList([...(cacheRencana || []), ...loadLocalRencana()]));
+            fillIfEmpty('rencanaData', applyRencanaDeleteTombstones(dedupeRencanaList([...(cacheRencana || []), ...loadLocalRencana()])));
             fillIfEmpty('surveiData', cache.survei || loadLocalSurvei());
             fillIfEmpty('agendaData', cache.agenda);
             fillIfEmpty('kalenderLiburData', cache.kalenderLibur);
@@ -11100,9 +11100,13 @@
         const ARIKA_RENCANA_LOCAL_KEY = 'arika_rencana_pribadi_v2';
         const ARIKA_RENCANA_OLD_LOCAL_KEY = 'arika_rencana_pribadi';
 
+        const ARIKA_DELETED_RENCANA_TOMBSTONE_KEY = 'arika_deleted_rencana_tombstones_v1';
+        const ARIKA_DELETED_RENCANA_TOMBSTONE_MAX_AGE = 30 * 60 * 1000;
+
         function loadLocalRencana() {
             try {
-                return JSON.parse(localStorage.getItem(ARIKA_RENCANA_LOCAL_KEY) || '[]');
+                const parsed = JSON.parse(localStorage.getItem(ARIKA_RENCANA_LOCAL_KEY) || '[]');
+                return applyRencanaDeleteTombstones(parsed);
             } catch (_) {
                 return [];
             }
@@ -11110,7 +11114,8 @@
 
         function saveLocalRencana(list) {
             try {
-                localStorage.setItem(ARIKA_RENCANA_LOCAL_KEY, JSON.stringify(list || []));
+                const safeList = applyRencanaDeleteTombstones(list || []);
+                localStorage.setItem(ARIKA_RENCANA_LOCAL_KEY, JSON.stringify(safeList));
                 localStorage.removeItem(ARIKA_RENCANA_OLD_LOCAL_KEY);
             } catch (_) {}
         }
@@ -11123,10 +11128,10 @@
         }
 
         function applyCloudRencanaData(mappedList) {
-            const cloudList = dedupeRencanaList(mappedList || []).map(item => ({ ...item, syncStatus: 'synced' }));
+            const cloudList = applyRencanaDeleteTombstones(dedupeRencanaList(mappedList || []).map(item => ({ ...item, syncStatus: 'synced' })));
             const cloudKeys = new Set(cloudList.map(getRencanaKey));
             const pendingLocal = loadLocalRencana().filter(item => isRecentPendingLocalRencana(item) && !cloudKeys.has(getRencanaKey(item)));
-            const finalList = dedupeRencanaList([...cloudList, ...pendingLocal]);
+            const finalList = applyRencanaDeleteTombstones(dedupeRencanaList([...cloudList, ...pendingLocal]));
             window.rencanaData = finalList;
             saveLocalRencana(finalList);
             return finalList;
@@ -11142,6 +11147,69 @@
                 normalize(item.catatan || ''),
                 normalize(item.status || 'Aktif')
             ].join('|');
+        }
+
+        function readRencanaDeleteTombstones() {
+            let map = {};
+            try {
+                map = JSON.parse(localStorage.getItem(ARIKA_DELETED_RENCANA_TOMBSTONE_KEY) || '{}') || {};
+            } catch(_) {
+                map = {};
+            }
+            const now = Date.now();
+            let changed = false;
+            Object.keys(map).forEach(key => {
+                if(!map[key] || (now - Number(map[key])) > ARIKA_DELETED_RENCANA_TOMBSTONE_MAX_AGE) {
+                    delete map[key];
+                    changed = true;
+                }
+            });
+            if(changed) {
+                try { localStorage.setItem(ARIKA_DELETED_RENCANA_TOMBSTONE_KEY, JSON.stringify(map)); } catch(_) {}
+            }
+            return map;
+        }
+
+        function writeRencanaDeleteTombstones(map) {
+            try { localStorage.setItem(ARIKA_DELETED_RENCANA_TOMBSTONE_KEY, JSON.stringify(map || {})); } catch(_) {}
+        }
+
+        function buildRencanaDeleteKeys(item = {}) {
+            const keys = [];
+            const id = String(item.id || '').trim();
+            if(id) keys.push('id:' + id);
+            keys.push('content:' + getRencanaKey(item));
+            keys.push([
+                'soft',
+                normalize(item.ownerNip || item.ownerName || ''),
+                String(item.tanggal || ''),
+                normalize(getRencanaJamReminder(item)),
+                normalize(item.judul || ''),
+                normalize(item.catatan || '')
+            ].join('|'));
+            return keys.filter(Boolean);
+        }
+
+        function markRencanaAsLocallyDeleted(item = {}) {
+            const map = readRencanaDeleteTombstones();
+            const now = Date.now();
+            buildRencanaDeleteKeys(item).forEach(key => { map[key] = now; });
+            writeRencanaDeleteTombstones(map);
+        }
+
+        function isRencanaLocallyDeleted(item = {}) {
+            const map = readRencanaDeleteTombstones();
+            return buildRencanaDeleteKeys(item).some(key => !!map[key]);
+        }
+
+        function applyRencanaDeleteTombstones(list = []) {
+            return (list || []).filter(item => !isRencanaLocallyDeleted(item));
+        }
+
+        function rencanaMatchesDeleteTarget(row = {}, target = {}) {
+            const targetId = String(target.id || '').trim();
+            if(targetId && String(row.id || '').trim() === targetId) return true;
+            return buildRencanaDeleteKeys(row).some(key => buildRencanaDeleteKeys(target).includes(key));
         }
 
         function dedupeRencanaList(list) {
@@ -11173,11 +11241,11 @@
                     return cache?.rencanaCloudAuthority === true && Array.isArray(cache?.rencana) ? cache.rencana : [];
                 } catch(e) { return []; }
             })();
-            return dedupeRencanaList([...(extraList || []), ...liveList, ...localList, ...coreCacheList]);
+            return applyRencanaDeleteTombstones(dedupeRencanaList([...(extraList || []), ...liveList, ...localList, ...coreCacheList]));
         }
 
         function saveStableRencanaData(list) {
-            const stable = dedupeRencanaList(list || []);
+            const stable = applyRencanaDeleteTombstones(dedupeRencanaList(list || []));
             if(stable.length > 0) {
                 window.rencanaData = stable;
                 saveLocalRencana(stable);
@@ -12119,21 +12187,43 @@
         };
 
         window.hapusRencanaPribadi = function(id) {
-            const target = (window.rencanaData || []).find(r => String(r.id) === String(id));
+            const targetId = String(id || '').trim();
+            const stableList = getStableRencanaData();
+            const target = stableList.find(r => String(r.id || '').trim() === targetId) || (window.rencanaData || []).find(r => String(r.id || '').trim() === targetId);
             if(!target) return;
-            window.showCustomConfirm(`Hapus reminder "${target.judul}"?`, async () => {
+            window.showCustomConfirm(`Hapus reminder "${target.judul}"?`, () => {
                 window.showLoader(true, 'Menghapus Reminder...');
-                try {
-                    await postToScript('delete_rencana', { id });
-                } catch(err) {
-                    console.warn('Hapus cloud gagal, data lokal tetap diperbarui:', err);
-                } finally {
-                    window.rencanaData = (window.rencanaData || []).filter(r => String(r.id) !== String(id));
-                    saveLocalRencana(window.rencanaData);
-                    try { saveLocalCoreCache(); } catch(e) {}
-                    window.renderRencanaPribadi();
-                    window.showLoader(false);
-                }
+
+                // v178: hapus optimistis dari tampilan terlebih dahulu.
+                // Google Sheet tetap dihapus di belakang layar agar Beranda tidak menunggu respons Apps Script/cache.
+                markRencanaAsLocallyDeleted(target);
+                window.rencanaData = applyRencanaDeleteTombstones(
+                    stableList.filter(r => !rencanaMatchesDeleteTarget(r, target))
+                );
+                saveLocalRencana(window.rencanaData);
+                try { saveLocalCoreCache(); } catch(e) {}
+                window.renderRencanaPribadi();
+                window.showLoader(false);
+                try { updateSyncStatus('Rencana dihapus dari tampilan, sinkronisasi berjalan...', 'info'); } catch(_) {}
+
+                postToScript('delete_rencana', {
+                    id: targetId,
+                    ownerName: target.ownerName || window.currentUser?.nama || '',
+                    ownerNip: target.ownerNip || window.currentUser?.nip || '',
+                    tanggal: target.tanggal || '',
+                    jamReminder: getRencanaJamReminder(target) || '',
+                    judul: target.judul || '',
+                    catatan: target.catatan || ''
+                })
+                    .then(function() {
+                        try { updateSyncStatus('Rencana berhasil dihapus', 'ok'); } catch(_) {}
+                        try { window.fetchCloudData && window.fetchCloudData({ force: true }); } catch(_) {}
+                    })
+                    .catch(function(err) {
+                        console.warn('Hapus rencana dikirim tetapi respons Apps Script terlambat/gagal:', err);
+                        try { updateSyncStatus('Tampilan sudah diperbarui, sinkron hapus dicek ulang...', 'warn'); } catch(_) {}
+                        try { setTimeout(() => window.fetchCloudData && window.fetchCloudData({ force: true }), 1200); } catch(_) {}
+                    });
             });
         };
 
