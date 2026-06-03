@@ -4815,11 +4815,11 @@
                     </div>
                     <div>
                         <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Rentang Awal</label>
-                        <input type="date" id="filter-rekap-start" onchange="window.runFilter(); window.renderVisualCalendar()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="date" id="filter-rekap-start" onchange="window.runFilter()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                     <div>
                         <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Rentang Akhir</label>
-                        <input type="date" id="filter-rekap-end" onchange="window.runFilter(); window.renderVisualCalendar()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="date" id="filter-rekap-end" onchange="window.runFilter()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-2">
@@ -13539,7 +13539,192 @@
             const html = `
                 <html><head><meta charset="UTF-8"></head><body>
                 ${tableHtml}
-                </body></html>
+                
+
+<style id="arika-v193-filter-stability-style">
+  /* v193: Kurangi flicker/layar hitam saat dropdown dan date picker Riwayat dibuka. */
+  #view-rekap select,
+  #view-rekap input[type="date"],
+  #view-rekap input[type="text"] {
+    transform: none !important;
+    will-change: auto !important;
+    backface-visibility: hidden;
+  }
+
+  body.arika-rekap-filtering #global-loader,
+  body.arika-filter-native-open #global-loader {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  body.arika-rekap-filtering #view-rekap *,
+  body.arika-filter-native-open #view-rekap * {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+
+  body.arika-rekap-filtering #view-rekap,
+  body.arika-filter-native-open #view-rekap {
+    transform: translateZ(0);
+    contain: layout paint;
+  }
+</style>
+<script>
+// v193: Stabilkan dropdown/filter tanggal Riwayat Jurnal agar tidak memicu layar hitam/jank.
+(function(){
+  var FILTER_SELECTOR = '#view-rekap #search-keyword, #view-rekap #filter-rekap-cat, #view-rekap #filter-rekap-status, #view-rekap #filter-rekap-start, #view-rekap #filter-rekap-end';
+  var classTimer = null;
+  var suppressUntil = 0;
+  var chartTimer = null;
+  var trendTimer = null;
+  var calendarTimer = null;
+
+  function matchesFilterControl(el){
+    try { return !!(el && el.matches && el.matches(FILTER_SELECTOR)); } catch(e) { return false; }
+  }
+
+  function markFilterInteraction(duration){
+    duration = duration || 1400;
+    suppressUntil = Date.now() + Math.max(duration, 900);
+    try {
+      document.body.classList.add('arika-rekap-filtering');
+      document.body.classList.add('arika-filter-native-open');
+      clearTimeout(classTimer);
+      classTimer = setTimeout(function(){
+        document.body.classList.remove('arika-rekap-filtering');
+        document.body.classList.remove('arika-filter-native-open');
+      }, duration);
+    } catch(e) {}
+  }
+
+  function scheduleIdle(fn, delay){
+    delay = delay || 180;
+    return setTimeout(function(){
+      if (window.requestIdleCallback) {
+        requestIdleCallback(function(){ try { fn(); } catch(err) { console.warn('ARIKA idle task gagal:', err); } }, { timeout: 900 });
+      } else {
+        try { fn(); } catch(err) { console.warn('ARIKA idle task gagal:', err); }
+      }
+    }, delay);
+  }
+
+  function installLoaderGuard(){
+    try {
+      if (typeof window.showLoader !== 'function' || window.showLoader.__arikaV193Guard) return;
+      var oldShowLoader = window.showLoader;
+      var guarded = function(show, text){
+        if (show && Date.now() < suppressUntil) {
+          var label = String(text || '').toLowerCase();
+          // Saat user hanya membuka dropdown/tanggal, jangan munculkan overlay layar penuh.
+          // Operasi penting seperti simpan/hapus/login tetap boleh menampilkan loader.
+          var important = /simpan|hapus|masuk|keluar|mengirim|menyimpan|menghapus/i.test(label);
+          if (!important) {
+            var loader = document.getElementById('global-loader');
+            if (loader) {
+              loader.style.display = 'none';
+              loader.style.opacity = '0';
+              loader.style.pointerEvents = 'none';
+            }
+            return;
+          }
+        }
+        return oldShowLoader.apply(this, arguments);
+      };
+      guarded.__arikaV193Guard = true;
+      guarded.__old = oldShowLoader;
+      window.showLoader = guarded;
+    } catch(e) {}
+  }
+
+  function installDeferredHeavyRender(){
+    try {
+      if (typeof window.renderCharts === 'function' && !window.renderCharts.__arikaV193Deferred) {
+        var oldCharts = window.renderCharts;
+        window.renderCharts = function(){
+          clearTimeout(chartTimer);
+          chartTimer = scheduleIdle(function(){ oldCharts(); }, 170);
+        };
+        window.renderCharts.__arikaV193Deferred = true;
+        window.renderCharts.__old = oldCharts;
+      }
+
+      if (typeof window.renderTrendChart === 'function' && !window.renderTrendChart.__arikaV193Deferred) {
+        var oldTrend = window.renderTrendChart;
+        window.renderTrendChart = function(){
+          clearTimeout(trendTimer);
+          trendTimer = scheduleIdle(function(){ oldTrend(); }, 230);
+        };
+        window.renderTrendChart.__arikaV193Deferred = true;
+        window.renderTrendChart.__old = oldTrend;
+      }
+
+      if (typeof window.renderVisualCalendar === 'function' && !window.renderVisualCalendar.__arikaV193Deferred) {
+        var oldCalendar = window.renderVisualCalendar;
+        window.renderVisualCalendar = function(options){
+          if (options && options.immediate) return oldCalendar.apply(this, arguments);
+          clearTimeout(calendarTimer);
+          calendarTimer = scheduleIdle(function(){ oldCalendar(); }, 260);
+        };
+        window.renderVisualCalendar.__arikaV193Deferred = true;
+        window.renderVisualCalendar.__old = oldCalendar;
+      }
+
+      if (typeof window.runFilter === 'function' && !window.runFilter.__arikaV193Stable) {
+        var oldRunFilter = window.runFilter;
+        window.runFilter = function(options){
+          markFilterInteraction(1100);
+          var active = document.activeElement;
+          var keepFocus = matchesFilterControl(active);
+          var scrollX = window.scrollX || window.pageXOffset || 0;
+          var scrollY = window.scrollY || window.pageYOffset || 0;
+          var result = oldRunFilter.apply(this, arguments);
+          // Kalender cukup diperbarui setelah browser selesai menutup date picker/dropdown.
+          if (typeof window.renderVisualCalendar === 'function') window.renderVisualCalendar();
+          if (keepFocus && active && document.contains(active)) {
+            setTimeout(function(){
+              try { active.focus({ preventScroll: true }); } catch(e) {}
+              try { window.scrollTo(scrollX, scrollY); } catch(e) {}
+            }, 80);
+          }
+          return result;
+        };
+        window.runFilter.__arikaV193Stable = true;
+        window.runFilter.__old = oldRunFilter;
+      }
+    } catch(e) {
+      console.warn('Patch v193 filter ringan gagal:', e);
+    }
+  }
+
+  ['pointerdown','mousedown','touchstart','focusin','click'].forEach(function(type){
+    document.addEventListener(type, function(ev){
+      if (matchesFilterControl(ev.target)) markFilterInteraction(type === 'focusin' ? 900 : 1600);
+    }, true);
+  });
+  ['input','change'].forEach(function(type){
+    document.addEventListener(type, function(ev){
+      if (!matchesFilterControl(ev.target)) return;
+      markFilterInteraction(1200);
+      if ((ev.target.id === 'filter-rekap-start' || ev.target.id === 'filter-rekap-end') && typeof window.renderVisualCalendar === 'function') {
+        window.renderVisualCalendar();
+      }
+    }, true);
+  });
+
+  function install(){
+    installLoaderGuard();
+    installDeferredHeavyRender();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 300);
+  setTimeout(install, 1200);
+})();
+</script>
+
+</body></html>
             `;
             const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
