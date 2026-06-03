@@ -4594,7 +4594,7 @@
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="block text-[8px] font-black text-slate-400 uppercase mb-1">Tanggal</label>
-                                    <input type="text" id="rencana-tanggal" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                                    <input type="text" id="rencana-tanggal" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                                 </div>
                                 <div>
                                     <label class="block text-[8px] font-black text-slate-400 uppercase mb-1">Jam Reminder</label>
@@ -4774,7 +4774,7 @@
                             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                                 <div class="lg:col-span-1 text-left">
                                     <label class="block text-[9px] md:text-[10px] font-black text-emerald-600 uppercase mb-2 ml-2 tracking-widest">Tanggal Kegiatan</label>
-                                    <input type="text" id="in-date" required onchange="window.checkHariLibur()" class="w-full bg-emerald-50/70 border-2 border-emerald-100 rounded-2xl p-3 font-black text-xs md:text-sm outline-none input-focus text-center sm:text-left text-slate-700 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                                    <input type="text" id="in-date" required onchange="window.checkHariLibur()" class="w-full bg-emerald-50/70 border-2 border-emerald-100 rounded-2xl p-3 font-black text-xs md:text-sm outline-none input-focus text-center sm:text-left text-slate-700 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                                     <div id="holiday-warning" class="hidden mt-2 p-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-[10px] font-black uppercase text-center animate-pulse shadow-sm"></div>
                                 </div>
                                 <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -4890,7 +4890,7 @@
         <section id="view-lembur" class="view-section animate-fade hidden text-center sm:text-left">
             <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h1 class="text-lg md:text-xl font-black uppercase tracking-widest">Rekap Lembur Saya</h1>
-                <input type="text" id="filt-lembur-bulan" onchange="window.renderLemburTable()" class="p-2 border rounded-xl text-xs font-black outline-none text-center sm:text-left arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm-yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06-2026. Alternatif: yyyy-mm.">
+                <input type="text" id="filt-lembur-bulan" onchange="window.renderLemburTable()" class="p-2 border rounded-xl text-xs font-black outline-none text-center sm:text-left arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
             </div>
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden overflow-x-auto">
                 <table class="w-full text-left text-[11px] text-center sm:text-left">
@@ -4952,7 +4952,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="mt-3 text-[9px] font-bold text-slate-400 leading-relaxed">Filter kalender dibuat manual. Ketik bulan dengan format mm-yyyy, contoh 06-2026, atau tanggal lengkap dd-mm-yyyy, contoh 03-06-2026. Tidak ada date picker/kalender browser yang terbuka.</p>
+                <p class="mt-3 text-[9px] font-bold text-slate-400 leading-relaxed">Filter kalender dibuat manual. Ketik bulan dengan format mm/yyyy, contoh 06/2026, atau tanggal lengkap dd/mm/yyyy, contoh 03/06/2026. Tidak ada date picker/kalender browser yang terbuka.</p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -5021,7 +5021,7 @@
                             <p id="pegawai-dashboard-subtitle" class="mt-2 text-sm text-emerald-50/90 font-bold leading-relaxed max-w-3xl">Ringkasan jurnal, lembur, catatan atasan, dan monev unit secara read-only khusus pegawai login.</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <input type="text" id="pegawai-dashboard-month" onchange="window.renderDashboardPegawai()" class="px-4 py-3 rounded-2xl bg-white/95 text-slate-800 text-xs font-black outline-none shadow-lg arika-manual-date-input" title="Filter bulan Dashboard Saya | Cukup ketik angka 062026, ARIKA otomatis menjadi 06-2026. Alternatif: yyyy-mm." inputmode="numeric" autocomplete="off" placeholder="mm-yyyy" data-arika-manual-date="month">
+                            <input type="text" id="pegawai-dashboard-month" onchange="window.renderDashboardPegawai()" class="px-4 py-3 rounded-2xl bg-white/95 text-slate-800 text-xs font-black outline-none shadow-lg arika-manual-date-input" title="Filter bulan Dashboard Saya | Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm." inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month">
                             <button type="button" onclick="const el=document.getElementById('pegawai-dashboard-month'); if(el) el.value=(new Date()).toISOString().slice(0,7); window.renderDashboardPegawai();" class="px-4 py-3 rounded-2xl bg-white text-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all">Bulan Ini</button>
                             <button type="button" onclick="const el=document.getElementById('pegawai-dashboard-month'); if(el) el.value=''; window.renderDashboardPegawai();" class="px-4 py-3 rounded-2xl bg-emerald-950/30 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-950/40 transition-all">Semua Periode</button>
                             <button type="button" onclick="window.fetchLiveJurnalFromSheet && window.fetchLiveJurnalFromSheet({ silent:false, timeoutMs:12000 }).then(()=>window.renderDashboardPegawai())" class="px-4 py-3 rounded-2xl bg-cyan-950/30 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-cyan-950/40 transition-all">↻ Sinkron</button>
@@ -5743,7 +5743,7 @@
                                 <p class="admin-section-desc">Pantau tren pengisian jurnal, lembur, ketuntasan pekerjaan, dan performa fungsi kerja secara bulanan dengan tampilan ringkas untuk kebutuhan evaluasi pimpinan.</p>
                             </div>
                             <div class="admin-filterbar">
-                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm-yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06-2026. Alternatif: yyyy-mm.">
+                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
                                 <select id="admin-analytics-lab" onchange="window.renderAdminAnalytics()" class="admin-control">
                                     <option value="Semua">Semua Lab</option>
                                     <option value="Kimia OBA">Kimia OBA</option>
@@ -5901,7 +5901,7 @@
                                 <p class="admin-section-desc">Pantau pengajuan lembur, kelengkapan surat tugas, data dukung, jam lembur, dan status review agar proses verifikasi lebih tertib dan siap direkap.</p>
                             </div>
                             <div class="admin-filterbar">
-                                <input type="text" id="admin-overtime-month" onchange="window.renderAdminOvertimeDashboard()" title="Kosongkan untuk menampilkan semua periode | Cukup ketik angka 062026, ARIKA otomatis menjadi 06-2026. Alternatif: yyyy-mm." class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm-yyyy" data-arika-manual-date="month">
+                                <input type="text" id="admin-overtime-month" onchange="window.renderAdminOvertimeDashboard()" title="Kosongkan untuk menampilkan semua periode | Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm." class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month">
                                 <button type="button" onclick="const el=document.getElementById('admin-overtime-month'); if(el) el.value=''; window.renderAdminOvertimeDashboard();" class="admin-action-btn admin-action-emerald" title="Tampilkan seluruh data lembur tanpa batas bulan">Semua Bulan</button>
                                 <select id="admin-overtime-lab" onchange="window.renderAdminOvertimeDashboard()" class="admin-control">
                                     <option value="Semua">Semua Lab</option>
@@ -5934,15 +5934,15 @@
                                     <div class="rounded-2xl border border-slate-200 bg-white/90 p-3">
                                         <label class="block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">SPK Harian</label>
                                         <div class="flex flex-col sm:flex-row gap-2">
-                                            <input type="text" id="admin-spk-date" class="min-w-[155px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-cyan-100 focus:border-cyan-400 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                                            <input type="text" id="admin-spk-date" class="min-w-[155px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-cyan-100 focus:border-cyan-400 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                                             <button onclick="window.downloadAdminSPKWord()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap">📄 SPK Harian</button>
                                         </div>
                                     </div>
                                     <div class="rounded-2xl border border-slate-200 bg-white/90 p-3">
                                         <label class="block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">SPK Rentang</label>
                                         <div class="flex flex-col sm:flex-row gap-2">
-                                            <input type="text" id="admin-spk-range-start" class="min-w-[145px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400 arika-manual-date-input" title="Tanggal awal SPK rentang | Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd." inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date">
-                                            <input type="text" id="admin-spk-range-end" class="min-w-[145px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400 arika-manual-date-input" title="Tanggal akhir SPK rentang | Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd." inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date">
+                                            <input type="text" id="admin-spk-range-start" class="min-w-[145px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400 arika-manual-date-input" title="Tanggal awal SPK rentang | Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd." inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date">
+                                            <input type="text" id="admin-spk-range-end" class="min-w-[145px] flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-400 arika-manual-date-input" title="Tanggal akhir SPK rentang | Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd." inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date">
                                             <button onclick="window.downloadAdminSPKBulananWord()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors whitespace-nowrap">📚 SPK Rentang</button>
                                         </div>
                                     </div>
@@ -6084,7 +6084,7 @@
                             <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Pantau pengalaman pengguna, fitur yang paling membantu, kendala, dan rencana tindak lanjut perbaikan.</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm-yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06-2026. Alternatif: yyyy-mm.">
+                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
                             <button onclick="window.downloadSurveyReportWord()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📄 Laporan Survei</button>
                             <button onclick="window.downloadSurveyMonevExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📊 Tindak Lanjut XLS</button>
                         </div>
@@ -6168,11 +6168,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Rentang Awal</label>
-                            <input type="text" id="admin-filter-start" onchange="window.renderAdminAllTable()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                            <input type="text" id="admin-filter-start" onchange="window.renderAdminAllTable()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Rentang Akhir</label>
-                            <input type="text" id="admin-filter-end" onchange="window.renderAdminAllTable()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                            <input type="text" id="admin-filter-end" onchange="window.renderAdminAllTable()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Laboratorium / Fungsi</label>
@@ -6269,11 +6269,11 @@
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Tanggal Mulai</label>
-                            <input type="text" id="pengumuman-mulai" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                            <input type="text" id="pengumuman-mulai" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Tanggal Selesai</label>
-                            <input type="text" id="pengumuman-selesai" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                            <input type="text" id="pengumuman-selesai" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Waktu Mulai Kegiatan</label>
@@ -6328,7 +6328,7 @@
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Tanggal</label>
-                            <input type="text" id="agenda-tanggal" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-cyan-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03-06-2026. Alternatif: yyyy-mm-dd.">
+                            <input type="text" id="agenda-tanggal" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-cyan-500 arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="dd/mm/yyyy" data-arika-manual-date="date" title="Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026. Alternatif: yyyy-mm-dd.">
                         </div>
                         <div>
                             <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Waktu Mulai</label>
@@ -6480,7 +6480,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v205 dropdown chip & tanggal otomatis</div>
     </footer>
 
-    <script src="app.js?v=205"></script>
+    <script src="app.js?v=206"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){

@@ -711,15 +711,71 @@
             if(value instanceof Date && !Number.isNaN(value.getTime())) {
                 return value.toLocaleDateString('en-CA');
             }
-            const raw = String(value || '').trim();
-            if(!raw) return '';
-            const iso = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-            if(iso) return `${iso[1]}-${String(Number(iso[2])).padStart(2, '0')}-${String(Number(iso[3])).padStart(2, '0')}`;
-            const local = raw.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
-            if(local) return `${local[3]}-${String(Number(local[2])).padStart(2, '0')}-${String(Number(local[1])).padStart(2, '0')}`;
-            const parsed = new Date(raw);
+            const rawOriginal = String(value || '').trim();
+            if(!rawOriginal) return '';
+            const raw = rawOriginal.replace(/[.]/g, '/').replace(/\s+/g, '');
+
+            const padDatePart = (n) => String(Number(n)).padStart(2, '0');
+            const validDateParts = (y, m, d) => {
+                y = Number(y); m = Number(m); d = Number(d);
+                const dt = new Date(y, m - 1, d);
+                return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+            };
+            const makeKey = (y, m, d) => validDateParts(y, m, d) ? `${Number(y)}-${padDatePart(m)}-${padDatePart(d)}` : '';
+
+            let match = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:T.*)?$/);
+            if(match) return makeKey(match[1], match[2], match[3]) || rawOriginal.split('T')[0];
+
+            match = raw.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+            if(match) return makeKey(match[3], match[2], match[1]) || rawOriginal;
+
+            // Angka murni: 03062026 -> 2026-06-03, 20260603 -> 2026-06-03
+            match = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+            if(match) return makeKey(match[3], match[2], match[1]) || rawOriginal;
+
+            match = raw.match(/^(\d{4})(\d{2})(\d{2})$/);
+            if(match && /^(19|20)\d{2}$/.test(match[1])) return makeKey(match[1], match[2], match[3]) || rawOriginal;
+
+            const parsed = new Date(rawOriginal);
             if(!Number.isNaN(parsed.getTime())) return parsed.toLocaleDateString('en-CA');
-            return raw.split('T')[0];
+            return rawOriginal.split('T')[0];
+        }
+
+        function normalizeMonthKeyFromInput(value) {
+            if(!value) return '';
+            if(value instanceof Date && !Number.isNaN(value.getTime())) return value.toLocaleDateString('en-CA').slice(0, 7);
+            const rawOriginal = String(value || '').trim();
+            if(!rawOriginal) return '';
+            const raw = rawOriginal.replace(/[.]/g, '/').replace(/\s+/g, '');
+            const dateKey = normalizeDateKeyFromSheet(raw);
+            if(/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return dateKey.slice(0, 7);
+            let y, m, match;
+            const makeMonth = (yy, mm) => {
+                yy = Number(yy); mm = Number(mm);
+                if(!yy || mm < 1 || mm > 12) return '';
+                return `${yy}-${String(mm).padStart(2, '0')}`;
+            };
+            match = raw.match(/^(\d{4})[-\/](\d{1,2})$/);
+            if(match) return makeMonth(match[1], match[2]);
+            match = raw.match(/^(\d{1,2})[-\/](\d{4})$/);
+            if(match) return makeMonth(match[2], match[1]);
+            match = raw.match(/^(\d{2})(\d{4})$/);
+            if(match) return makeMonth(match[2], match[1]);
+            match = raw.match(/^(\d{4})(\d{2})$/);
+            if(match && /^(19|20)\d{2}$/.test(match[1])) return makeMonth(match[1], match[2]);
+            return '';
+        }
+
+        function getManualDateValueById(id) {
+            const el = document.getElementById(id);
+            if(!el) return '';
+            return normalizeDateKeyFromSheet(el.dataset?.arikaIsoValue || el.value || '') || '';
+        }
+
+        function getManualMonthValueById(id, fallback = '') {
+            const el = document.getElementById(id);
+            if(!el) return fallback || '';
+            return normalizeMonthKeyFromInput(el.dataset?.arikaIsoValue || el.value || '') || fallback || '';
         }
 
         function getJurnalSortTime(row) {
@@ -3378,7 +3434,7 @@
 
         window.renderLemburTable = function() {
             const body = document.getElementById('lembur-body');
-            const filt = document.getElementById('filt-lembur-bulan').value;
+            const filt = getManualMonthValueById('filt-lembur-bulan', '');
             if(!body) return;
             body.innerHTML = '';
             const targetName = normalize(window.currentUser.nama);
@@ -3940,7 +3996,7 @@
         };
 
         function getAdminAnalyticsRows() {
-            const monthVal = document.getElementById('admin-analytics-month')?.value || getCurrentMonth();
+            const monthVal = getManualMonthValueById('admin-analytics-month', getCurrentMonth());
             const labSelect = document.getElementById('admin-analytics-lab')?.value || 'Semua';
             const rows = getRoleScopedJurnalRows().filter(d => {
                 const matchesMonth = !monthVal || String(d.date || '').startsWith(monthVal);
@@ -4354,7 +4410,7 @@
             const monthEl = document.getElementById('admin-overtime-month');
             return {
                 // Kosong berarti semua periode. Ini mencegah dashboard tampak kosong ketika belum ada lembur di bulan berjalan.
-                monthVal: monthEl?.value || '',
+                monthVal: normalizeMonthKeyFromInput(monthEl?.dataset?.arikaIsoValue || monthEl?.value || '') || '',
                 labSelect: document.getElementById('admin-overtime-lab')?.value || 'Semua',
                 statusSelect: document.getElementById('admin-overtime-status')?.value || 'Semua',
                 searchText: normalize(document.getElementById('admin-overtime-search')?.value || '')
@@ -4870,8 +4926,8 @@
         }
 
         function getDateRangeValues(startId, endId) {
-            let start = normalizeDateKeyFromSheet(document.getElementById(startId)?.value || '') || '';
-            let end = normalizeDateKeyFromSheet(document.getElementById(endId)?.value || '') || '';
+            let start = getManualDateValueById(startId) || normalizeDateKeyFromSheet(document.getElementById(startId)?.value || '') || '';
+            let end = getManualDateValueById(endId) || normalizeDateKeyFromSheet(document.getElementById(endId)?.value || '') || '';
             if(start && end && start > end) {
                 const temp = start;
                 start = end;
@@ -4892,27 +4948,30 @@
 
         function getRekapMonthValue() {
             const monthEl = document.getElementById('filter-rekap-month');
-            return monthEl?.value || '';
+            return getManualMonthValueById('filter-rekap-month', '');
         }
 
         function getRekapDateValue() {
             const dateEl = document.getElementById('filter-rekap-date');
-            return dateEl?.value || '';
+            return getManualDateValueById('filter-rekap-date');
         }
 
         function dateMatchesRekapFilter(dateValue, monthValue, exactDateValue) {
-            const dateKey = String(dateValue || '').slice(0, 10);
+            const dateKey = normalizeDateKeyFromSheet(dateValue) || String(dateValue || '').slice(0, 10);
+            const exactKey = normalizeDateKeyFromSheet(exactDateValue) || '';
+            const monthKey = normalizeMonthKeyFromInput(monthValue) || '';
             if(!dateKey) return false;
-            if(exactDateValue) return dateKey === exactDateValue;
-            if(monthValue) return dateKey.startsWith(monthValue);
+            if(exactKey) return dateKey === exactKey;
+            if(monthKey) return dateKey.startsWith(monthKey);
             return true;
         }
 
         function dateInMonth(dateValue, monthValue) {
-            const dateKey = String(dateValue || '').slice(0, 10);
+            const dateKey = normalizeDateKeyFromSheet(dateValue) || String(dateValue || '').slice(0, 10);
+            const monthKey = normalizeMonthKeyFromInput(monthValue) || '';
             if(!dateKey) return false;
-            if(!monthValue) return true;
-            return dateKey.startsWith(monthValue);
+            if(!monthKey) return true;
+            return dateKey.startsWith(monthKey);
         }
 
         window.setRekapMonthToCurrent = function() {
@@ -6677,8 +6736,8 @@
                 id: isEdit ? editId : makeLocalId('pengumuman'),
                 judul: document.getElementById('pengumuman-judul')?.value.trim() || '',
                 jenis: document.getElementById('pengumuman-jenis')?.value || 'Informasi',
-                mulai: document.getElementById('pengumuman-mulai')?.value || getTodayKey(),
-                selesai: document.getElementById('pengumuman-selesai')?.value || getTodayKey(),
+                mulai: getManualDateValueById('pengumuman-mulai') || getTodayKey(),
+                selesai: getManualDateValueById('pengumuman-selesai') || getTodayKey(),
                 waktuMulai: document.getElementById('pengumuman-waktu-mulai')?.value || '',
                 targetFungsi: getPengumumanTargetValues().join(', '),
                 createdByName: window.currentUser?.nama || (window.isAdmin ? 'Administrator' : ''),
@@ -7014,7 +7073,7 @@
                 id: editId || makeLocalId('agenda'),
                 judul: document.getElementById('agenda-judul')?.value.trim() || '',
                 jenis: document.getElementById('agenda-jenis')?.value || 'Agenda',
-                tanggal: document.getElementById('agenda-tanggal')?.value || getTodayKey(),
+                tanggal: getManualDateValueById('agenda-tanggal') || getTodayKey(),
                 waktuMulai: document.getElementById('agenda-waktu')?.value || '',
                 lokasi: document.getElementById('agenda-lokasi')?.value.trim() || '',
                 keterangan: document.getElementById('agenda-keterangan')?.value.trim() || '',
@@ -7572,7 +7631,7 @@
 
             const monthEl = document.getElementById('pegawai-dashboard-month');
             if(monthEl && monthEl.value) monthEl.dataset.touched = 'true';
-            const monthVal = monthEl ? monthEl.value : getCurrentMonth();
+            const monthVal = monthEl ? getManualMonthValueById('pegawai-dashboard-month', getCurrentMonth()) : getCurrentMonth();
             const periodLabel = getPegawaiDashboardPeriodLabel(monthVal);
             const myRows = getMyJurnalRowsForDashboard(monthVal);
             const myOvertimeRows = myRows.filter(d => isAdminOvertimeRow(d));
@@ -7649,7 +7708,7 @@
         window.downloadExcelLembur = function() {
             if(!window.currentUser) return;
 
-            const month = document.getElementById('filt-lembur-bulan')?.value || getCurrentMonth();
+            const month = getManualMonthValueById('filt-lembur-bulan', getCurrentMonth());
             const labPegawai = getCurrentUserLab();
             const ketuaTim = getKetuaTimByLab(labPegawai);
             const bulanLabel = formatBulanIndonesia(month).toUpperCase();
@@ -7733,7 +7792,7 @@
 
         window.downloadSPKLembur = function() {
             if(!window.currentUser) return;
-            const month = document.getElementById('filt-lembur-bulan')?.value || getCurrentMonth();
+            const month = getManualMonthValueById('filt-lembur-bulan', getCurrentMonth());
             const rows = window.arikaData.filter(d => d.isLembur && normalize(d.name) === normalize(window.currentUser.nama) && (!month || d.date.startsWith(month)));
             let html = `<table border="1"><tr><th colspan="5">SURAT PERINTAH KERJA LEMBUR KOLEKTIF</th></tr><tr><td>Unit</td><td colspan="4">Balai POM di Ambon</td></tr><tr><th>No</th><th>Nama</th><th>Tanggal</th><th>Waktu</th><th>Uraian</th></tr>`;
             rows.forEach((d, i) => html += `<tr><td>${i+1}</td><td>${escapeHTML(d.name)}</td><td>${escapeHTML(formatHariTanggal(d.date))}</td><td>${escapeHTML(d.start)} - ${escapeHTML(d.end)}</td><td>${escapeHTML(d.desc)}</td></tr>`);
@@ -7867,7 +7926,7 @@
         window.downloadAdminSPKWord = function() {
             if(!window.isAdmin) return window.showCustomAlert('Akses admin diperlukan.');
 
-            const spkDate = document.getElementById('admin-spk-date')?.value;
+            const spkDate = getManualDateValueById('admin-spk-date');
             if(!spkDate) return window.showCustomAlert('Pilih tanggal SPK Harian pada Dashboard Lembur terlebih dahulu.');
 
             const labSelect = document.getElementById('admin-overtime-lab')?.value || 'Semua';
@@ -8274,7 +8333,7 @@
         };
 
         function getAdminSurveyRows() {
-            const monthVal = document.getElementById('admin-survei-month')?.value || getCurrentMonth();
+            const monthVal = getManualMonthValueById('admin-survei-month', getCurrentMonth());
             const rows = (window.surveiData || []).filter(s => !monthVal || String(s.bulan || '').startsWith(monthVal));
             return { rows, monthVal };
         }
@@ -8402,7 +8461,7 @@
         // Override tabel lembur dengan durasi pembulatan verifikasi 1/2 jam.
         window.renderLemburTable = function() {
             const body = document.getElementById('lembur-body');
-            const filt = document.getElementById('filt-lembur-bulan')?.value || '';
+            const filt = getManualMonthValueById('filt-lembur-bulan', '');
             if(!body) return;
             body.innerHTML = '';
             if(!window.currentUser) return;
@@ -9125,7 +9184,7 @@
 
 // ARIKA v202 - Filter tanggal manual global dengan pemisah otomatis.
 // Semua input tanggal/bulan yang diberi data-arika-manual-date akan menerima ketikan manual,
-// lalu menerima tampilan/petunjuk dd-mm-yyyy atau mm-yyyy, dan dinormalisasi internal ke format aman.
+// lalu menerima tampilan/petunjuk dd/mm/yyyy atau mm/yyyy, dan dinormalisasi internal ke format aman.
 (function(){
   'use strict';
 
@@ -9303,8 +9362,8 @@
     const raw = String(el.value || '').trim();
     const kind = getKind(el);
     const message = kind === 'month'
-      ? 'Format bulan tidak sesuai. Gunakan mm-yyyy, contoh 06-2026. Alternatif: yyyy-mm, contoh 2026-06.'
-      : 'Format tanggal tidak sesuai. Gunakan dd-mm-yyyy, contoh 03-06-2026. Alternatif: yyyy-mm-dd, contoh 2026-06-03.';
+      ? 'Format bulan tidak sesuai. Gunakan mm/yyyy, contoh 06/2026. Alternatif: yyyy-mm, contoh 2026-06.'
+      : 'Format tanggal tidak sesuai. Gunakan dd/mm/yyyy, contoh 03/06/2026. Alternatif: yyyy-mm-dd, contoh 2026-06-03.';
 
     if(!raw) {
       setFieldValidity(el, true, '');
@@ -9375,8 +9434,8 @@
       el.dataset.arikaManualHint = 'true';
       const kind = getKind(el);
       const hintText = kind === 'month'
-        ? 'Cukup ketik angka: 062026 → 06-2026. Alternatif: 2026-06.'
-        : 'Cukup ketik angka: 03062026 → 03-06-2026. Alternatif: 2026-06-03.';
+        ? 'Cukup ketik angka: 062026 → 06/2026. Alternatif: 2026-06.'
+        : 'Cukup ketik angka: 03062026 → 03/06/2026. Alternatif: 2026-06-03.';
       const next = el.nextElementSibling;
       if(next && next.classList && next.classList.contains('arika-date-helper')) return;
       // Untuk form yang sudah padat, cukup pakai title/placeholder; hint visual hanya untuk filter admin yang rawan salah input.
@@ -9396,7 +9455,7 @@
       el.setAttribute('inputmode', 'numeric');
       el.setAttribute('autocomplete', 'off');
       const kindForMask = getKind(el);
-      if(!el.getAttribute('placeholder')) el.setAttribute('placeholder', kindForMask === 'month' ? 'mm-yyyy' : 'dd-mm-yyyy');
+      if(!el.getAttribute('placeholder')) el.setAttribute('placeholder', kindForMask === 'month' ? 'mm/yyyy' : 'dd/mm/yyyy');
       el.setAttribute('maxlength', kindForMask === 'month' ? '7' : '10');
       el.setAttribute('pattern', kindForMask === 'month' ? '(\\d{2}-\\d{4}|\\d{4}-\\d{2})' : '(\\d{2}-\\d{2}-\\d{4}|\\d{4}-\\d{2}-\\d{2})');
       el.addEventListener('input', function(){
@@ -9745,23 +9804,23 @@
 })();
 
 
-// ARIKA v205 - Perbaikan nyata: dropdown jadi chip/tombol + tanggal/bulan otomatis memakai garis miring.
+// ARIKA v206 - Parser tanggal/bulan angka murni + dropdown chip.
 (function(){
   'use strict';
 
   const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta']);
-  const CHIP_GROUP_CLASS_V205 = 'arika-v205-chip-group';
-  const CHIP_BUTTON_CLASS_V205 = 'arika-v205-chip-btn';
+  const CHIP_GROUP_CLASS_V205 = 'arika-v206-chip-group';
+  const CHIP_BUTTON_CLASS_V205 = 'arika-v206-chip-btn';
   const DATE_SELECTOR_V205 = 'input[data-arika-manual-date]';
 
   function pad2V205(n){ return String(n).padStart(2, '0'); }
 
   function injectV205Style(){
-    if(document.getElementById('arika-v205-style')) return;
+    if(document.getElementById('arika-v206-style')) return;
     const style = document.createElement('style');
-    style.id = 'arika-v205-style';
+    style.id = 'arika-v206-style';
     style.textContent = `
-      select.arika-v205-select-hidden,
+      select.arika-v206-select-hidden,
       select.arika-native-select-hidden:not(#pengumuman-target-fungsi):not(#agenda-peserta) {
         position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
         overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
@@ -9769,22 +9828,22 @@
       }
       #pengumuman-target-fungsi,
       #agenda-peserta { position:static!important;width:auto!important;height:auto!important;opacity:1!important;pointer-events:auto!important;clip:auto!important; }
-      .arika-v205-chip-group{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:.35rem;width:100%;}
-      .arika-v205-chip-group[data-select-id="mobile-nav-select"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;}
-      .arika-v205-chip-group[data-select-id="add-lab"],
-      .arika-v205-chip-group[data-select-id="admin-analytics-lab"],
-      .arika-v205-chip-group[data-select-id="admin-overtime-lab"],
-      .arika-v205-chip-group[data-select-id="admin-filter-lab"]{max-height:10rem;overflow:auto;padding:.1rem .15rem .25rem 0;}
-      .arika-v205-chip-btn{border:1.8px solid rgba(148,163,184,.45);background:linear-gradient(135deg,#fff,#f8fafc);color:#334155;border-radius:999px;padding:.58rem .82rem;font-size:.68rem;font-weight:900;line-height:1.15;letter-spacing:.01em;cursor:pointer;box-shadow:0 8px 18px rgba(15,23,42,.05);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,border-color .12s ease,color .12s ease;text-align:center;min-height:2.25rem;}
-      .arika-v205-chip-group[data-select-id="mobile-nav-select"] .arika-v205-chip-btn{border-radius:1rem;padding:.66rem .55rem;font-size:.66rem;}
-      .arika-v205-chip-btn:hover{transform:translateY(-1px);border-color:rgba(8,145,178,.65);box-shadow:0 12px 25px rgba(8,145,178,.12);}
-      .arika-v205-chip-btn.active{color:#fff;border-color:rgba(8,145,178,.95);background:linear-gradient(135deg,#0891b2,#0f766e);box-shadow:0 12px 28px rgba(8,145,178,.25);}
-      .arika-v205-chip-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
-      .arika-v205-chip-btn.v205-hidden-option{display:none!important;}
-      .arika-v205-date-hint{display:block;margin-top:.32rem;font-size:.62rem;font-weight:800;color:#64748b;line-height:1.35;}
+      .arika-v206-chip-group{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:.35rem;width:100%;}
+      .arika-v206-chip-group[data-select-id="mobile-nav-select"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;}
+      .arika-v206-chip-group[data-select-id="add-lab"],
+      .arika-v206-chip-group[data-select-id="admin-analytics-lab"],
+      .arika-v206-chip-group[data-select-id="admin-overtime-lab"],
+      .arika-v206-chip-group[data-select-id="admin-filter-lab"]{max-height:10rem;overflow:auto;padding:.1rem .15rem .25rem 0;}
+      .arika-v206-chip-btn{border:1.8px solid rgba(148,163,184,.45);background:linear-gradient(135deg,#fff,#f8fafc);color:#334155;border-radius:999px;padding:.58rem .82rem;font-size:.68rem;font-weight:900;line-height:1.15;letter-spacing:.01em;cursor:pointer;box-shadow:0 8px 18px rgba(15,23,42,.05);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,border-color .12s ease,color .12s ease;text-align:center;min-height:2.25rem;}
+      .arika-v206-chip-group[data-select-id="mobile-nav-select"] .arika-v206-chip-btn{border-radius:1rem;padding:.66rem .55rem;font-size:.66rem;}
+      .arika-v206-chip-btn:hover{transform:translateY(-1px);border-color:rgba(8,145,178,.65);box-shadow:0 12px 25px rgba(8,145,178,.12);}
+      .arika-v206-chip-btn.active{color:#fff;border-color:rgba(8,145,178,.95);background:linear-gradient(135deg,#0891b2,#0f766e);box-shadow:0 12px 28px rgba(8,145,178,.25);}
+      .arika-v206-chip-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+      .arika-v206-chip-btn.v206-hidden-option{display:none!important;}
+      .arika-v206-date-hint{display:block;margin-top:.32rem;font-size:.62rem;font-weight:800;color:#64748b;line-height:1.35;}
       input[data-arika-manual-date]{letter-spacing:.02em;}
       input[data-arika-manual-date]::placeholder{color:#64748b!important;opacity:.95!important;font-weight:800!important;}
-      @media(max-width:480px){.arika-v205-chip-group[data-select-id="mobile-nav-select"]{grid-template-columns:1fr}.arika-v205-chip-btn{width:100%;}}
+      @media(max-width:480px){.arika-v206-chip-group[data-select-id="mobile-nav-select"]{grid-template-columns:1fr}.arika-v206-chip-btn{width:100%;}}
     `;
     document.head.appendChild(style);
   }
@@ -9827,12 +9886,12 @@
     const buttons = Array.from(group.querySelectorAll('.' + CHIP_BUTTON_CLASS_V205));
     buttons.forEach(btn => {
       const opt = options.find(o => String(optionValueV205(o)) === String(btn.dataset.value || ''));
-      if(!opt){ btn.classList.add('v205-hidden-option'); btn.disabled = true; return; }
+      if(!opt){ btn.classList.add('v206-hidden-option'); btn.disabled = true; return; }
       const selected = String(select.value || '') === String(btn.dataset.value || '');
       btn.classList.toggle('active', selected);
       btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
       btn.disabled = !!select.disabled || !!opt.disabled;
-      btn.classList.toggle('v205-hidden-option', !!opt.hidden || opt.classList.contains('hidden'));
+      btn.classList.toggle('v206-hidden-option', !!opt.hidden || opt.classList.contains('hidden'));
       const label = optionLabelV205(opt);
       if(btn.textContent !== label) btn.textContent = label;
       btn.title = label;
@@ -9879,10 +9938,10 @@
   function convertSelectV205(select){
     if(!select || !select.id) return;
     if(EXCLUDED_SELECT_IDS_V205.has(select.id)){
-      select.classList.remove('arika-v205-select-hidden', 'arika-native-select-hidden');
+      select.classList.remove('arika-v206-select-hidden', 'arika-native-select-hidden');
       return;
     }
-    select.classList.add('arika-v205-select-hidden', 'arika-native-select-hidden');
+    select.classList.add('arika-v206-select-hidden', 'arika-native-select-hidden');
     select.tabIndex = -1;
     rebuildChipV205(select);
     if(!select.__arikaV205Observer){
@@ -9996,8 +10055,8 @@
   }
 
   function refreshAllV205(){
-    try{ installChipV205(); }catch(err){ console.warn('ARIKA v205 chip gagal:', err); }
-    try{ installDateV205(); }catch(err){ console.warn('ARIKA v205 tanggal gagal:', err); }
+    try{ installChipV205(); }catch(err){ console.warn('ARIKA v206 chip gagal:', err); }
+    try{ installDateV205(); }catch(err){ console.warn('ARIKA v206 tanggal gagal:', err); }
   }
 
   window.refreshArikaChipSelects = refreshAllV205;
