@@ -9098,7 +9098,7 @@
 
 // ARIKA v200 - Filter tanggal manual global tanpa date/month picker browser.
 // Semua input tanggal/bulan yang diberi data-arika-manual-date akan menerima ketikan manual,
-// lalu dinormalisasi ke format aman: YYYY-MM-DD untuk tanggal dan YYYY-MM untuk bulan.
+// lalu menerima tampilan/petunjuk dd/mm/yyyy atau mm/yyyy, dan dinormalisasi internal ke format aman.
 (function(){
   'use strict';
 
@@ -9231,8 +9231,8 @@
     const raw = String(el.value || '').trim();
     const kind = getKind(el);
     const message = kind === 'month'
-      ? 'Format bulan tidak sesuai. Gunakan YYYY-MM, contoh 2026-06.'
-      : 'Format tanggal tidak sesuai. Gunakan YYYY-MM-DD, contoh 2026-06-03.';
+      ? 'Format bulan tidak sesuai. Gunakan mm/yyyy, contoh 06/2026. Alternatif: yyyy-mm, contoh 2026-06.'
+      : 'Format tanggal tidak sesuai. Gunakan dd/mm/yyyy, contoh 03/06/2026. Alternatif: yyyy-mm-dd, contoh 2026-06-03.';
 
     if(!raw) {
       setFieldValidity(el, true, '');
@@ -9290,6 +9290,7 @@
     style.id = 'arika-v200-manual-date-style';
     style.textContent = `
       .arika-manual-date-input { letter-spacing: .02em; }
+      .arika-manual-date-input::placeholder { color: rgb(100 116 139); opacity: .95; font-weight: 800; }
       .arika-date-invalid { box-shadow: 0 0 0 3px rgba(244, 63, 94, .12) !important; border-color: rgb(244 63 94) !important; }
       .arika-date-helper { display:block; margin-top:.35rem; font-size:.62rem; font-weight:800; color:rgb(100 116 139); line-height:1.35; }
     `;
@@ -9302,8 +9303,8 @@
       el.dataset.arikaManualHint = 'true';
       const kind = getKind(el);
       const hintText = kind === 'month'
-        ? 'Ketik manual, contoh: 2026-06 atau 06/2026.'
-        : 'Ketik manual, contoh: 2026-06-03 atau 03/06/2026.';
+        ? 'Ketik manual: mm/yyyy, contoh 06/2026. Alternatif: yyyy-mm.'
+        : 'Ketik manual: dd/mm/yyyy, contoh 03/06/2026. Alternatif: yyyy-mm-dd.';
       const next = el.nextElementSibling;
       if(next && next.classList && next.classList.contains('arika-date-helper')) return;
       // Untuk form yang sudah padat, cukup pakai title/placeholder; hint visual hanya untuk filter admin yang rawan salah input.
@@ -9322,7 +9323,7 @@
       el.setAttribute('type', 'text');
       el.setAttribute('inputmode', 'numeric');
       el.setAttribute('autocomplete', 'off');
-      if(!el.getAttribute('placeholder')) el.setAttribute('placeholder', getKind(el) === 'month' ? 'YYYY-MM' : 'YYYY-MM-DD');
+      if(!el.getAttribute('placeholder')) el.setAttribute('placeholder', getKind(el) === 'month' ? 'mm/yyyy' : 'dd/mm/yyyy');
       el.addEventListener('input', function(){
         if(el.classList.contains('arika-date-invalid')) normalizeManualField(el, { apply: false });
       });
