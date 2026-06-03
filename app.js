@@ -3527,7 +3527,8 @@
             const categorySelect = document.getElementById('filter-rekap-cat')?.value || 'Semua';
             const statusSelect = document.getElementById('filter-rekap-status')?.value || 'Semua';
             const monthSelect = getRekapMonthValue();
-            const signature = `${targetName}|${targetNip}|${searchKeyword}|${categorySelect}|${statusSelect}|${monthSelect}`;
+            const exactDateSelect = getRekapDateValue();
+            const signature = `${targetName}|${targetNip}|${searchKeyword}|${categorySelect}|${statusSelect}|${monthSelect}|${exactDateSelect}`;
 
             if(!options.keepPage && window.personalHistorySignature !== signature) {
                 window.personalHistoryPage = 1;
@@ -3540,8 +3541,8 @@
                     const matchesKeyword = !searchKeyword || normalize(d.desc).includes(searchKeyword);
                     const matchesCategory = categorySelect === 'Semua' || d.cat === categorySelect;
                     const matchesStatus = statusSelect === 'Semua' || d.status === statusSelect;
-                    const matchesMonth = dateInMonth(d.date, monthSelect);
-                    return matchesUser && matchesKeyword && matchesCategory && matchesStatus && matchesMonth;
+                    const matchesDatePeriod = dateMatchesRekapFilter(d.date, monthSelect, exactDateSelect);
+                    return matchesUser && matchesKeyword && matchesCategory && matchesStatus && matchesDatePeriod;
                 })
                 .sort((a,b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
@@ -3713,11 +3714,16 @@
             const grid = document.getElementById('calendar-grid');
             if(!grid) return;
 
+            const exactDateFilter = getRekapDateValue();
             const monthFilter = getRekapMonthValue();
-            const filterMonthVal = monthFilter || getCurrentMonth();
+            const filterMonthVal = (exactDateFilter ? exactDateFilter.slice(0, 7) : monthFilter) || getCurrentMonth();
             const [year, month] = filterMonthVal.split('-').map(Number);
             const monthTitle = document.getElementById('calendar-month-title');
-            if(monthTitle) monthTitle.innerText = `Kalender ${formatBulanIndonesia(filterMonthVal)} • Klik tanggal untuk melihat detail aktivitas`;
+            if(monthTitle) {
+                monthTitle.innerText = exactDateFilter
+                    ? `Kalender ${formatBulanIndonesia(filterMonthVal)} • Filter tanggal ${formatDateIndo(exactDateFilter)}`
+                    : `Kalender ${formatBulanIndonesia(filterMonthVal)} • Klik tanggal untuk melihat detail aktivitas`;
+            }
 
             const firstDayIndex = new Date(year, month - 1, 1).getDay();
             const totalDays = new Date(year, month, 0).getDate();
@@ -3829,15 +3835,16 @@
 
             const rows = Array.isArray(filtered) ? filtered : [];
             const monthFilter = getRekapMonthValue();
+            const exactDateFilter = getRekapDateValue();
             const catFilter = document.getElementById('filter-rekap-cat')?.value || 'Semua';
             const statusFilter = document.getElementById('filter-rekap-status')?.value || 'Semua';
-            const periode = monthFilter ? formatBulanIndonesia(monthFilter) : 'Semua Bulan';
+            const periode = exactDateFilter ? formatDateIndo(exactDateFilter) : (monthFilter ? formatBulanIndonesia(monthFilter) : 'Semua Bulan');
             const safeName = String(window.currentUser.nama || 'pegawai')
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '') || 'pegawai';
             const tanggalUnduh = formatDateIndo(new Date());
-            const filename = `riwayat-jurnal-${safeName}-${monthFilter || 'semua-bulan'}.xls`;
+            const filename = `riwayat-jurnal-${safeName}-${exactDateFilter || monthFilter || 'semua-bulan'}.xls`;
 
             const cellStyle = 'border:1px solid #999;padding:7px;vertical-align:top;';
             const headStyle = cellStyle + 'background:#e2e8f0;font-weight:bold;text-align:center;';
@@ -3857,7 +3864,7 @@
                     `;
                 });
             } else {
-                bodyRows = `<tr><td colspan="6" style="${cellStyle}text-align:center;">Belum ada riwayat jurnal pada filter bulan yang dipilih.</td></tr>`;
+                bodyRows = `<tr><td colspan="6" style="${cellStyle}text-align:center;">Belum ada riwayat jurnal pada filter bulan/tanggal yang dipilih.</td></tr>`;
             }
 
             const tableHtml = `
@@ -4883,6 +4890,19 @@
         function getRekapMonthValue() {
             const monthEl = document.getElementById('filter-rekap-month');
             return monthEl?.value || '';
+        }
+
+        function getRekapDateValue() {
+            const dateEl = document.getElementById('filter-rekap-date');
+            return dateEl?.value || '';
+        }
+
+        function dateMatchesRekapFilter(dateValue, monthValue, exactDateValue) {
+            const dateKey = String(dateValue || '').slice(0, 10);
+            if(!dateKey) return false;
+            if(exactDateValue) return dateKey === exactDateValue;
+            if(monthValue) return dateKey.startsWith(monthValue);
+            return true;
         }
 
         function dateInMonth(dateValue, monthValue) {
@@ -8910,3 +8930,467 @@
                 if (fallback) fallback.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         };
+
+// v199: Filter Riwayat Jurnal manual tanpa date picker native.
+(function(){
+  'use strict';
+
+  function pad2(n){ return String(n).padStart(2, '0'); }
+  function currentMonthKey(){ return new Date().toISOString().slice(0, 7); }
+  function isValidDateParts(year, month, day){
+    var dt = new Date(year, month - 1, day);
+    return dt.getFullYear() === year && dt.getMonth() === month - 1 && dt.getDate() === day;
+  }
+  function parseMonthKey(value){
+    var val = String(value || '').trim();
+    var m = /^(\d{4})[-\/](\d{1,2})$/.exec(val) || /^(\d{1,2})[-\/](\d{4})$/.exec(val);
+    if(!m) return null;
+    var year, month;
+    if(m[1].length === 4) { year = Number(m[1]); month = Number(m[2]); }
+    else { month = Number(m[1]); year = Number(m[2]); }
+    if(!year || month < 1 || month > 12) return null;
+    return year + '-' + pad2(month);
+  }
+  function parseDateKey(value){
+    var val = String(value || '').trim();
+    var m = /^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/.exec(val);
+    var year, month, day;
+    if(m) { year = Number(m[1]); month = Number(m[2]); day = Number(m[3]); }
+    else {
+      m = /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/.exec(val);
+      if(!m) return null;
+      day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+    }
+    if(!isValidDateParts(year, month, day)) return null;
+    return year + '-' + pad2(month) + '-' + pad2(day);
+  }
+  function parseManualPeriod(value){
+    var raw = String(value || '').trim();
+    if(!raw) return { valid: true, month: '', date: '' };
+    var date = parseDateKey(raw);
+    if(date) return { valid: true, month: date.slice(0, 7), date: date };
+    var month = parseMonthKey(raw);
+    if(month) return { valid: true, month: month, date: '' };
+    return { valid: false, month: '', date: '' };
+  }
+  function addMonths(value, delta){
+    var monthKey = parseMonthKey(value) || currentMonthKey();
+    var parts = monthKey.split('-').map(Number);
+    var dt = new Date(parts[0], parts[1] - 1 + Number(delta || 0), 1);
+    return dt.getFullYear() + '-' + pad2(dt.getMonth() + 1);
+  }
+  function formatMonthLabel(value){
+    var val = String(value || '').slice(0, 7);
+    if(!val) return 'Semua Bulan';
+    if(typeof window.formatBulanIndonesia === 'function') return window.formatBulanIndonesia(val);
+    var names = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    var parts = val.split('-').map(Number);
+    return parts[0] && parts[1] ? (names[parts[1] - 1] + ' ' + parts[0]) : val;
+  }
+  function formatDateLabel(value){
+    if(!value) return '';
+    if(typeof window.formatDateIndo === 'function') return window.formatDateIndo(value);
+    return value;
+  }
+  function setHiddenValue(id, value){
+    var el = document.getElementById(id);
+    if(el) el.value = value || '';
+  }
+  function getHiddenValue(id, fallback){
+    var el = document.getElementById(id);
+    return el ? el.value : (fallback || '');
+  }
+  function setActiveByData(attr, value){
+    document.querySelectorAll('[' + attr + ']').forEach(function(btn){
+      btn.classList.toggle('active', String(btn.getAttribute(attr) || '') === String(value || ''));
+    });
+  }
+  var filterTimer = null;
+  function safeRunFilter(){
+    try { if(typeof window.showLoader === 'function') window.showLoader(false); } catch(e) {}
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(function(){
+      if(typeof window.runFilter === 'function') window.runFilter({ deferHeavy: true });
+      window.requestAnimationFrame(function(){
+        try { if(typeof window.renderVisualCalendar === 'function') window.renderVisualCalendar(); } catch(e) {}
+      });
+    }, 160);
+  }
+  function setManualInput(value, force){
+    var input = document.getElementById('filter-rekap-manual');
+    if(!input) return;
+    if(force || document.activeElement !== input) input.value = value || '';
+  }
+
+  window.applyRekapManualPeriod = function(value){
+    var input = document.getElementById('filter-rekap-manual');
+    var parsed = parseManualPeriod(value);
+    if(input) {
+      input.classList.toggle('border-rose-300', !parsed.valid);
+      input.classList.toggle('bg-rose-50', !parsed.valid);
+    }
+    if(!parsed.valid) return;
+    setHiddenValue('filter-rekap-month', parsed.month);
+    setHiddenValue('filter-rekap-date', parsed.date);
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  window.updateRekapFilterUI = function(){
+    var cat = getHiddenValue('filter-rekap-cat', 'Semua') || 'Semua';
+    var status = getHiddenValue('filter-rekap-status', 'Semua') || 'Semua';
+    var month = getHiddenValue('filter-rekap-month', '') || '';
+    var date = getHiddenValue('filter-rekap-date', '') || '';
+    setActiveByData('data-rekap-cat', cat);
+    setActiveByData('data-rekap-status', status);
+    setManualInput(date || month || '', false);
+    var label = document.getElementById('rekap-month-label');
+    if(label) {
+      label.textContent = date ? ('Tanggal ' + formatDateLabel(date)) : formatMonthLabel(month || currentMonthKey());
+      label.classList.toggle('active', !!(month || date));
+      label.title = date ? 'Filter tanggal manual aktif' : (month ? 'Filter bulan manual aktif' : 'Semua bulan. Klik untuk bulan ini.');
+    }
+  };
+
+  window.setRekapCategory = function(value){
+    setHiddenValue('filter-rekap-cat', value || 'Semua');
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  window.setRekapStatus = function(value){
+    setHiddenValue('filter-rekap-status', value || 'Semua');
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  window.setRekapMonthToCurrent = function(){
+    setHiddenValue('filter-rekap-month', currentMonthKey());
+    setHiddenValue('filter-rekap-date', '');
+    setManualInput(currentMonthKey(), true);
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  window.clearRekapMonth = function(){
+    setHiddenValue('filter-rekap-month', '');
+    setHiddenValue('filter-rekap-date', '');
+    setManualInput('', true);
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  window.shiftRekapMonth = function(delta){
+    var cur = getHiddenValue('filter-rekap-month', '') || (getHiddenValue('filter-rekap-date', '') || '').slice(0, 7) || currentMonthKey();
+    var next = addMonths(cur, Number(delta || 0));
+    setHiddenValue('filter-rekap-month', next);
+    setHiddenValue('filter-rekap-date', '');
+    setManualInput(next, true);
+    window.updateRekapFilterUI();
+    safeRunFilter();
+  };
+
+  function init(){ window.updateRekapFilterUI(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+  setTimeout(init, 500);
+})();
+
+// ARIKA v200 - Filter tanggal manual global tanpa date/month picker browser.
+// Semua input tanggal/bulan yang diberi data-arika-manual-date akan menerima ketikan manual,
+// lalu dinormalisasi ke format aman: YYYY-MM-DD untuk tanggal dan YYYY-MM untuk bulan.
+(function(){
+  'use strict';
+
+  const DATE_INPUT_SELECTOR = 'input[data-arika-manual-date]';
+  const DATE_FUNCTIONS_TO_GUARD = [
+    'checkHariLibur',
+    'renderLemburTable',
+    'renderDashboardPegawai',
+    'renderAdminAnalytics',
+    'renderAdminOvertimeDashboard',
+    'renderAdminSurvei',
+    'renderAdminAllTable',
+    'downloadAdminAllExcel',
+    'downloadAdminSPKWord',
+    'downloadAdminSPKBulananWord',
+    'downloadAdminMonthlyReportWord',
+    'downloadAdminMonevExcel',
+    'downloadAdminOvertimeReportWord',
+    'downloadAdminOvertimeExcel',
+    'downloadAdminSurveyExcel',
+    'submitPengumuman',
+    'submitAgenda'
+  ];
+
+  function pad2(value){
+    return String(value).padStart(2, '0');
+  }
+
+  function isValidDateParts(year, month, day){
+    const dt = new Date(year, month - 1, day);
+    return dt.getFullYear() === year && dt.getMonth() === month - 1 && dt.getDate() === day;
+  }
+
+  function parseDateManual(value){
+    let raw = String(value || '').trim();
+    if(!raw) return '';
+    raw = raw.replace(/[.]/g, '/').replace(/\s+/g, '');
+
+    // YYYY-MM-DD atau YYYY/MM/DD
+    let m = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(raw);
+    let year, month, day;
+    if(m) {
+      year = Number(m[1]); month = Number(m[2]); day = Number(m[3]);
+      return isValidDateParts(year, month, day) ? `${year}-${pad2(month)}-${pad2(day)}` : null;
+    }
+
+    // DD-MM-YYYY atau DD/MM/YYYY
+    m = /^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/.exec(raw);
+    if(m) {
+      day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+      return isValidDateParts(year, month, day) ? `${year}-${pad2(month)}-${pad2(day)}` : null;
+    }
+
+    // YYYYMMDD
+    m = /^(\d{4})(\d{2})(\d{2})$/.exec(raw);
+    if(m) {
+      year = Number(m[1]); month = Number(m[2]); day = Number(m[3]);
+      return isValidDateParts(year, month, day) ? `${year}-${pad2(month)}-${pad2(day)}` : null;
+    }
+
+    // DDMMYYYY
+    m = /^(\d{2})(\d{2})(\d{4})$/.exec(raw);
+    if(m) {
+      day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+      return isValidDateParts(year, month, day) ? `${year}-${pad2(month)}-${pad2(day)}` : null;
+    }
+
+    return null;
+  }
+
+  function parseMonthManual(value){
+    let raw = String(value || '').trim();
+    if(!raw) return '';
+    raw = raw.replace(/[.]/g, '/').replace(/\s+/g, '');
+
+    // Jika user mengetik tanggal lengkap di filter bulan, ambil bulan-tahunnya.
+    const dateKey = parseDateManual(raw);
+    if(dateKey) return dateKey.slice(0, 7);
+
+    let m = /^(\d{4})[-/](\d{1,2})$/.exec(raw);
+    let year, month;
+    if(m) {
+      year = Number(m[1]); month = Number(m[2]);
+      return year && month >= 1 && month <= 12 ? `${year}-${pad2(month)}` : null;
+    }
+
+    m = /^(\d{1,2})[-/](\d{4})$/.exec(raw);
+    if(m) {
+      month = Number(m[1]); year = Number(m[2]);
+      return year && month >= 1 && month <= 12 ? `${year}-${pad2(month)}` : null;
+    }
+
+    // YYYYMM
+    m = /^(\d{4})(\d{2})$/.exec(raw);
+    if(m) {
+      year = Number(m[1]); month = Number(m[2]);
+      return year && month >= 1 && month <= 12 ? `${year}-${pad2(month)}` : null;
+    }
+
+    // MMYYYY
+    m = /^(\d{2})(\d{4})$/.exec(raw);
+    if(m) {
+      month = Number(m[1]); year = Number(m[2]);
+      return year && month >= 1 && month <= 12 ? `${year}-${pad2(month)}` : null;
+    }
+
+    return null;
+  }
+
+  function getKind(el){
+    return String(el?.dataset?.arikaManualDate || '').toLowerCase() === 'month' ? 'month' : 'date';
+  }
+
+  function parseByKind(el){
+    const kind = getKind(el);
+    return kind === 'month' ? parseMonthManual(el.value) : parseDateManual(el.value);
+  }
+
+  function setFieldValidity(el, valid, message){
+    if(!el) return;
+    el.classList.toggle('arika-date-invalid', !valid);
+    el.classList.toggle('border-rose-300', !valid);
+    el.classList.toggle('bg-rose-50', !valid);
+    try { el.setCustomValidity(valid ? '' : (message || 'Format tanggal tidak sesuai.')); } catch(e) {}
+  }
+
+  function normalizeManualField(el, options){
+    options = options || {};
+    if(!el || !el.matches || !el.matches(DATE_INPUT_SELECTOR)) return true;
+    const raw = String(el.value || '').trim();
+    const kind = getKind(el);
+    const message = kind === 'month'
+      ? 'Format bulan tidak sesuai. Gunakan YYYY-MM, contoh 2026-06.'
+      : 'Format tanggal tidak sesuai. Gunakan YYYY-MM-DD, contoh 2026-06-03.';
+
+    if(!raw) {
+      setFieldValidity(el, true, '');
+      return true;
+    }
+
+    const normalized = parseByKind(el);
+    if(normalized) {
+      if(options.apply !== false) el.value = normalized;
+      setFieldValidity(el, true, '');
+      return true;
+    }
+
+    setFieldValidity(el, false, message);
+    if(options.report) {
+      try { el.reportValidity(); } catch(e) {}
+    }
+    return false;
+  }
+
+  function isInputRelevant(el){
+    if(!el) return false;
+    if(el.disabled) return false;
+    // Hindari field dari panel tersembunyi memblokir aksi panel lain.
+    if(el.offsetParent === null && document.activeElement !== el) return false;
+    return true;
+  }
+
+  function normalizeAllManualFields(options){
+    options = options || {};
+    const fields = Array.from(document.querySelectorAll(DATE_INPUT_SELECTOR));
+    let ok = true;
+    for(const el of fields) {
+      if(options.visibleOnly !== false && !isInputRelevant(el)) continue;
+      const fieldOk = normalizeManualField(el, options);
+      if(!fieldOk) ok = false;
+    }
+    return ok;
+  }
+
+  function normalizeFormManualFields(form, options){
+    options = options || {};
+    const fields = Array.from((form || document).querySelectorAll(DATE_INPUT_SELECTOR));
+    let ok = true;
+    for(const el of fields) {
+      const fieldOk = normalizeManualField(el, options);
+      if(!fieldOk) ok = false;
+    }
+    return ok;
+  }
+
+  function injectManualDateStyle(){
+    if(document.getElementById('arika-v200-manual-date-style')) return;
+    const style = document.createElement('style');
+    style.id = 'arika-v200-manual-date-style';
+    style.textContent = `
+      .arika-manual-date-input { letter-spacing: .02em; }
+      .arika-date-invalid { box-shadow: 0 0 0 3px rgba(244, 63, 94, .12) !important; border-color: rgb(244 63 94) !important; }
+      .arika-date-helper { display:block; margin-top:.35rem; font-size:.62rem; font-weight:800; color:rgb(100 116 139); line-height:1.35; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function addInputHints(){
+    document.querySelectorAll(DATE_INPUT_SELECTOR).forEach(function(el){
+      if(el.dataset.arikaManualHint === 'true') return;
+      el.dataset.arikaManualHint = 'true';
+      const kind = getKind(el);
+      const hintText = kind === 'month'
+        ? 'Ketik manual, contoh: 2026-06 atau 06/2026.'
+        : 'Ketik manual, contoh: 2026-06-03 atau 03/06/2026.';
+      const next = el.nextElementSibling;
+      if(next && next.classList && next.classList.contains('arika-date-helper')) return;
+      // Untuk form yang sudah padat, cukup pakai title/placeholder; hint visual hanya untuk filter admin yang rawan salah input.
+      if(!/^admin-|^pegawai-dashboard-month$|^filt-lembur-bulan$/.test(el.id || '')) return;
+      const small = document.createElement('small');
+      small.className = 'arika-date-helper';
+      small.textContent = hintText;
+      el.insertAdjacentElement('afterend', small);
+    });
+  }
+
+  function installFieldListeners(){
+    document.querySelectorAll(DATE_INPUT_SELECTOR).forEach(function(el){
+      if(el.dataset.arikaManualDateInstalled === 'true') return;
+      el.dataset.arikaManualDateInstalled = 'true';
+      el.setAttribute('type', 'text');
+      el.setAttribute('inputmode', 'numeric');
+      el.setAttribute('autocomplete', 'off');
+      if(!el.getAttribute('placeholder')) el.setAttribute('placeholder', getKind(el) === 'month' ? 'YYYY-MM' : 'YYYY-MM-DD');
+      el.addEventListener('input', function(){
+        if(el.classList.contains('arika-date-invalid')) normalizeManualField(el, { apply: false });
+      });
+      el.addEventListener('blur', function(){ normalizeManualField(el); }, true);
+      el.addEventListener('change', function(ev){
+        const ok = normalizeManualField(el);
+        if(!ok) {
+          try { ev.stopImmediatePropagation(); } catch(e) {}
+        }
+      }, true);
+      el.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter') normalizeManualField(el, { report: true });
+      });
+      normalizeManualField(el, { apply: true });
+    });
+  }
+
+  function installSubmitGuard(){
+    if(window.__arikaV200ManualDateSubmitGuard) return;
+    window.__arikaV200ManualDateSubmitGuard = true;
+    document.addEventListener('submit', function(ev){
+      const ok = normalizeFormManualFields(ev.target, { report: true, visibleOnly: false });
+      if(!ok) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        const firstInvalid = ev.target.querySelector('.arika-date-invalid');
+        if(firstInvalid) {
+          try { firstInvalid.focus({ preventScroll: false }); } catch(e) { try { firstInvalid.focus(); } catch(_) {} }
+        }
+      }
+    }, true);
+  }
+
+  function installFunctionGuards(){
+    DATE_FUNCTIONS_TO_GUARD.forEach(function(name){
+      const fn = window[name];
+      if(typeof fn !== 'function' || fn.__arikaV200ManualDateGuard) return;
+      const wrapped = function(){
+        const ok = normalizeAllManualFields({ report: false, visibleOnly: true });
+        if(!ok) return false;
+        return fn.apply(this, arguments);
+      };
+      wrapped.__arikaV200ManualDateGuard = true;
+      wrapped.__old = fn;
+      window[name] = wrapped;
+    });
+  }
+
+  function install(){
+    try {
+      injectManualDateStyle();
+      installFieldListeners();
+      installSubmitGuard();
+      installFunctionGuards();
+      addInputHints();
+    } catch(err) {
+      console.warn('ARIKA v200 manual date global gagal dipasang:', err);
+    }
+  }
+
+  window.normalizeArikaManualDateInputs = function(options){
+    return normalizeAllManualFields(options || { visibleOnly: false });
+  };
+  window.parseArikaManualDate = parseDateManual;
+  window.parseArikaManualMonth = parseMonthManual;
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 500);
+  setTimeout(install, 1500);
+})();
