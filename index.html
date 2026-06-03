@@ -8864,33 +8864,34 @@
             const ctx = getArikaAudioContext();
             if(!ctx || ctx.state !== 'running') return false;
 
-            // Nada pengingat baru ARIKA: chime lembut-tegas, tidak memakai square wave yang terasa kasar.
-            // Motif dibuat berbeda untuk tiap jenis reminder, tetapi tetap pendek agar tidak mengganggu.
-            // Durasi efektif sekitar 1,8-2,6 detik.
+            // v179: Volume chime reminder diperkuat agar lebih terdengar saat user membuka tab lain/Office.
+            // Nada tetap memakai sine/triangle agar tidak kasar, tetapi gain dibuat lebih tegas dan durasi sedikit lebih panjang.
+            // Durasi efektif sekitar 2,3-3,2 detik.
             const patternMap = {
                 urgent: [
-                    [0.00, 523.25, .20, 'sine'], [0.24, 659.25, .22, 'sine'], [0.50, 783.99, .24, 'triangle'],
-                    [0.88, 1046.50, .20, 'sine'], [1.14, 783.99, .28, 'triangle'], [1.58, 659.25, .36, 'sine']
+                    [0.00, 523.25, .24, 'triangle'], [0.28, 659.25, .25, 'triangle'], [0.58, 783.99, .27, 'triangle'],
+                    [0.96, 1046.50, .24, 'triangle'], [1.26, 783.99, .32, 'triangle'], [1.72, 659.25, .40, 'triangle'],
+                    [2.32, 1046.50, .26, 'triangle'], [2.66, 783.99, .34, 'triangle']
                 ],
                 review: [
-                    [0.00, 493.88, .22, 'sine'], [0.28, 659.25, .24, 'triangle'], [0.62, 880.00, .24, 'sine'],
-                    [1.02, 659.25, .34, 'triangle']
+                    [0.00, 493.88, .25, 'triangle'], [0.32, 659.25, .27, 'triangle'], [0.70, 880.00, .28, 'triangle'],
+                    [1.16, 659.25, .38, 'triangle'], [1.76, 880.00, .30, 'triangle']
                 ],
                 agenda: [
-                    [0.00, 587.33, .18, 'sine'], [0.24, 739.99, .20, 'triangle'], [0.52, 987.77, .22, 'sine'],
-                    [0.92, 739.99, .34, 'triangle']
+                    [0.00, 587.33, .24, 'triangle'], [0.30, 739.99, .26, 'triangle'], [0.66, 987.77, .27, 'triangle'],
+                    [1.12, 739.99, .38, 'triangle'], [1.72, 987.77, .30, 'triangle']
                 ],
                 pengumuman: [
-                    [0.00, 440.00, .22, 'sine'], [0.30, 554.37, .22, 'triangle'], [0.62, 659.25, .26, 'sine'],
-                    [1.04, 554.37, .34, 'triangle']
+                    [0.00, 440.00, .25, 'triangle'], [0.34, 554.37, .27, 'triangle'], [0.72, 659.25, .30, 'triangle'],
+                    [1.20, 554.37, .38, 'triangle'], [1.82, 659.25, .30, 'triangle']
                 ],
                 rencana: [
-                    [0.00, 523.25, .20, 'sine'], [0.28, 659.25, .20, 'triangle'], [0.56, 783.99, .24, 'sine'],
-                    [0.96, 659.25, .28, 'triangle'], [1.36, 523.25, .32, 'sine']
+                    [0.00, 523.25, .25, 'triangle'], [0.32, 659.25, .25, 'triangle'], [0.68, 783.99, .30, 'triangle'],
+                    [1.16, 659.25, .34, 'triangle'], [1.64, 523.25, .38, 'triangle'], [2.24, 783.99, .32, 'triangle']
                 ],
                 default: [
-                    [0.00, 523.25, .20, 'sine'], [0.28, 659.25, .22, 'triangle'], [0.58, 783.99, .24, 'sine'],
-                    [0.98, 659.25, .32, 'triangle']
+                    [0.00, 523.25, .25, 'triangle'], [0.32, 659.25, .27, 'triangle'], [0.70, 783.99, .30, 'triangle'],
+                    [1.18, 659.25, .38, 'triangle'], [1.78, 783.99, .30, 'triangle']
                 ]
             };
             const pattern = patternMap[kind] || patternMap.default;
@@ -8899,23 +8900,23 @@
             pattern.forEach(([offset, frequency, duration, type]) => {
                 playArikaTone(ctx, now + offset, frequency, duration, {
                     type,
-                    typeB: 'sine',
+                    typeB: 'triangle',
                     harmony: 2.0,
-                    peak: kind === 'urgent' ? 0.58 : 0.48,
-                    master: kind === 'urgent' ? 0.92 : 0.84,
-                    filter: 4200
+                    peak: kind === 'urgent' ? 0.98 : 0.90,
+                    master: kind === 'urgent' ? 1.00 : 0.96,
+                    filter: 5600
                 });
             });
 
             // Tambahkan getar jika perangkat mendukung, agar notifikasi lebih terasa di HP.
             try {
-                if(navigator.vibrate) navigator.vibrate(kind === 'urgent' ? [140, 70, 140] : [90, 60, 90]);
+                if(navigator.vibrate) navigator.vibrate(kind === 'urgent' ? [180, 80, 180, 80, 180] : [130, 70, 130]);
             } catch(e) {}
             return true;
         }
 
         function getArikaReminderTimingText() {
-            return 'Durasi nada pengingat ARIKA sekitar 2 detik. Sistem mengecek reminder setiap 30 detik. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah jam reminder tiba, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
+            return 'Durasi nada pengingat ARIKA sekitar 2–3 detik dengan volume chime yang sudah diperkuat. Sistem mengecek reminder setiap 30 detik. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah jam reminder tiba, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
         }
 
         function arikaSpeechSupported() {
@@ -9321,7 +9322,7 @@
             await loadArikaVoices();
             updateArikaReminderSoundPanel();
             if(ok) playArikaBeepPattern('urgent');
-            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
+            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi lebih keras. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
             flashArikaTitle('Tes Pengingat ARIKA');
             if(spoke) {
                 window.showCustomAlert('Tes suara berhasil. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
