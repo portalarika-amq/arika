@@ -10921,27 +10921,49 @@
 })();
 
 
-// ARIKA v214 - Failsafe tampilan mobile: cegah navigasi mobile dobel/terpotong.
+// ARIKA v215 - Navigasi mobile kembali memakai dropdown/select agar tampilan HP stabil.
 (function(){
   'use strict';
-  function hideDuplicateMobileSelectChips(){
+  function restoreMobileNavDropdown(){
     try {
+      var select = document.getElementById('mobile-nav-select');
+      if(!select) return;
+      select.hidden = false;
+      select.removeAttribute('aria-hidden');
+      select.classList.remove('arika-native-select-hidden', 'arika-v206-select-hidden');
+      select.style.display = 'block';
+      select.style.visibility = 'visible';
+      select.style.opacity = '1';
+      select.style.pointerEvents = 'auto';
+      select.style.position = 'static';
+      select.style.width = 'min(92vw, 360px)';
+      select.style.maxWidth = 'min(92vw, 360px)';
+
+      var wrap = select.parentElement;
+      if(wrap){
+        wrap.style.display = 'flex';
+        wrap.style.visibility = 'visible';
+        wrap.style.justifyContent = 'center';
+        wrap.style.width = '100%';
+        wrap.style.maxWidth = '100%';
+      }
+
+      var chipPanel = document.getElementById('arika-mobile-nav-chips');
+      if(chipPanel){
+        chipPanel.style.display = 'none';
+        chipPanel.style.visibility = 'hidden';
+        chipPanel.setAttribute('aria-hidden', 'true');
+      }
       document.querySelectorAll('.arika-chip-select-group[data-select-id="mobile-nav-select"], .arika-v206-chip-group[data-select-id="mobile-nav-select"]').forEach(function(el){
         el.style.display = 'none';
         el.style.visibility = 'hidden';
         el.setAttribute('aria-hidden', 'true');
       });
-      var panel = document.getElementById('arika-mobile-nav-chips');
-      if(panel){
-        panel.style.display = '';
-        panel.style.visibility = '';
-        panel.removeAttribute('aria-hidden');
-      }
     } catch(e) {}
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hideDuplicateMobileSelectChips); else hideDuplicateMobileSelectChips();
-  setTimeout(hideDuplicateMobileSelectChips, 300);
-  setTimeout(hideDuplicateMobileSelectChips, 1000);
-  setTimeout(hideDuplicateMobileSelectChips, 2200);
-  setInterval(hideDuplicateMobileSelectChips, 2000);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', restoreMobileNavDropdown); else restoreMobileNavDropdown();
+  setTimeout(restoreMobileNavDropdown, 250);
+  setTimeout(restoreMobileNavDropdown, 900);
+  setTimeout(restoreMobileNavDropdown, 2000);
+  setInterval(restoreMobileNavDropdown, 1800);
 })();

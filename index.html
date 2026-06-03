@@ -4915,6 +4915,193 @@
 })();
 </script>
 
+
+
+<style id="arika-v215-mobile-dropdown-style">
+    /* v215: navigasi khusus mobile dikembalikan ke dropdown/select agar lebih stabil dan hemat ruang di layar HP. */
+    @media (max-width: 900px) {
+        html, body {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        #main-nav {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+            background: rgba(255,255,255,.96) !important;
+            border-bottom: 1px solid rgba(226,232,240,.92) !important;
+            box-shadow: 0 10px 28px rgba(15,23,42,.07) !important;
+        }
+
+        #main-nav .max-w-7xl {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        #main-nav .nav-row {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: .62rem !important;
+            height: auto !important;
+            min-height: 0 !important;
+            padding: .72rem 0 .78rem !important;
+        }
+
+        #main-nav .nav-row > .group {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+        }
+
+        #main-nav .arika-logo-nav {
+            width: min(152px, 52vw) !important;
+            max-width: min(152px, 52vw) !important;
+            height: auto !important;
+            max-height: 48px !important;
+            object-fit: contain !important;
+            margin: 0 auto !important;
+        }
+
+        #main-nav #nav-menu {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        #main-nav .mobile-nav-wrap {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+        }
+
+        /* Matikan navigasi chip mobile dari versi sebelumnya. */
+        #arika-mobile-nav-chips,
+        .arika-mobile-nav-chips,
+        html body .arika-chip-select-group[data-select-id="mobile-nav-select"],
+        html body .arika-v206-chip-group[data-select-id="mobile-nav-select"] {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+        }
+
+        #mobile-nav-select,
+        #mobile-nav-select.mobile-nav-select-arika {
+            display: block !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            position: static !important;
+            opacity: 1 !important;
+            clip: auto !important;
+            width: min(92vw, 360px) !important;
+            max-width: min(92vw, 360px) !important;
+            min-width: 0 !important;
+            height: 48px !important;
+            min-height: 48px !important;
+            padding: 0 .95rem !important;
+            border-radius: 1rem !important;
+            border: 1px solid rgba(148,163,184,.42) !important;
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            letter-spacing: .02em !important;
+            line-height: 1.2 !important;
+            text-align: left !important;
+            box-shadow: 0 10px 24px rgba(15,23,42,.08) !important;
+            z-index: 20 !important;
+        }
+
+        [id^="view-"] {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+    }
+
+    @media (max-width: 430px) {
+        #main-nav .arika-logo-nav {
+            width: min(136px, 54vw) !important;
+            max-width: min(136px, 54vw) !important;
+        }
+
+        #mobile-nav-select,
+        #mobile-nav-select.mobile-nav-select-arika {
+            width: min(90vw, 330px) !important;
+            max-width: min(90vw, 330px) !important;
+            height: 46px !important;
+            min-height: 46px !important;
+        }
+    }
+</style>
+
+<script id="arika-v215-mobile-dropdown-script">
+(function(){
+    function restoreMobileDropdown(){
+        try {
+            var select = document.getElementById('mobile-nav-select');
+            if (!select) return;
+            select.hidden = false;
+            select.removeAttribute('aria-hidden');
+            select.classList.remove('arika-native-select-hidden', 'arika-v206-select-hidden');
+            select.style.display = 'block';
+            select.style.visibility = 'visible';
+            select.style.opacity = '1';
+            select.style.pointerEvents = 'auto';
+            select.style.position = 'static';
+
+            var wrap = select.parentElement;
+            if (wrap) {
+                wrap.style.display = 'flex';
+                wrap.style.visibility = 'visible';
+                wrap.style.justifyContent = 'center';
+                wrap.style.width = '100%';
+                wrap.style.maxWidth = '100%';
+            }
+
+            var chipPanel = document.getElementById('arika-mobile-nav-chips');
+            if (chipPanel) {
+                chipPanel.style.display = 'none';
+                chipPanel.style.visibility = 'hidden';
+                chipPanel.setAttribute('aria-hidden', 'true');
+            }
+
+            document.querySelectorAll('.arika-chip-select-group[data-select-id="mobile-nav-select"], .arika-v206-chip-group[data-select-id="mobile-nav-select"]').forEach(function(el){
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                el.setAttribute('aria-hidden', 'true');
+            });
+        } catch(e) {}
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', restoreMobileDropdown);
+    else restoreMobileDropdown();
+    setTimeout(restoreMobileDropdown, 200);
+    setTimeout(restoreMobileDropdown, 700);
+    setTimeout(restoreMobileDropdown, 1600);
+    setInterval(restoreMobileDropdown, 1500);
+})();
+</script>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 
@@ -7157,7 +7344,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v209 filter tanggal & status clean</div>
     </footer>
 
-    <script src="app.js?v=214"></script>
+    <script src="app.js?v=215"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
