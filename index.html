@@ -3985,6 +3985,148 @@
         }
     }
 </style>
+
+
+<style id="arika-v173-mobile-smooth-history">
+    /* v173: mode mobile dibuat lebih ringan dan isi riwayat jurnal tidak dipotong. */
+    #tbl-body .truncate,
+    #tbl-body .arika-history-desc-full {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        line-height: 1.55 !important;
+    }
+    #modal-activities-list,
+    #modal-activities-list * {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+    .arika-calendar-activity-desc {
+        white-space: pre-wrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        display: block !important;
+        line-height: 1.55 !important;
+    }
+    html.arika-mobile-lite body {
+        text-rendering: optimizeSpeed !important;
+    }
+    @media (max-width: 640px) {
+        html.arika-github-pages-mode .home-section-card,
+        html.arika-github-pages-mode .admin-panel,
+        html.arika-github-pages-mode .admin-data-card,
+        html.arika-github-pages-mode .admin-chart-card,
+        html.arika-github-pages-mode .role-command-card,
+        html.arika-github-pages-mode .role-command-panel {
+            content-visibility: visible !important;
+            contain-intrinsic-size: auto !important;
+        }
+        .animate-fade,
+        .calendar-day-card,
+        .home-section-card,
+        .admin-panel,
+        .admin-data-card,
+        .admin-chart-card,
+        .admin-kpi-card,
+        .admin-overtime-kpi-card,
+        .role-command-card,
+        .role-command-panel {
+            animation: none !important;
+            transition-duration: .08s !important;
+            will-change: auto !important;
+        }
+        .shadow-xl,
+        .shadow-2xl,
+        .home-section-card,
+        .admin-panel,
+        .admin-data-card,
+        .admin-chart-card,
+        .admin-kpi-card,
+        .admin-overtime-kpi-card,
+        .role-command-card,
+        .role-command-panel {
+            box-shadow: 0 8px 18px rgba(15, 23, 42, .06) !important;
+        }
+        #view-rekap .chart-container {
+            height: 180px !important;
+            max-height: 180px !important;
+        }
+        #view-rekap canvas {
+            max-height: 180px !important;
+        }
+        #view-rekap .overflow-x-auto {
+            overflow-x: visible !important;
+        }
+        #tbl-body tr {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: .2rem !important;
+            padding: .85rem !important;
+            border-bottom: 1px solid rgba(226, 232, 240, .95) !important;
+            background: #ffffff !important;
+        }
+        #tbl-body td {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: .25rem 0 !important;
+            text-align: left !important;
+        }
+        #tbl-body td:nth-child(1)::before {
+            content: 'Tanggal: ';
+            font-weight: 950;
+            color: #94a3b8;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        #tbl-body td:nth-child(2)::before {
+            content: 'Aktivitas: ';
+            display: block;
+            margin-bottom: .25rem;
+            font-size: 9px;
+            font-weight: 950;
+            color: #94a3b8;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        #tbl-body td:nth-child(3) {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            flex-wrap: wrap !important;
+            gap: .45rem !important;
+            margin-top: .35rem !important;
+        }
+        #modal-activities-list {
+            padding: 1rem !important;
+            max-height: calc(100dvh - 11.5rem) !important;
+        }
+        #calendar-modal > div {
+            border-radius: 1.35rem !important;
+        }
+        #calendar-modal .calendar-modal-head {
+            padding: 1rem !important;
+        }
+    }
+</style>
+<script id="arika-v173-mobile-lite-boot">
+    (function(){
+        try {
+            var mq = window.matchMedia && window.matchMedia('(max-width: 640px)');
+            var apply = function(){
+                document.documentElement.classList.toggle('arika-mobile-lite', !!(mq && mq.matches));
+            };
+            apply();
+            if (mq) {
+                if (mq.addEventListener) mq.addEventListener('change', apply);
+                else if (mq.addListener) mq.addListener(apply);
+            }
+        } catch(e) {}
+    })();
+</script>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 
@@ -6230,7 +6372,7 @@
         window.adminHistorySignature = '';
         window.adminAllPage = 1;
         window.adminAllSignature = '';
-        const ARIKA_HISTORY_PAGE_SIZE = 10;
+        const ARIKA_HISTORY_PAGE_SIZE = (window.matchMedia && window.matchMedia('(max-width: 640px)').matches) ? 5 : 10;
 
         // --- DAFTAR HARI LIBUR NASIONAL 2026 ---
         const liburNasional = ["2026-01-01","2026-02-17","2026-03-20","2026-03-21","2026-03-22","2026-04-03","2026-05-01","2026-05-14","2026-05-27","2026-06-01","2026-07-19","2026-08-17","2026-09-16","2026-12-25"];
@@ -8297,6 +8439,7 @@
                 const restored = hydrateFromCoreCache({ force: false });
                 if(!restored) window.showCustomAlert('Data belum berhasil dimuat. Pastikan Apps Script sudah deploy versi terbaru, lalu coba refresh halaman.');
             } finally {
+                setJurnalSavingState(false, isEditing);
                 window.showLoader(false);
             }
         };
@@ -9424,7 +9567,7 @@
                 const badgeColor = d.status === 'Selesai' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
                 const dataLink = renderDataDukungLink(d.linkDataDukung);
                 const reviewBox = renderCatatanAtasanBox(d);
-                return `<tr><td class="p-4 text-center font-mono text-slate-400 text-[9px]">${formatHariTanggal(d.date)}</td><td class="p-4 text-center font-bold text-slate-700 text-[10px] uppercase sm:text-left max-w-[260px]"><div class="truncate">${escapeHTML(d.desc)}</div>${dataLink}${reviewBox}</td><td class="p-4 text-center flex items-center justify-center gap-2"><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}">${escapeHTML(d.status)}</span><button onclick="window.editJurnal('${escapeHTML(d.id)}')" class="p-1.5 bg-cyan-50 text-cyan-700 rounded-md font-black hover:bg-cyan-600 hover:text-white transition-colors text-[10px]">✏️</button><button onclick="window.hapusJurnal('${escapeHTML(d.date)}', \`${escapeHTML(d.desc).replaceAll('`', '')}\`, '${escapeHTML(d.id)}')" class="p-1.5 bg-rose-50 text-rose-600 rounded-md font-black hover:bg-rose-500 hover:text-white transition-colors">🗑️</button></td></tr>`;
+                return `<tr><td class="p-4 text-center font-mono text-slate-400 text-[9px]">${formatHariTanggal(d.date)}</td><td class="p-4 text-center font-bold text-slate-700 text-[10px] sm:text-left max-w-[420px]"><div class="arika-history-desc-full text-slate-700 normal-case">${escapeHTML(d.desc)}</div>${dataLink}${reviewBox}</td><td class="p-4 text-center flex items-center justify-center gap-2"><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}">${escapeHTML(d.status)}</span><button onclick="window.editJurnal('${escapeHTML(d.id)}')" class="p-1.5 bg-cyan-50 text-cyan-700 rounded-md font-black hover:bg-cyan-600 hover:text-white transition-colors text-[10px]">✏️</button><button onclick="window.hapusJurnal('${escapeHTML(d.date)}', \`${escapeHTML(d.desc).replaceAll('`', '')}\`, '${escapeHTML(d.id)}')" class="p-1.5 bg-rose-50 text-rose-600 rounded-md font-black hover:bg-rose-500 hover:text-white transition-colors">🗑️</button></td></tr>`;
             }).join('');
 
             if(pagination) {
@@ -9677,13 +9820,11 @@
                 label: special?.label || (isWeekend ? 'Akhir Pekan' : 'Hari Kerja')
             };
         }
-
         // --- 📅 RENDER KALENDER VISUAL BULANAN ---
         window.renderVisualCalendar = function() {
             const grid = document.getElementById('calendar-grid');
             if(!grid) return;
 
-            grid.innerHTML = '';
             const rangeStart = document.getElementById('filter-rekap-start')?.value || '';
             const rangeEnd = document.getElementById('filter-rekap-end')?.value || '';
             const filterMonthVal = (rangeStart || rangeEnd || getTodayKey()).substring(0, 7);
@@ -9693,19 +9834,26 @@
 
             const firstDayIndex = new Date(year, month - 1, 1).getDay();
             const totalDays = new Date(year, month, 0).getDate();
+            const currentName = normalize(window.currentUser?.nama || '');
+            const activityByDate = new Map();
 
+            (window.arikaData || []).forEach(d => {
+                const date = String(d.date || '');
+                if(!date.startsWith(filterMonthVal)) return;
+                if(normalize(d.name) !== currentName) return;
+                if(!activityByDate.has(date)) activityByDate.set(date, []);
+                activityByDate.get(date).push(d);
+            });
+
+            let calendarHtml = '';
             for(let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="min-h-[54px] md:min-h-[64px] rounded-2xl border border-slate-50 bg-slate-50/40"></div>`;
+                calendarHtml += `<div class="min-h-[54px] md:min-h-[64px] rounded-2xl border border-slate-50 bg-slate-50/40"></div>`;
             }
 
             for(let day = 1; day <= totalDays; day++) {
                 const dateKey = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 const info = getCalendarDayInfo(dateKey);
-
-                const daysActivities = window.arikaData.filter(d => 
-                    normalize(d.name) === normalize(window.currentUser?.nama || '') && d.date === dateKey
-                );
-
+                const daysActivities = activityByDate.get(dateKey) || [];
                 const hasActivity = daysActivities.length > 0;
                 const allDone = hasActivity ? daysActivities.every(a => normalize(a.status) === normalize('Selesai')) : false;
 
@@ -9720,7 +9868,7 @@
                     ? `<span class="inline-flex items-center gap-1 text-[8px] font-black uppercase ${allDone ? 'text-emerald-700' : 'text-rose-700'}"><i class="w-2 h-2 rounded-full ${allDone ? 'bg-emerald-500' : 'bg-rose-500'} inline-block"></i>${daysActivities.length}</span>`
                     : `<span class="inline-block w-2 h-2 rounded-full ${info.isHoliday ? 'bg-rose-300' : 'bg-slate-200'}"></span>`;
 
-                grid.innerHTML += `
+                calendarHtml += `
                     <div onclick="window.showCalendarDayDetail('${dateKey}')" class="calendar-day-card ${dayClass} ${todayClass}">
                         <div class="flex items-start justify-between gap-1">
                             <span class="calendar-day-number ${numColor}">${day}</span>
@@ -9730,6 +9878,7 @@
                     </div>
                 `;
             }
+            grid.innerHTML = calendarHtml;
         };
 
         window.showCalendarDayDetail = function(dateKey) {
@@ -9759,11 +9908,11 @@
                     const statusClass = act.status === 'Selesai' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700';
                     list.innerHTML += `
                         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-[9px] uppercase font-black text-slate-400">${act.cat}</span>
-                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${statusClass}">${act.status}</span>
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <span class="text-[9px] uppercase font-black text-slate-400">${escapeHTML(act.cat)}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${statusClass}">${escapeHTML(act.status)}</span>
                             </div>
-                            <p class="text-xs font-bold text-slate-700">${act.desc}</p>
+                            <p class="arika-calendar-activity-desc text-xs font-bold text-slate-700">${escapeHTML(act.desc)}</p>
                         </div>
                     `;
                 });
@@ -11595,7 +11744,6 @@
                 console.error(err);
                 window.showCustomAlert('Gagal menyimpan jurnal: ' + err.message);
             } finally {
-                setJurnalSavingState(false, isEditing);
                 window.showLoader(false);
             }
         }
