@@ -9671,7 +9671,7 @@
 (function(){
   'use strict';
 
-  const EXCLUDED_SELECT_IDS = new Set(['pengumuman-target-fungsi', 'agenda-peserta']);
+  const EXCLUDED_SELECT_IDS = new Set(['pengumuman-target-fungsi', 'agenda-peserta', 'mobile-nav-select']);
   const PROCESSED_ATTR = 'data-arika-chip-select-installed';
   const CHIP_GROUP_CLASS = 'arika-chip-select-group';
   const CHIP_BUTTON_CLASS = 'arika-chip-select-button';
@@ -9941,7 +9941,7 @@
 (function(){
   'use strict';
 
-  const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta']);
+  const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta', 'mobile-nav-select']);
   const CHIP_GROUP_CLASS_V205 = 'arika-v206-chip-group';
   const CHIP_BUTTON_CLASS_V205 = 'arika-v206-chip-btn';
   const DATE_SELECTOR_V205 = 'input[data-arika-manual-date]';
@@ -10716,4 +10716,232 @@
   setInterval(function(){
     try { syncJurnalStatusVisual(); } catch(_) {}
   }, 2500);
+})();
+
+
+// ARIKA v213 - Perbaikan tampilan awal filter bulan pada Laporan Lembur.
+// Memastikan nilai awal tidak berubah menjadi 20/2606, tetapi tampil konsisten sebagai 06/2026.
+(function(){
+  'use strict';
+
+  const INPUT_ID = 'filt-lembur-bulan';
+  const LABEL_ID = 'lembur-month-label';
+  const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const pad2 = n => String(n).padStart(2, '0');
+
+  function currentMonthKey(){
+    const d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+  }
+
+  function makeMonth(year, month){
+    year = Number(year);
+    month = Number(month);
+    if(!Number.isFinite(year) || year < 1900 || year > 2100 || !Number.isFinite(month) || month < 1 || month > 12) return '';
+    return year + '-' + pad2(month);
+  }
+
+  function parseMonth(value){
+    const raw = String(value || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
+    if(!raw) return '';
+
+    let m = raw.match(/^(\d{4})[-\/](\d{1,2})$/);
+    if(m) return makeMonth(m[1], m[2]);
+
+    m = raw.match(/^(\d{1,2})[-\/](\d{4})$/);
+    if(m) return makeMonth(m[2], m[1]);
+
+    const digits = raw.replace(/\D/g, '');
+    if(/^\d{6}$/.test(digits)) {
+      // 202606 atau tampilan rusak lama 20/2606 dipulihkan menjadi 06/2026.
+      if(/^(19|20)\d{2}/.test(digits.slice(0, 4))) return makeMonth(digits.slice(0, 4), digits.slice(4, 6));
+      // 062026 -> 06/2026.
+      return makeMonth(digits.slice(2, 6), digits.slice(0, 2));
+    }
+    return '';
+  }
+
+  function displayMonth(key){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(key || ''));
+    return m ? (m[2] + '/' + m[1]) : '';
+  }
+
+  function monthLabel(key){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(key || ''));
+    if(!m) return 'Semua Bulan';
+    return (monthNames[Number(m[2]) - 1] || m[2]) + ' ' + m[1];
+  }
+
+  function partialMonthDisplay(value){
+    const digits = String(value || '').replace(/\D/g, '').slice(0, 6);
+    if(!digits) return '';
+    if(digits.length === 6) {
+      const key = parseMonth(digits);
+      return key ? displayMonth(key) : digits;
+    }
+    // Input bulan lembur memakai pola utama mm/yyyy.
+    return digits.length <= 2 ? digits : (digits.slice(0, 2) + '/' + digits.slice(2));
+  }
+
+  function getInput(){ return document.getElementById(INPUT_ID); }
+  function getLabel(){ return document.getElementById(LABEL_ID); }
+
+  function setValidity(el, valid){
+    if(!el) return;
+    el.classList.toggle('border-rose-300', !valid);
+    el.classList.toggle('bg-rose-50', !valid);
+    try { el.setCustomValidity(valid ? '' : 'Format bulan tidak sesuai. Ketik 062026 atau 06/2026.'); } catch(_) {}
+  }
+
+  function updateLabel(){
+    const label = getLabel();
+    const el = getInput();
+    if(!label || !el) return;
+    const key = el.dataset.arikaIsoValue || parseMonth(el.value);
+    label.textContent = key ? monthLabel(key) : 'Semua Bulan';
+    label.classList.toggle('active', !!key);
+  }
+
+  function setMonthKey(key, render){
+    const el = getInput();
+    if(!el) return;
+    key = key || '';
+    el.value = key ? displayMonth(key) : '';
+    el.dataset.arikaIsoValue = key;
+    setValidity(el, true);
+    updateLabel();
+    if(render !== false && typeof window.renderLemburTable === 'function') {
+      clearTimeout(window.__arikaV213LemburRenderTimer);
+      window.__arikaV213LemburRenderTimer = setTimeout(() => {
+        try { window.renderLemburTable(); } catch(e) { console.warn(e); }
+      }, 80);
+    }
+  }
+
+  function normalizeInput(el, options){
+    options = options || {};
+    el = el || getInput();
+    if(!el) return '';
+    el.setAttribute('type', 'text');
+    el.setAttribute('inputmode', 'numeric');
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('maxlength', '7');
+    el.setAttribute('placeholder', 'mm/yyyy');
+    el.title = 'Ketik 062026, otomatis menjadi 06/2026. Alternatif: 2026-06.';
+
+    const raw = String(el.value || '').trim();
+    if(!raw) {
+      el.dataset.arikaIsoValue = '';
+      setValidity(el, true);
+      updateLabel();
+      return '';
+    }
+
+    const key = parseMonth(raw);
+    if(key) {
+      el.value = displayMonth(key);
+      el.dataset.arikaIsoValue = key;
+      setValidity(el, true);
+      updateLabel();
+      if(options.render) setMonthKey(key, true);
+      return key;
+    }
+
+    const digits = raw.replace(/\D/g, '');
+    if(digits && digits.length < 6) {
+      el.value = partialMonthDisplay(raw);
+      el.dataset.arikaIsoValue = '';
+      setValidity(el, true);
+      updateLabel();
+      try { if(document.activeElement === el) el.setSelectionRange(el.value.length, el.value.length); } catch(_) {}
+      return '';
+    }
+
+    setValidity(el, false);
+    updateLabel();
+    return '';
+  }
+
+  window.applyLemburMonthInput = function(el){
+    return normalizeInput(el || getInput(), { render:true });
+  };
+
+  window.shiftLemburMonth = function(delta){
+    const el = getInput();
+    const base = (el && (el.dataset.arikaIsoValue || parseMonth(el.value))) || currentMonthKey();
+    const m = /^(\d{4})-(\d{2})$/.exec(base);
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1 + Number(delta || 0), 1) : new Date();
+    setMonthKey(d.getFullYear() + '-' + pad2(d.getMonth() + 1), true);
+  };
+
+  window.setLemburMonthToCurrent = function(){
+    setMonthKey(currentMonthKey(), true);
+  };
+
+  window.clearLemburMonth = function(){
+    setMonthKey('', true);
+  };
+
+  const oldRender = window.renderLemburTable;
+  if(typeof oldRender === 'function' && !oldRender.__arikaV213Wrapped) {
+    const wrapped = function(){
+      const el = getInput();
+      if(el && el.value) normalizeInput(el, { render:false });
+      const result = oldRender.apply(this, arguments);
+      try { updateLabel(); } catch(_) {}
+      return result;
+    };
+    wrapped.__arikaV213Wrapped = true;
+    window.renderLemburTable = wrapped;
+  }
+
+  function install(){
+    const el = getInput();
+    if(!el) return;
+    if(!el.__arikaV213Bound) {
+      el.__arikaV213Bound = true;
+      el.addEventListener('input', function(){ normalizeInput(el, { render:true }); }, true);
+      el.addEventListener('blur', function(){ normalizeInput(el, { render:true }); }, true);
+      el.addEventListener('change', function(){ normalizeInput(el, { render:true }); }, true);
+    }
+
+    // Bersihkan nilai tampilan rusak dari versi lama, misalnya 20/2606.
+    const recovered = parseMonth(el.dataset.arikaIsoValue || el.value);
+    if(recovered) setMonthKey(recovered, false);
+    else if(!String(el.value || '').trim()) setMonthKey(currentMonthKey(), false);
+    else normalizeInput(el, { render:false });
+    updateLabel();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 250);
+  setTimeout(install, 900);
+  setTimeout(install, 1800);
+})();
+
+
+// ARIKA v214 - Failsafe tampilan mobile: cegah navigasi mobile dobel/terpotong.
+(function(){
+  'use strict';
+  function hideDuplicateMobileSelectChips(){
+    try {
+      document.querySelectorAll('.arika-chip-select-group[data-select-id="mobile-nav-select"], .arika-v206-chip-group[data-select-id="mobile-nav-select"]').forEach(function(el){
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.setAttribute('aria-hidden', 'true');
+      });
+      var panel = document.getElementById('arika-mobile-nav-chips');
+      if(panel){
+        panel.style.display = '';
+        panel.style.visibility = '';
+        panel.removeAttribute('aria-hidden');
+      }
+    } catch(e) {}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hideDuplicateMobileSelectChips); else hideDuplicateMobileSelectChips();
+  setTimeout(hideDuplicateMobileSelectChips, 300);
+  setTimeout(hideDuplicateMobileSelectChips, 1000);
+  setTimeout(hideDuplicateMobileSelectChips, 2200);
+  setInterval(hideDuplicateMobileSelectChips, 2000);
 })();

@@ -4681,7 +4681,7 @@
             var value = btn.getAttribute('data-arika-nav-value');
             btn.classList.toggle('is-active', value && value === activeValue && value !== 'logout');
             if (value && value === activeValue) {
-                setTimeout(function(){ try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch(e) {} }, 90);
+                setTimeout(function(){ try { var panel = btn.closest('.arika-mobile-nav-chips'); if(panel){ var targetLeft = btn.offsetLeft - Math.max(0, (panel.clientWidth - btn.offsetWidth) / 2); panel.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' }); } } catch(e) {} }, 90);
             }
         });
     }
@@ -4699,6 +4699,219 @@
             if (mobileSelect) new MutationObserver(function(){ ensureMobileNav(); }).observe(mobileSelect, { attributes: true, childList: true, subtree: true, attributeFilter: ['class','hidden','disabled'] });
         }
     });
+})();
+</script>
+
+
+<style id="arika-v214-mobile-nav-clean-style">
+    /* v214: perbaikan tampilan mobile. Hanya satu navigasi mobile yang tampil, tidak dobel, tidak melebar ke samping. */
+    @media (max-width: 900px) {
+        html, body {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
+
+        body {
+            position: relative !important;
+        }
+
+        #main-nav {
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            transform: none !important;
+        }
+
+        #main-nav .max-w-7xl,
+        #main-nav .nav-row,
+        #main-nav .mobile-nav-wrap {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            transform: none !important;
+            box-sizing: border-box !important;
+        }
+
+        #main-nav .max-w-7xl {
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        #main-nav .nav-row {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: .5rem !important;
+            padding-top: .55rem !important;
+            padding-bottom: .55rem !important;
+            height: auto !important;
+            min-height: 0 !important;
+        }
+
+        #main-nav .nav-row > .group {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            overflow: visible !important;
+        }
+
+        #main-nav .arika-logo-nav {
+            width: 142px !important;
+            max-width: 48vw !important;
+            min-width: 0 !important;
+            height: auto !important;
+            max-height: 44px !important;
+            object-fit: contain !important;
+            margin: 0 auto !important;
+        }
+
+        /* Sembunyikan semua navigasi lama/hasil konversi dropdown agar tidak muncul dobel. */
+        #main-nav #nav-menu,
+        #main-nav .desktop-nav-menu,
+        #mobile-nav-select,
+        #mobile-nav-select.mobile-nav-select-arika,
+        html body .arika-chip-select-group[data-select-id="mobile-nav-select"],
+        html body .arika-v206-chip-group[data-select-id="mobile-nav-select"] {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+        }
+
+        #main-nav .mobile-nav-wrap {
+            display: block !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+        }
+
+        #arika-mobile-nav-chips,
+        .arika-mobile-nav-chips {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: .45rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: .08rem .02rem .22rem !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+            overscroll-behavior-x: contain !important;
+            transform: none !important;
+            scroll-snap-type: x proximity !important;
+        }
+
+        #arika-mobile-nav-chips::-webkit-scrollbar,
+        .arika-mobile-nav-chips::-webkit-scrollbar {
+            display: none !important;
+        }
+
+        #arika-mobile-nav-chips .arika-mobile-nav-chip,
+        .arika-mobile-nav-chip {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: none !important;
+            min-width: max-content !important;
+            min-height: 38px !important;
+            padding: .58rem .78rem !important;
+            border-radius: 999px !important;
+            font-size: .63rem !important;
+            line-height: 1.12 !important;
+            letter-spacing: .02em !important;
+            white-space: nowrap !important;
+            word-break: keep-all !important;
+            text-align: center !important;
+            transform: none !important;
+            scroll-snap-align: start !important;
+        }
+
+        #app, main, .view-section, [id^="view-"], .max-w-7xl, .max-w-6xl, .max-w-5xl {
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+        }
+
+        [id^="view-"] {
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        .overflow-x-auto,
+        .custom-scrollbar {
+            max-width: 100% !important;
+        }
+    }
+
+    @media (max-width: 430px) {
+        #main-nav .arika-logo-nav {
+            width: 128px !important;
+            max-width: 46vw !important;
+            max-height: 40px !important;
+        }
+        .arika-mobile-nav-chip {
+            min-height: 36px !important;
+            padding: .54rem .7rem !important;
+            font-size: .6rem !important;
+        }
+    }
+</style>
+<script id="arika-v214-mobile-nav-clean-script">
+(function(){
+    function cleanDuplicateMobileNav(){
+        try {
+            var select = document.getElementById('mobile-nav-select');
+            var wrap = select && select.parentElement;
+            var panel = document.getElementById('arika-mobile-nav-chips');
+            if (!select || !wrap || !panel) return;
+
+            // Pastikan hanya panel navigasi ringan yang berada di dalam wrapper mobile.
+            Array.prototype.slice.call(wrap.children).forEach(function(child){
+                if (child === select || child === panel) return;
+                if (child.classList && (child.classList.contains('arika-chip-select-group') || child.classList.contains('arika-v206-chip-group'))) {
+                    child.style.display = 'none';
+                    child.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            document.querySelectorAll('.arika-chip-select-group[data-select-id="mobile-nav-select"], .arika-v206-chip-group[data-select-id="mobile-nav-select"]').forEach(function(el){
+                if (el !== panel) {
+                    el.style.display = 'none';
+                    el.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            panel.style.display = '';
+            panel.style.visibility = '';
+            panel.style.opacity = '';
+        } catch(e) {}
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cleanDuplicateMobileNav);
+    else cleanDuplicateMobileNav();
+    setTimeout(cleanDuplicateMobileNav, 250);
+    setTimeout(cleanDuplicateMobileNav, 900);
+    setTimeout(cleanDuplicateMobileNav, 1800);
+    setInterval(cleanDuplicateMobileNav, 1800);
 })();
 </script>
 
@@ -5345,7 +5558,7 @@
                 <h1 class="text-lg md:text-xl font-black uppercase tracking-widest">Rekap Lembur Saya</h1>
                 <div class="w-full lg:w-auto rounded-3xl border border-slate-100 bg-white/80 p-3 shadow-sm">
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Filter Bulan Lembur</label>
-                    <input type="text" id="filt-lembur-bulan" oninput="window.applyLemburMonthInput && window.applyLemburMonthInput(this)" onchange="window.applyLemburMonthInput && window.applyLemburMonthInput(this); window.renderLemburTable()" class="w-full lg:w-[220px] p-2.5 border rounded-xl text-xs font-black outline-none text-center arika-manual-date-input focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                    <input type="text" id="filt-lembur-bulan" oninput="window.applyLemburMonthInput && window.applyLemburMonthInput(this)" onchange="window.applyLemburMonthInput && window.applyLemburMonthInput(this); window.renderLemburTable()" class="w-full lg:w-[220px] p-2.5 border rounded-xl text-xs font-black outline-none text-center arika-manual-date-input focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Ketik 062026, otomatis menjadi 06/2026. Alternatif: 2026-06.">
                     <div class="flex flex-wrap items-center justify-center lg:justify-end gap-2 mt-2">
                         <button type="button" onclick="window.shiftLemburMonth(-1)" class="rekap-filter-chip" title="Tampilkan bulan sebelumnya">‹ Bulan Sebelumnya</button>
                         <button type="button" id="lembur-month-label" onclick="window.setLemburMonthToCurrent()" class="rekap-filter-chip active min-w-[130px]">Bulan Ini</button>
@@ -6207,7 +6420,7 @@
                                 <p class="admin-section-desc">Pantau tren pengisian jurnal, lembur, ketuntasan pekerjaan, dan performa fungsi kerja secara bulanan dengan tampilan ringkas untuk kebutuhan evaluasi pimpinan.</p>
                             </div>
                             <div class="admin-filterbar">
-                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Ketik 062026, otomatis menjadi 06/2026. Alternatif: 2026-06.">
                                 <select id="admin-analytics-lab" onchange="window.renderAdminAnalytics()" class="admin-control">
                                     <option value="Semua">Semua Lab</option>
                                     <option value="Kimia OBA">Kimia OBA</option>
@@ -6548,7 +6761,7 @@
                             <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Pantau pengalaman pengguna, fitur yang paling membantu, kendala, dan rencana tindak lanjut perbaikan.</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Ketik 062026, otomatis menjadi 06/2026. Alternatif: 2026-06.">
                             <button onclick="window.downloadSurveyReportWord()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📄 Laporan Survei</button>
                             <button onclick="window.downloadSurveyMonevExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📊 Tindak Lanjut XLS</button>
                         </div>
@@ -6944,7 +7157,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v209 filter tanggal & status clean</div>
     </footer>
 
-    <script src="app.js?v=212"></script>
+    <script src="app.js?v=214"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
