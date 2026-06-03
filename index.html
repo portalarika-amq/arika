@@ -4822,10 +4822,12 @@
                                 </div>
                                 <div class="text-left">
                                     <label class="block text-[9px] md:text-[10px] font-black text-emerald-600 uppercase mb-2 ml-2 tracking-widest">Status Akhir</label>
-                                    <select id="in-status" required class="w-full p-3 bg-gradient-to-r from-slate-50 to-cyan-50 border-2 border-cyan-100 rounded-2xl font-black text-xs outline-none input-focus text-center text-slate-700">
-                                        <option value="Selesai">✅ Selesai</option>
-                                        <option value="Belum Selesai">⏳ Belum Selesai</option>
-                                    </select>
+                                    <input type="hidden" id="in-status" name="status_akhir" value="Selesai">
+                                    <div id="jurnal-status-options" class="flex flex-wrap gap-2" role="radiogroup" aria-label="Pilih status akhir jurnal">
+                                        <button type="button" data-jurnal-status="Selesai" onclick="window.setJurnalStatus && window.setJurnalStatus('Selesai')" class="rekap-filter-chip active">✅ Selesai</button>
+                                        <button type="button" data-jurnal-status="Belum Selesai" onclick="window.setJurnalStatus && window.setJurnalStatus('Belum Selesai')" class="rekap-filter-chip">⏳ Belum Selesai</button>
+                                    </div>
+                                    <p class="mt-2 text-[9px] text-slate-400 font-bold leading-relaxed ml-1">Klik salah satu status. Tidak memakai dropdown agar lebih ringan dan tidak memunculkan layar hitam.</p>
                                 </div>
                             </div>
 
@@ -6488,10 +6490,10 @@
 
     <footer class="bg-white border-t py-6 no-print text-center">
         <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">&copy; 2026 ARIKA BPOM Ambon.</div>
-        <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v205 dropdown chip & tanggal otomatis</div>
+        <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v209 filter tanggal & status clean</div>
     </footer>
 
-    <script src="app.js?v=208"></script>
+    <script src="app.js?v=209"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){

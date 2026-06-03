@@ -10381,3 +10381,283 @@
   setTimeout(init, 500);
   setTimeout(init, 1500);
 })();
+
+// ARIKA v209 - Perbaikan filter tanggal/bulan Riwayat Jurnal + status akhir Isi Jurnal tanpa duplikasi.
+(function(){
+  'use strict';
+
+  const pad2 = n => String(n).padStart(2, '0');
+  const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+  function validDate(y, m, d){
+    const dt = new Date(y, m - 1, d);
+    return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+  }
+
+  function makeMonth(y, m){
+    y = Number(y); m = Number(m);
+    if(!y || y < 1900 || y > 2100 || m < 1 || m > 12) return '';
+    return `${y}-${pad2(m)}`;
+  }
+
+  function makeDate(y, m, d){
+    y = Number(y); m = Number(m); d = Number(d);
+    if(!validDate(y, m, d)) return '';
+    return `${y}-${pad2(m)}-${pad2(d)}`;
+  }
+
+  function parseManualMonth(raw){
+    raw = String(raw || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
+    if(!raw) return '';
+    let m;
+    if((m = /^(\d{4})[-/](\d{1,2})$/.exec(raw))) return makeMonth(m[1], m[2]);
+    if((m = /^(\d{1,2})[-/](\d{4})$/.exec(raw))) return makeMonth(m[2], m[1]);
+    if((m = /^(\d{2})(\d{4})$/.exec(raw))) return makeMonth(m[2], m[1]);
+    if((m = /^(\d{4})(\d{2})$/.exec(raw))) return makeMonth(m[1], m[2]);
+    return '';
+  }
+
+  function parseManualDate(raw){
+    raw = String(raw || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
+    if(!raw) return '';
+    let m;
+    if((m = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(raw))) return makeDate(m[1], m[2], m[3]);
+    if((m = /^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/.exec(raw))) return makeDate(m[3], m[2], m[1]);
+    if((m = /^(\d{2})(\d{2})(\d{4})$/.exec(raw))) return makeDate(m[3], m[2], m[1]);
+    if((m = /^(\d{4})(\d{2})(\d{2})$/.exec(raw))) return makeDate(m[1], m[2], m[3]);
+    return '';
+  }
+
+  function displayMonth(iso){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(iso || ''));
+    return m ? `${m[2]}/${m[1]}` : '';
+  }
+
+  function displayDate(iso){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
+  }
+
+  function displayMonthLabel(iso){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(iso || ''));
+    if(!m) return 'Semua Bulan';
+    return `${monthNames[Number(m[2]) - 1] || m[2]} ${m[1]}`;
+  }
+
+  function parseRekapPeriod(raw){
+    raw = String(raw || '').trim();
+    if(!raw) return { valid:true, date:'', month:'', display:'' };
+
+    // Jika 8 digit, prioritaskan tanggal ddmmyyyy agar 03062026 menjadi 03/06/2026.
+    const digits = raw.replace(/\D/g, '');
+    if(/^\d{8}$/.test(digits)) {
+      const dmy = parseManualDate(digits);
+      if(dmy) return { valid:true, date:dmy, month:dmy.slice(0, 7), display:displayDate(dmy) };
+    }
+
+    const date = parseManualDate(raw);
+    if(date) return { valid:true, date, month:date.slice(0, 7), display:displayDate(date) };
+
+    const month = parseManualMonth(raw);
+    if(month) return { valid:true, date:'', month, display:displayMonth(month) };
+
+    return { valid:false, date:'', month:'', display:raw };
+  }
+
+  function partialFormatRekap(raw){
+    const digits = String(raw || '').replace(/\D/g, '');
+    if(!digits) return '';
+    if(digits.length <= 6) {
+      const d = digits.slice(0, 6);
+      return d.length <= 2 ? d : `${d.slice(0,2)}/${d.slice(2)}`;
+    }
+    const d = digits.slice(0, 8);
+    if(d.length <= 2) return d;
+    if(d.length <= 4) return `${d.slice(0,2)}/${d.slice(2)}`;
+    return `${d.slice(0,2)}/${d.slice(2,4)}/${d.slice(4)}`;
+  }
+
+  function setHidden(id, value){
+    const el = document.getElementById(id);
+    if(el) el.value = value || '';
+  }
+
+  function getHidden(id){
+    return document.getElementById(id)?.value || '';
+  }
+
+  function updateRekapMonthLabel(){
+    const label = document.getElementById('rekap-month-label');
+    if(!label) return;
+    const date = getHidden('filter-rekap-date');
+    const month = getHidden('filter-rekap-month');
+    label.textContent = date ? displayDate(date) : displayMonthLabel(month);
+    label.classList.toggle('active', !!(date || month));
+  }
+
+  function scheduleRekapRender(){
+    try { if(typeof window.showLoader === 'function') window.showLoader(false); } catch(_) {}
+    clearTimeout(window.__arikaV209RekapTimer);
+    window.__arikaV209RekapTimer = setTimeout(function(){
+      try { if(typeof window.runFilter === 'function') window.runFilter({ deferHeavy:true }); } catch(e) { console.warn(e); }
+      try { if(typeof window.renderVisualCalendar === 'function') window.renderVisualCalendar(); } catch(e) {}
+    }, 90);
+  }
+
+  function applyRekapManualInput(options){
+    options = options || {};
+    const input = document.getElementById('filter-rekap-manual');
+    if(!input) return true;
+    input.setAttribute('type', 'text');
+    input.setAttribute('inputmode', 'numeric');
+    input.setAttribute('autocomplete', 'off');
+    input.setAttribute('maxlength', '10');
+    input.setAttribute('placeholder', 'Ketik 062026 atau 03062026');
+    input.title = 'Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026.';
+
+    const raw = String(input.value || '');
+    if(!raw.trim()) {
+      input.classList.remove('border-rose-300','bg-rose-50');
+      setHidden('filter-rekap-month', '');
+      setHidden('filter-rekap-date', '');
+      updateRekapMonthLabel();
+      if(options.run) scheduleRekapRender();
+      return true;
+    }
+
+    const parsed = parseRekapPeriod(raw);
+    if(parsed.valid) {
+      input.value = parsed.display;
+      setHidden('filter-rekap-month', parsed.month);
+      setHidden('filter-rekap-date', parsed.date);
+      input.classList.remove('border-rose-300','bg-rose-50');
+      updateRekapMonthLabel();
+      if(options.run) scheduleRekapRender();
+      return true;
+    }
+
+    // Selama user masih mengetik angka, tampilkan pemisah otomatis tetapi jangan paksa filter.
+    const digits = raw.replace(/\D/g, '');
+    if(digits && digits.length < 8) {
+      input.value = partialFormatRekap(raw);
+      input.classList.remove('border-rose-300','bg-rose-50');
+      return false;
+    }
+
+    input.classList.add('border-rose-300','bg-rose-50');
+    return false;
+  }
+
+  function setRekapMonthKey(monthKey, run){
+    const input = document.getElementById('filter-rekap-manual');
+    setHidden('filter-rekap-date', '');
+    setHidden('filter-rekap-month', monthKey || '');
+    if(input) input.value = monthKey ? displayMonth(monthKey) : '';
+    updateRekapMonthLabel();
+    if(run !== false) scheduleRekapRender();
+  }
+
+  function getActiveRekapMonth(){
+    return getHidden('filter-rekap-month') || (getHidden('filter-rekap-date') || '').slice(0, 7) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : new Date().toISOString().slice(0,7));
+  }
+
+  window.applyRekapManualPeriod = function(value){
+    const input = document.getElementById('filter-rekap-manual');
+    if(input && typeof value === 'string' && input.value !== value && document.activeElement !== input) input.value = value;
+    setTimeout(() => applyRekapManualInput({ run:true }), 0);
+  };
+
+  window.setRekapMonthToCurrent = function(){
+    const now = new Date();
+    setRekapMonthKey(`${now.getFullYear()}-${pad2(now.getMonth() + 1)}`, true);
+  };
+
+  window.clearRekapMonth = function(){
+    setRekapMonthKey('', true);
+  };
+
+  window.shiftRekapMonth = function(delta){
+    const key = getActiveRekapMonth();
+    const m = /^(\d{4})-(\d{2})$/.exec(key);
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1 + Number(delta || 0), 1) : new Date();
+    setRekapMonthKey(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}`, true);
+  };
+
+  function installRekapManualFix(){
+    const input = document.getElementById('filter-rekap-manual');
+    if(!input) return;
+    if(!input.__arikaV209Installed) {
+      input.__arikaV209Installed = true;
+      input.addEventListener('input', function(){ setTimeout(() => applyRekapManualInput({ run:true }), 0); }, true);
+      input.addEventListener('blur', function(){ setTimeout(() => applyRekapManualInput({ run:true }), 0); }, true);
+      input.addEventListener('change', function(){ setTimeout(() => applyRekapManualInput({ run:true }), 0); }, true);
+    }
+    applyRekapManualInput({ run:false });
+  }
+
+  // Status akhir Isi Jurnal: satu kelompok tombol saja, tanpa select native dan tanpa chip ganda.
+  const STATUS_VALUES = ['Selesai', 'Belum Selesai'];
+  function syncJurnalStatusVisual(){
+    const input = document.getElementById('in-status');
+    if(!input) return;
+    let value = String(input.value || '').trim();
+    if(!STATUS_VALUES.includes(value)) value = 'Selesai';
+    input.value = value;
+    document.querySelectorAll('#jurnal-status-options [data-jurnal-status]').forEach(function(btn){
+      const active = String(btn.dataset.jurnalStatus || '') === value;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    // Bersihkan chip otomatis lama jika masih tertinggal dari cache DOM.
+    document.querySelectorAll('.arika-chip-select-group[data-select-id="in-status"], .arika-v206-chip-group[data-select-id="in-status"]').forEach(el => el.remove());
+  }
+
+  window.setJurnalStatus = function(value){
+    const input = document.getElementById('in-status');
+    if(!input) return;
+    input.value = STATUS_VALUES.includes(value) ? value : 'Selesai';
+    try { input.dispatchEvent(new Event('input', { bubbles:true })); } catch(_) {}
+    try { input.dispatchEvent(new Event('change', { bubbles:true })); } catch(_) {}
+    syncJurnalStatusVisual();
+  };
+
+  function installJurnalStatusFix(){
+    document.querySelectorAll('#jurnal-status-options [data-jurnal-status]').forEach(function(btn){
+      if(btn.__arikaV209StatusBound) return;
+      btn.__arikaV209StatusBound = true;
+      btn.addEventListener('click', function(){ window.setJurnalStatus(btn.dataset.jurnalStatus || 'Selesai'); });
+    });
+    const form = document.getElementById('form-arika');
+    if(form && !form.__arikaV209StatusReset) {
+      form.__arikaV209StatusReset = true;
+      form.addEventListener('reset', function(){ setTimeout(() => window.setJurnalStatus('Selesai'), 0); });
+    }
+    syncJurnalStatusVisual();
+  }
+
+  function install(){
+    installRekapManualFix();
+    installJurnalStatusFix();
+  }
+
+  const oldEdit = window.editJurnal;
+  if(typeof oldEdit === 'function' && !oldEdit.__arikaV209Wrapped) {
+    const wrapped = function(){
+      const result = oldEdit.apply(this, arguments);
+      setTimeout(syncJurnalStatusVisual, 260);
+      setTimeout(syncJurnalStatusVisual, 600);
+      return result;
+    };
+    wrapped.__arikaV209Wrapped = true;
+    window.editJurnal = wrapped;
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+  setTimeout(install, 300);
+  setTimeout(install, 900);
+  setTimeout(install, 1800);
+  setInterval(function(){
+    try { syncJurnalStatusVisual(); } catch(_) {}
+  }, 2500);
+})();
