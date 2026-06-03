@@ -5214,7 +5214,7 @@
                                 <tr><td class="p-3">Belum isi jurnal</td><td class="p-3">Pegawai belum mencatat jurnal pada hari kerja berjalan.</td><td class="p-3">± 60 menit sekali</td></tr>
                                 <tr><td class="p-3">Jurnal terlewat</td><td class="p-3">Ada hari kerja sebelumnya yang belum memiliki jurnal.</td><td class="p-3">± 60 menit sekali</td></tr>
                                 <tr><td class="p-3">Catatan atasan</td><td class="p-3">Jurnal pegawai mendapat catatan/review dari admin atau ketua tim.</td><td class="p-3">± 60 menit sekali</td></tr>
-                                <tr><td class="p-3">Rencana pribadi</td><td class="p-3">Ada rencana pribadi yang sudah memasuki jam reminder hari ini atau sudah terlewat.</td><td class="p-3">± 60 menit sekali</td></tr>
+                                <tr><td class="p-3">Rencana pribadi</td><td class="p-3">Ada rencana pribadi yang sudah memasuki jam reminder hari ini atau sudah terlewat dan belum diklik selesai.</td><td class="p-3">± 15 menit sekali sampai selesai</td></tr>
                                 <tr><td class="p-3">Pengumuman</td><td class="p-3">Ada pengumuman aktif sesuai tanggal dan target fungsi.</td><td class="p-3">± 120 menit sekali</td></tr>
                                 <tr><td class="p-3">Agenda kegiatan</td><td class="p-3">Agenda mendekati waktu mulai atau berlangsung hari ini.</td><td class="p-3">± 15 menit sekali</td></tr>
                             </tbody>
@@ -8977,7 +8977,7 @@
         }
 
         function getArikaReminderTimingText() {
-            return 'Alarm ARIKA sekarang memakai file MP3 custom alarm_reminder.mp3 sebagai suara utama. Jika file MP3 belum bisa diputar oleh browser, ARIKA otomatis memakai bel sintetis “triiiing... triiiing” sebagai cadangan. Sistem mengecek reminder sekitar setiap 10 detik, termasuk dari data stabil lokal/cache, dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
+            return 'Alarm ARIKA sekarang memakai file MP3 custom alarm_reminder.mp3 sebagai suara utama. Jika file MP3 belum bisa diputar oleh browser, ARIKA otomatis memakai bel sintetis “triiiing... triiiing” sebagai cadangan. Sistem mengecek reminder sekitar setiap 10 detik, termasuk dari data stabil lokal/cache, dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; rencana pribadi akan berulang sekitar 15 menit sekali selama belum diklik selesai, jurnal/catatan sekitar 180 menit sekali, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
         }
 
         function arikaSpeechSupported() {
@@ -9007,17 +9007,42 @@
             if(!arikaSpeechSupported()) return null;
             const voices = window.speechSynthesis.getVoices() || [];
             if(!voices.length) return null;
-            const lower = v => `${v.name || ''} ${v.lang || ''}`.toLowerCase();
+            const lower = v => `${v.name || ''} ${v.lang || ''} ${v.voiceURI || ''}`.toLowerCase();
 
             // Penting: jangan fallback ke suara English/default, karena akan terdengar logat Inggris.
             // ARIKA hanya memilih voice Bahasa Indonesia. Jika tidak ada, fungsi ini mengembalikan null.
-            const indonesianVoices = voices.filter(v => /(^|[-_])id($|[-_])|id-id|indonesia|indonesian|bahasa indonesia/.test(lower(v)));
+            const indonesianVoices = voices.filter(v => /(^|[-_])id($|[-_])|id-id|indonesia|indonesian|bahasa indonesia|bahasa_indonesia/.test(lower(v)));
             if(!indonesianVoices.length) return null;
 
-            const femaleIndonesian = indonesianVoices.find(v => /female|wanita|perempuan|gadis|siti|zira|arini|damayanti|indah|amelia|id-id/.test(lower(v)));
-            if(femaleIndonesian) return femaleIndonesian;
+            // v186: pilih suara Indonesia yang paling mendekati karakter wanita muda/presenter.
+            // Nama voice berbeda-beda di tiap perangkat/browser, jadi dipilih dengan sistem skor.
+            const scoreVoice = (voice) => {
+                const text = lower(voice);
+                let score = 0;
 
-            return indonesianVoices[0] || null;
+                // Cocokkan bahasa Indonesia lebih dulu.
+                if(/id-id|id_id|indonesian|indonesia|bahasa indonesia|bahasa_indonesia/.test(text)) score += 45;
+                if(/^id[-_]?id$/i.test(voice.lang || '')) score += 35;
+
+                // Prioritas untuk voice wanita atau nama voice Indonesia yang umumnya lebih halus.
+                if(/female|woman|wanita|perempuan|gadis|putri|citra|siti|arini|damayanti|indah|amelia|ayunda|kartika|ratih|maya|nisa|nina|diah/.test(text)) score += 80;
+
+                // Voice cloud/modern biasanya lebih natural daripada voice legacy lokal.
+                if(/google|microsoft|natural|online|neural|premium|enhanced/.test(text)) score += 24;
+                if(voice.localService === false) score += 8;
+
+                // Hindari suara yang jelas laki-laki bila tersedia alternatif wanita.
+                if(/male|man|laki|pria|ardi|andika|dimas|bayu|budi|agus|joko/.test(text)) score -= 70;
+
+                // Hindari voice lama/kompak jika ada pilihan lain.
+                if(/legacy|compact|default|old/.test(text)) score -= 15;
+
+                return score;
+            };
+
+            return indonesianVoices
+                .slice()
+                .sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] || indonesianVoices[0] || null;
         }
 
         function hasArikaIndonesianVoice() {
@@ -9028,9 +9053,9 @@
             if(!arikaSpeechSupported()) return 'Browser belum mendukung pembacaan suara.';
             const voices = window.speechSynthesis.getVoices() || [];
             const voice = getArikaPreferredVoice();
-            if(voice) return `Suara Bahasa Indonesia terdeteksi: ${voice.name || 'Voice Indonesia'}.`;
+            if(voice) return `Mode narasi wanita muda/presenter aktif memakai voice: ${voice.name || 'Voice Indonesia'}. Kualitas suara tetap mengikuti voice yang tersedia di browser/perangkat ini.`;
             if(!voices.length) return 'Daftar suara belum terbaca. Klik Tes Suara kembali beberapa detik lagi.';
-            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai alarm MP3 custom, atau bel sintetis ARIKA jika MP3 tidak tersedia. Silakan tambahkan voice Bahasa Indonesia di pengaturan Windows/Edge/Chrome jika ingin memakai suara narasi.';
+            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai alarm MP3 custom, atau bel sintetis ARIKA jika MP3 tidak tersedia. Jika ingin narasi wanita yang lebih natural, tambahkan voice Bahasa Indonesia wanita/natural di pengaturan Windows/Edge/Chrome.';
         }
 
         function sanitizeArikaSpeechText(text) {
@@ -9060,8 +9085,10 @@
                 utterance.lang = voice.lang || 'id-ID';
                 utterance.voice = voice;
                 utterance.volume = 1;
-                utterance.rate = kind === 'urgent' ? 0.88 : 0.92;
-                utterance.pitch = 1.04;
+                // v186: gaya narasi dibuat lebih muda, ramah, dan seperti presenter.
+                // Nilai tetap aman agar tidak terdengar cempreng/terlalu cepat.
+                utterance.rate = kind === 'urgent' ? 0.96 : 1.02;
+                utterance.pitch = kind === 'urgent' ? 1.08 : 1.14;
                 synth.speak(utterance);
                 return true;
             } catch(e) {
@@ -9276,15 +9303,15 @@
                     addReminderEvent(events, {
                         // Rencana yang sudah masuk jamnya harus menang dari reminder jurnal biasa,
                         // supaya alarm pada jam pilihan user tidak tertunda oleh event lain.
-                        priority: todayCount ? 1 : 2,
+                        priority: 0,
                         kind: 'rencana',
                         key: `rencana-pribadi-${userKey}-${todayCount ? 'due' : 'overdue'}-${dueKeyBase}`,
                         title: overdueCount && !todayCount ? 'Reminder Pribadi Terlewat' : 'Reminder Pribadi Sekarang',
                         body: overdueCount && !todayCount ? `${overdueCount} rencana pribadi melewati target.` : `${todayCount || 1} rencana pribadi sudah memasuki jam reminder${jamText}${planTitle}.`,
                         speech: overdueCount && !todayCount ? `Halo, ada ${overdueCount} reminder pribadi yang sudah melewati target.` : `Halo, reminder pribadi${planTitle} sudah memasuki jam pengingat${jamText}.`,
-                        // Pada 60 menit pertama setelah jam rencana, ulang lebih cepat agar tidak mudah terlewat
-                        // bila timer browser sempat tertahan ketika tab berada di background.
-                        repeatMinutes: todayCount ? 10 : 60
+                        // v185: Rencana Saya berbunyi ulang sekitar 15 menit sekali selama belum diklik selesai.
+                        // Begitu status berubah menjadi selesai, event ini hilang karena filter isRencanaSelesai().
+                        repeatMinutes: 15
                     });
                 }
             } catch(e) {}
@@ -9390,7 +9417,7 @@
             if(played) {
                 markArikaReminderSoundPlayed(selected.key);
             } else if(options && options.forceRencana) {
-                // Jika baru menyimpan rencana tetapi audio belum sempat keluar, jangan dikunci 60 menit.
+                // Jika baru menyimpan rencana tetapi audio belum sempat keluar, jangan dikunci jeda 15 menit.
                 // Timer berikutnya akan mencoba lagi selama tab ARIKA tetap terbuka.
                 try { console.warn('Reminder ARIKA belum berhasil mengeluarkan suara, akan dicoba ulang.', selected); } catch(e) {}
             }
@@ -9404,7 +9431,7 @@
             updateArikaReminderSoundPanel();
             if(showMessage) {
                 const playedMp3 = await playArikaReminderMp3('default');
-                const voiceText = getArikaReminderSpeech({ speech: 'Suara pengingat ARIKA sudah aktif. Jika tersedia, saya akan membacakan reminder dengan suara Bahasa Indonesia.' });
+                const voiceText = getArikaReminderSpeech({ speech: 'Suara pengingat ARIKA sudah aktif. Jika tersedia, saya akan membacakan reminder dengan suara Bahasa Indonesia yang lebih natural seperti presenter wanita.' });
                 const spoke = await speakArikaReminderText(voiceText, 'default');
                 if(playedMp3 || ok || spoke) {
                     if(!playedMp3 && ok) playArikaBeepPattern('default');
