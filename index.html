@@ -8916,7 +8916,7 @@
         }
 
         function getArikaReminderTimingText() {
-            return 'Durasi nada pengingat ARIKA sekitar 2–3 detik dengan volume chime yang sudah diperkuat. Sistem mengecek reminder setiap 30 detik. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah jam reminder tiba, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
+            return 'Durasi nada pengingat ARIKA sekitar 2–3 detik dengan volume chime yang sudah diperkuat. Sistem mengecek reminder sekitar setiap 15 detik saat tab aktif dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
         }
 
         function arikaSpeechSupported() {
@@ -9090,12 +9090,22 @@
         }
 
         function shouldPlayArikaReminderSound(key, repeatMinutes) {
+            // v180: hanya CEK apakah reminder sudah boleh dibunyikan.
+            // Jangan menulis log di sini, karena pada tab background audio bisa gagal/resume tertunda.
+            // Log baru ditulis setelah triggerArikaReminderSoundNow benar-benar berhasil mengeluarkan bunyi/suara.
             if(!key) return false;
             const log = getArikaSoundLog();
             const now = Date.now();
             const last = Number(log[key] || 0);
             const minMs = Math.max(5, Number(repeatMinutes || 120)) * 60 * 1000;
             if(last && (now - last) < minMs) return false;
+            return true;
+        }
+
+        function markArikaReminderSoundPlayed(key) {
+            if(!key) return;
+            const log = getArikaSoundLog();
+            const now = Date.now();
             log[key] = now;
 
             // Bersihkan log lama agar localStorage tidak membesar.
@@ -9103,7 +9113,6 @@
                 if(now - Number(log[k] || 0) > 7 * 24 * 60 * 60 * 1000) delete log[k];
             });
             setArikaSoundLog(log);
-            return true;
         }
 
         function reminderUserKey() {
@@ -9288,7 +9297,14 @@
             }
             if(!selected) selected = events.find(ev => shouldPlayArikaReminderSound(ev.key, ev.repeatMinutes));
             if(!selected) return;
-            await triggerArikaReminderSoundNow(selected);
+            const played = await triggerArikaReminderSoundNow(selected);
+            if(played) {
+                markArikaReminderSoundPlayed(selected.key);
+            } else if(options && options.forceRencana) {
+                // Jika baru menyimpan rencana tetapi audio belum sempat keluar, jangan dikunci 60 menit.
+                // Timer berikutnya akan mencoba lagi selama tab ARIKA tetap terbuka.
+                try { console.warn('Reminder ARIKA belum berhasil mengeluarkan suara, akan dicoba ulang.', selected); } catch(e) {}
+            }
         };
 
         window.enableArikaReminderSound = async function(showMessage = true) {
@@ -9322,7 +9338,7 @@
             await loadArikaVoices();
             updateArikaReminderSoundPanel();
             if(ok) playArikaBeepPattern('urgent');
-            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi lebih keras. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
+            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi lebih keras dan lebih stabil di tab background. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
             flashArikaTitle('Tes Pengingat ARIKA');
             if(spoke) {
                 window.showCustomAlert('Tes suara berhasil. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
@@ -9370,8 +9386,8 @@
                         window.renderRencanaPribadi && window.renderRencanaPribadi({ silent: true });
                     }
                 } catch(e) {}
-                try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'timer' }); } catch(e) {}
-            }, 30000);
+                try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: document.hidden ? 'timer-hidden' : 'timer' }); } catch(e) {}
+            }, 15000);
         };
 
         document.addEventListener('visibilitychange', () => {
@@ -9379,7 +9395,16 @@
                 try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'hidden' }); } catch(e) {}
             } else {
                 try { document.title = arikaOriginalTitle; clearInterval(arikaTitleFlashTimer); } catch(e) {}
+                // v180: saat user kembali ke tab ARIKA, langsung cek ulang agar reminder yang sempat tertunda tidak hilang.
+                try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'visible' }); } catch(e) {}
             }
+        });
+
+        window.addEventListener('focus', () => {
+            try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'focus' }); } catch(e) {}
+        });
+        window.addEventListener('pageshow', () => {
+            try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'pageshow' }); } catch(e) {}
         });
 
         function triggerDailyReminder() {
