@@ -1072,19 +1072,21 @@
 
         window.logout = async function() {
             window.showLoader(true, "Keluar...");
-            const clearPromise = clearSessionStorageAll();
-            try { await resolveWithTimeout(clearPromise, 1200, null); } catch(e) {}
+            try { window.__ARIKA_LOGGING_OUT__ = true; } catch(e) {}
+            setLogoutMarker && setLogoutMarker();
             window.currentUser = null;
             window.isAdmin = false;
             window.userRole = 'Pegawai';
             window.isReviewer = false;
-        window.userRole = 'Pegawai';
-        window.isReviewer = false;
             try { if(arikaReminderWatcherTimer) clearInterval(arikaReminderWatcherTimer); updateArikaReminderSoundPanel && updateArikaReminderSoundPanel(); } catch(e) {}
+            const clearPromise = clearSessionStorageAll();
+            try { await resolveWithTimeout(clearPromise, 1800, null); } catch(e) {}
             const nav = document.getElementById('main-nav');
             if(nav) nav.classList.add('hidden');
             document.querySelectorAll('input[type="password"]').forEach(i => i.value = '');
             window.nav('login-user');
+            try { setLogoutMarker && setLogoutMarker(); } catch(e) {}
+            try { window.__ARIKA_LOGGING_OUT__ = false; } catch(e) {}
             window.showLoader(false);
         };
 
@@ -1094,7 +1096,10 @@
         // ke 3 tempat: localStorage, sessionStorage, dan window.name sebagai fallback.
         const ARIKA_SESSION_KEY = 'arika_session_v53_cloud_cache_persist';
         const ARIKA_OLD_SESSION_KEYS = ['arika_session_v52_cloud_persist', 'arika_session_v51_persist', 'arika_session_v49_persist', 'arika_session_v43', 'arika_session_v12'];
-        const ARIKA_LOGOUT_MARKER_KEY = 'arika_logout_marker_v207';
+        const ARIKA_LOGOUT_MARKER_KEY = 'arika_logout_marker_v210';
+        const ARIKA_OLD_LOGOUT_MARKER_KEYS = ['arika_logout_marker_v207', 'arika_logout_marker_v208', 'arika_logout_marker_v209'];
+        window.__ARIKA_LOGGING_OUT__ = false;
+        window.__ARIKA_HARD_LOGGED_OUT__ = false;
 
         const getTodayKey = () => {
             const d = new Date();
@@ -1127,31 +1132,48 @@
 
         function setLogoutMarker() {
             const raw = String(Date.now());
-            try { localStorage.setItem(ARIKA_LOGOUT_MARKER_KEY, raw); } catch(e) {}
-            try { sessionStorage.setItem(ARIKA_LOGOUT_MARKER_KEY, raw); } catch(e) {}
-            try { document.cookie = `${ARIKA_LOGOUT_MARKER_KEY}=${raw}; max-age=${24 * 60 * 60}; path=/; SameSite=Lax`; } catch(e) {}
+            const keys = [ARIKA_LOGOUT_MARKER_KEY].concat(ARIKA_OLD_LOGOUT_MARKER_KEYS || []);
+            keys.forEach(key => {
+                try { localStorage.setItem(key, raw); } catch(e) {}
+                try { sessionStorage.setItem(key, raw); } catch(e) {}
+                try { document.cookie = `${key}=${raw}; max-age=${24 * 60 * 60}; path=/; SameSite=Lax`; } catch(e) {}
+            });
+            try { window.__ARIKA_HARD_LOGGED_OUT__ = true; } catch(e) {}
         }
 
         function clearLogoutMarker() {
-            try { localStorage.removeItem(ARIKA_LOGOUT_MARKER_KEY); } catch(e) {}
-            try { sessionStorage.removeItem(ARIKA_LOGOUT_MARKER_KEY); } catch(e) {}
-            try { document.cookie = `${ARIKA_LOGOUT_MARKER_KEY}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
+            const keys = [ARIKA_LOGOUT_MARKER_KEY].concat(ARIKA_OLD_LOGOUT_MARKER_KEYS || []);
+            keys.forEach(key => {
+                try { localStorage.removeItem(key); } catch(e) {}
+                try { sessionStorage.removeItem(key); } catch(e) {}
+                try { document.cookie = `${key}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
+            });
+            try { window.__ARIKA_HARD_LOGGED_OUT__ = false; } catch(e) {}
         }
 
-        function getLogoutMarkerCookie() {
+        function getLogoutMarkerCookie(key = ARIKA_LOGOUT_MARKER_KEY) {
             try {
-                const prefix = ARIKA_LOGOUT_MARKER_KEY + '=';
+                const prefix = key + '=';
                 const found = String(document.cookie || '').split(';').map(v => v.trim()).find(v => v.indexOf(prefix) === 0);
                 return found ? found.slice(prefix.length) : '';
             } catch(e) { return ''; }
         }
 
+        function getAnyLogoutMarkerRaw() {
+            const keys = [ARIKA_LOGOUT_MARKER_KEY].concat(ARIKA_OLD_LOGOUT_MARKER_KEYS || []);
+            for (const key of keys) {
+                let raw = '';
+                try { raw = localStorage.getItem(key) || ''; } catch(e) {}
+                if(!raw) { try { raw = sessionStorage.getItem(key) || ''; } catch(e) {} }
+                if(!raw) raw = getLogoutMarkerCookie(key);
+                if(raw) return raw;
+            }
+            return '';
+        }
+
         function isRecentlyLoggedOut() {
-            let raw = '';
-            try { raw = localStorage.getItem(ARIKA_LOGOUT_MARKER_KEY) || ''; } catch(e) {}
-            if(!raw) { try { raw = sessionStorage.getItem(ARIKA_LOGOUT_MARKER_KEY) || ''; } catch(e) {} }
-            if(!raw) raw = getLogoutMarkerCookie();
-            const time = Number(raw || 0);
+            if(window.__ARIKA_LOGGING_OUT__ || window.__ARIKA_HARD_LOGGED_OUT__) return true;
+            const time = Number(getAnyLogoutMarkerRaw() || 0);
             return Number.isFinite(time) && time > 0 && (Date.now() - time < 24 * 60 * 60 * 1000);
         }
 
@@ -1222,6 +1244,7 @@
 
         let cloudSessionSaveTimer = null;
         function scheduleSaveSessionToCloud(session) {
+            if(window.__ARIKA_LOGGING_OUT__ || isRecentlyLoggedOut()) return;
             if(!session || !session.profile || !SCRIPT_URL) return;
             clearTimeout(cloudSessionSaveTimer);
             cloudSessionSaveTimer = setTimeout(() => {
@@ -1517,6 +1540,7 @@
         }
 
         function persistSession(session) {
+            if(window.__ARIKA_LOGGING_OUT__) return;
             const safeSession = normalizeSessionObject(session);
             if (!safeSession) return;
             clearLogoutMarker();
@@ -1532,28 +1556,60 @@
 
         function clearSessionStorageAll() {
             try { clearTimeout(cloudSessionSaveTimer); } catch(e) {}
+            try { window.__ARIKA_LOGGING_OUT__ = true; } catch(e) {}
             setLogoutMarker();
-            try { localStorage.removeItem(ARIKA_SESSION_KEY); } catch(e) {}
-            try { sessionStorage.removeItem(ARIKA_SESSION_KEY); } catch(e) {}
-            deleteSessionFromIndexedDB(ARIKA_SESSION_KEY);
-            (ARIKA_OLD_SESSION_KEYS || []).forEach(key => {
+
+            // Kosongkan state aktif lebih dulu agar timer/render yang masih berjalan
+            // tidak sempat menyimpan ulang session lama saat proses logout.
+            try { window.currentUser = null; } catch(e) {}
+            try { window.isAdmin = false; } catch(e) {}
+            try { window.userRole = 'Pegawai'; } catch(e) {}
+            try { window.isReviewer = false; } catch(e) {}
+            try { window.__ARIKA_RESTORED_SESSION__ = null; } catch(e) {}
+            try { window.__ARIKA_SESSION_MEMORY__ = ''; } catch(e) {}
+
+            const sessionKeys = [ARIKA_SESSION_KEY].concat(ARIKA_OLD_SESSION_KEYS || []);
+            sessionKeys.forEach(key => {
                 try { localStorage.removeItem(key); } catch(e) {}
                 try { sessionStorage.removeItem(key); } catch(e) {}
                 try { document.cookie = `${key}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
                 deleteSessionFromIndexedDB(key);
             });
-            try { document.cookie = `${ARIKA_SESSION_KEY}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
-            try { window.__ARIKA_SESSION_MEMORY__ = ''; } catch(e) {}
-            const cloudDeletePromise = deleteSessionFromCloud();
+
+            // Bersihkan kemungkinan key session lama yang tidak masuk daftar versi.
+            try {
+                for(let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i) || '';
+                    if(/^arika_session_/i.test(key)) localStorage.removeItem(key);
+                }
+            } catch(e) {}
+            try {
+                for(let i = sessionStorage.length - 1; i >= 0; i--) {
+                    const key = sessionStorage.key(i) || '';
+                    if(/^arika_session_/i.test(key)) sessionStorage.removeItem(key);
+                }
+            } catch(e) {}
+
             try {
                 const parsedName = JSON.parse(window.name || '{}');
                 if (parsedName && parsedName.__arikaSession === true) window.name = '';
             } catch(e) {}
-            return cloudDeletePromise;
+
+            const cloudDeletePromise = deleteSessionFromCloud();
+            return cloudDeletePromise.finally(() => {
+                // Tetap pertahankan marker logout 24 jam, tetapi izinkan login baru
+                // dengan tombol login karena createSession akan membersihkannya.
+                try { window.__ARIKA_LOGGING_OUT__ = false; } catch(e) {}
+            });
         }
 
         async function checkSession() {
             document.body.classList.add('arika-session-restoring');
+            if(isRecentlyLoggedOut()) {
+                try { window.currentUser = null; window.isAdmin = false; window.userRole = 'Pegawai'; window.isReviewer = false; } catch(e) {}
+                document.body.classList.remove('arika-session-restoring');
+                return false;
+            }
             try {
                 const session = await resolveWithTimeout(readSessionAnyStorage(), 8200, null);
                 if (session && session.profile) {
@@ -3168,12 +3224,12 @@
                     await waitForArikaReminderMp3ToFinish(5600);
                     await waitArikaMs(350);
                 }
-                const voiceText = getArikaReminderSpeech({ speech: 'Suara pengingat ARIKA sudah aktif. Alarm MP3 akan berbunyi lebih dulu, lalu narasi manusia dibacakan setelahnya agar terdengar lebih jelas.' });
+                const voiceText = 'Suara pengingat ARIKA sudah aktif.';
                 const spoke = await speakArikaReminderText(voiceText, 'default');
                 if(playedMp3 || spoke) {
-                    window.showCustomAlert('Suara pengingat ARIKA sudah aktif. Alarm utama memakai file MP3 custom. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
+                    window.showCustomAlert('Suara pengingat ARIKA sudah aktif.');
                 } else {
-                    window.showCustomAlert('Suara pengingat disimpan aktif, tetapi browser belum mengizinkan audio/suara. Klik tombol Tes Suara atau Aktifkan Suara sekali lagi.');
+                    window.showCustomAlert('Suara pengingat ARIKA sudah aktif, tetapi browser belum mengizinkan audio. Klik Tes Suara sekali lagi.');
                 }
             }
             setTimeout(() => window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'enable' }), 1200);
@@ -3198,12 +3254,12 @@
                 await waitForArikaReminderMp3ToFinish(6500);
                 await waitArikaMs(350);
             }
-            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA. Alarm utama memakai file MP3 custom. Setelah alarm selesai, narasi manusia dibacakan dengan volume maksimum browser dan tempo lebih jelas. Jika narasi masih kecil, penyebabnya biasanya volume voice bawaan perangkat atau mixer sistem.' }), 'urgent');
+            const spoke = await speakArikaReminderText('Suara pengingat ARIKA sudah aktif.', 'urgent');
             flashArikaTitle('Tes Pengingat ARIKA');
             if(playedMp3 || spoke) {
-                window.showCustomAlert('Tes suara berhasil. Alarm MP3 custom sudah dicoba. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
+                window.showCustomAlert('Suara pengingat ARIKA sudah aktif.');
             } else {
-                window.showCustomAlert(getArikaVoiceDiagnosticText() + ' Alarm MP3 belum terdengar. Pastikan file alarm_reminder.mp3 berada satu folder dengan index.html, tab tidak di-mute, dan volume perangkat aktif. ' + getArikaReminderTimingText());
+                window.showCustomAlert('Alarm MP3 belum terdengar. Pastikan file alarm_reminder.mp3 tersedia dan volume perangkat aktif.');
             }
         };
 
