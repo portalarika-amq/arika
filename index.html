@@ -4888,9 +4888,20 @@
         </section>
 
         <section id="view-lembur" class="view-section animate-fade hidden text-center sm:text-left">
-            <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <h1 class="text-lg md:text-xl font-black uppercase tracking-widest">Rekap Lembur Saya</h1>
-                <input type="text" id="filt-lembur-bulan" onchange="window.renderLemburTable()" class="p-2 border rounded-xl text-xs font-black outline-none text-center sm:text-left arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                <div class="w-full lg:w-auto rounded-3xl border border-slate-100 bg-white/80 p-3 shadow-sm">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Filter Bulan Lembur</label>
+                    <input type="text" id="filt-lembur-bulan" oninput="window.applyLemburMonthInput && window.applyLemburMonthInput(this)" onchange="window.applyLemburMonthInput && window.applyLemburMonthInput(this); window.renderLemburTable()" class="w-full lg:w-[220px] p-2.5 border rounded-xl text-xs font-black outline-none text-center arika-manual-date-input focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                    <div class="flex flex-wrap items-center justify-center lg:justify-end gap-2 mt-2">
+                        <button type="button" onclick="window.shiftLemburMonth(-1)" class="rekap-filter-chip" title="Tampilkan bulan sebelumnya">‹ Bulan Sebelumnya</button>
+                        <button type="button" id="lembur-month-label" onclick="window.setLemburMonthToCurrent()" class="rekap-filter-chip active min-w-[130px]">Bulan Ini</button>
+                        <button type="button" onclick="window.shiftLemburMonth(1)" class="rekap-filter-chip" title="Tampilkan bulan berikutnya">Bulan Berikutnya ›</button>
+                        <button type="button" onclick="window.setLemburMonthToCurrent()" class="rekap-filter-chip">Bulan Ini</button>
+                        <button type="button" onclick="window.clearLemburMonth()" class="rekap-filter-chip">Semua Bulan</button>
+                    </div>
+                    <p class="mt-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider text-center lg:text-right">Cukup ketik 062026 → 06/2026, atau gunakan tombol bulan.</p>
+                </div>
             </div>
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden overflow-x-auto">
                 <table class="w-full text-left text-[11px] text-center sm:text-left">
@@ -5743,7 +5754,7 @@
                                 <p class="admin-section-desc">Pantau tren pengisian jurnal, lembur, ketuntasan pekerjaan, dan performa fungsi kerja secara bulanan dengan tampilan ringkas untuk kebutuhan evaluasi pimpinan.</p>
                             </div>
                             <div class="admin-filterbar">
-                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                                <input type="text" id="admin-analytics-month" onchange="window.renderAdminAnalytics()" class="admin-control arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
                                 <select id="admin-analytics-lab" onchange="window.renderAdminAnalytics()" class="admin-control">
                                     <option value="Semua">Semua Lab</option>
                                     <option value="Kimia OBA">Kimia OBA</option>
@@ -6084,7 +6095,7 @@
                             <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-wider">Pantau pengalaman pengguna, fitur yang paling membantu, kendala, dan rencana tindak lanjut perbaikan.</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" data-arika-manual-date="month" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
+                            <input type="text" id="admin-survei-month" onchange="window.renderAdminSurvei()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none arika-manual-date-input" inputmode="numeric" autocomplete="off" placeholder="mm/yyyy" title="Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026. Alternatif: yyyy-mm.">
                             <button onclick="window.downloadSurveyReportWord()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📄 Laporan Survei</button>
                             <button onclick="window.downloadSurveyMonevExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">📊 Tindak Lanjut XLS</button>
                         </div>
@@ -6480,7 +6491,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v205 dropdown chip & tanggal otomatis</div>
     </footer>
 
-    <script src="app.js?v=207"></script>
+    <script src="app.js?v=208"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){

@@ -10246,3 +10246,138 @@
   setTimeout(install, 500);
   setTimeout(install, 1500);
 })();
+
+// ARIKA v208 - Tombol cepat filter bulan pada Laporan Lembur Saya.
+(function(){
+  const INPUT_ID = 'filt-lembur-bulan';
+  const LABEL_ID = 'lembur-month-label';
+  const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const pad2 = n => String(n).padStart(2, '0');
+
+  function currentMonthKey(){
+    const d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+  }
+
+  function parseMonthKey(value){
+    const raw = String(value || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
+    if(!raw) return '';
+    if(window.parseArikaManualMonth) {
+      try {
+        const parsed = window.parseArikaManualMonth(raw);
+        if(parsed) return parsed;
+      } catch(_) {}
+    }
+    let m = raw.match(/^(\d{4})[-\/](\d{1,2})$/);
+    if(m) return makeMonth(m[1], m[2]);
+    m = raw.match(/^(\d{1,2})[-\/](\d{4})$/);
+    if(m) return makeMonth(m[2], m[1]);
+    m = raw.match(/^(\d{2})(\d{4})$/);
+    if(m) return makeMonth(m[2], m[1]);
+    m = raw.match(/^(\d{4})(\d{2})$/);
+    if(m) return makeMonth(m[1], m[2]);
+    return '';
+  }
+
+  function makeMonth(year, month){
+    year = Number(year); month = Number(month);
+    if(!year || month < 1 || month > 12) return '';
+    return year + '-' + pad2(month);
+  }
+
+  function keyToDisplay(key){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(key || ''));
+    if(!m) return '';
+    return m[2] + '/' + m[1];
+  }
+
+  function keyToLabel(key){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(key || ''));
+    if(!m) return 'Semua Bulan';
+    const monthIdx = Number(m[2]) - 1;
+    return (monthNames[monthIdx] || m[2]) + ' ' + m[1];
+  }
+
+  function getInput(){ return document.getElementById(INPUT_ID); }
+  function getCurrentKey(){
+    const el = getInput();
+    return el ? (parseMonthKey(el.value) || currentMonthKey()) : currentMonthKey();
+  }
+
+  function setMonthKey(key, render = true){
+    const el = getInput();
+    if(!el) return;
+    el.value = key ? keyToDisplay(key) : '';
+    try { el.dataset.arikaIsoValue = key || ''; } catch(_) {}
+    updateLabel();
+    if(render && typeof window.renderLemburTable === 'function') window.renderLemburTable();
+  }
+
+  function updateLabel(){
+    const label = document.getElementById(LABEL_ID);
+    const el = getInput();
+    if(!label || !el) return;
+    const key = parseMonthKey(el.value);
+    label.textContent = key ? keyToLabel(key) : 'Semua Bulan';
+  }
+
+  window.applyLemburMonthInput = function(el){
+    el = el || getInput();
+    if(!el) return;
+    const raw = String(el.value || '');
+    const digits = raw.replace(/\D/g, '');
+    if(digits.length >= 3 && digits.length <= 6 && !/^\d{4}$/.test(digits)) {
+      const d = digits.slice(0, 6);
+      el.value = d.slice(0, 2) + (d.length > 2 ? '/' + d.slice(2, 6) : '');
+      try { el.setSelectionRange(el.value.length, el.value.length); } catch(_) {}
+    } else if(/^\d{6}$/.test(digits) && /^(19|20)/.test(digits.slice(0,4))) {
+      el.value = digits.slice(4, 6) + '/' + digits.slice(0, 4);
+    }
+    const key = parseMonthKey(el.value);
+    try { el.dataset.arikaIsoValue = key || ''; } catch(_) {}
+    updateLabel();
+  };
+
+  window.shiftLemburMonth = function(delta){
+    const key = getCurrentKey();
+    const m = /^(\d{4})-(\d{2})$/.exec(key);
+    const d = m ? new Date(Number(m[1]), Number(m[2]) - 1 + Number(delta || 0), 1) : new Date();
+    setMonthKey(d.getFullYear() + '-' + pad2(d.getMonth() + 1));
+  };
+
+  window.setLemburMonthToCurrent = function(){
+    setMonthKey(currentMonthKey());
+  };
+
+  window.clearLemburMonth = function(){
+    setMonthKey('', true);
+  };
+
+  const oldRender = window.renderLemburTable;
+  if(typeof oldRender === 'function' && !oldRender.__arikaV208LemburLabelWrap) {
+    const wrapped = function(){
+      const result = oldRender.apply(this, arguments);
+      try { updateLabel(); } catch(_) {}
+      return result;
+    };
+    wrapped.__arikaV208LemburLabelWrap = true;
+    window.renderLemburTable = wrapped;
+  }
+
+  function init(){
+    const el = getInput();
+    if(!el) return;
+    el.setAttribute('type', 'text');
+    el.setAttribute('inputmode', 'numeric');
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('maxlength', '7');
+    if(!el.value) setMonthKey(currentMonthKey(), false);
+    else window.applyLemburMonthInput(el);
+    updateLabel();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+})();
