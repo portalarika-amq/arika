@@ -13494,7 +13494,237 @@
             const html = `
                 <html><head><meta charset="UTF-8"></head><body>
                 ${tableHtml}
-                </body></html>
+                
+
+<script id="arika-v189-pdf-filter-fix">
+// v189: Perbaikan Export PDF Jurnal kosong + filter/dropdown kalender lebih responsif.
+(function(){
+  'use strict';
+
+  function escapeCell(value){
+    try {
+      if (typeof window.escapeHTML === 'function') return window.escapeHTML(value == null ? '' : String(value));
+    } catch(e) {}
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function escLines(value){
+    try {
+      if (typeof window.escapeHTMLPreserveLines === 'function') return window.escapeHTMLPreserveLines(value == null ? '' : String(value));
+    } catch(e) {}
+    return escapeCell(value).replace(/\r?\n/g, '<br>');
+  }
+
+  function addPrintStyle(){
+    if (document.getElementById('arika-v189-print-style')) return;
+    var style = document.createElement('style');
+    style.id = 'arika-v189-print-style';
+    style.textContent = `
+      @media print {
+        @page { size: A4 portrait; margin: 14mm 12mm; }
+        body.arika-printing { background: #fff !important; color: #000 !important; }
+        body.arika-printing > *:not(#print-area-jurnal):not(script):not(style) { display: none !important; }
+        body.arika-printing #print-area-jurnal,
+        body.arika-printing #print-area-jurnal.print-area {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: static !important;
+          width: auto !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff !important;
+          color: #000 !important;
+          transform: none !important;
+          clip: auto !important;
+        }
+        body.arika-printing #print-area-jurnal table { width: 100% !important; border-collapse: collapse !important; }
+        body.arika-printing #print-area-jurnal th,
+        body.arika-printing #print-area-jurnal td { border: 1px solid #000 !important; vertical-align: top !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function setImportantStyle(el, prop, value){
+    if (!el) return;
+    try { el.style.setProperty(prop, value, 'important'); }
+    catch(e) { el.style[prop] = value; }
+  }
+
+  function preparePrintArea(printArea){
+    if (!printArea) return null;
+    var old = {
+      className: printArea.className,
+      ariaHidden: printArea.getAttribute('aria-hidden'),
+      style: printArea.getAttribute('style') || ''
+    };
+    document.body.classList.add('arika-printing');
+    printArea.classList.remove('no-print');
+    printArea.removeAttribute('aria-hidden');
+    setImportantStyle(printArea, 'display', 'block');
+    setImportantStyle(printArea, 'visibility', 'visible');
+    setImportantStyle(printArea, 'opacity', '1');
+    setImportantStyle(printArea, 'height', 'auto');
+    setImportantStyle(printArea, 'min-height', '0');
+    setImportantStyle(printArea, 'max-height', 'none');
+    setImportantStyle(printArea, 'overflow', 'visible');
+    setImportantStyle(printArea, 'position', 'static');
+    setImportantStyle(printArea, 'clip', 'auto');
+    setImportantStyle(printArea, 'transform', 'none');
+    setImportantStyle(printArea, 'background', '#ffffff');
+    return old;
+  }
+
+  function restorePrintArea(printArea, old){
+    document.body.classList.remove('arika-printing');
+    if (!printArea || !old) return;
+    printArea.className = old.className;
+    if (old.ariaHidden === null) printArea.removeAttribute('aria-hidden');
+    else printArea.setAttribute('aria-hidden', old.ariaHidden);
+    if (old.style) printArea.setAttribute('style', old.style);
+    else printArea.removeAttribute('style');
+    if (typeof window.arikaV154FixGoogleSitesUi === 'function') {
+      setTimeout(function(){ try { window.arikaV154FixGoogleSitesUi(); } catch(e) {} }, 50);
+    }
+  }
+
+  function buildPdfRows(rows){
+    var tbody = document.getElementById('pdf-table-body');
+    if (!tbody) return;
+    if (!rows || !rows.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="border border-black p-4 text-center">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(function(d){
+      var dateText = (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(d.date) : (d.date || '-');
+      return `
+        <tr>
+          <td class="border border-black p-2 text-center">${escapeCell(dateText)}</td>
+          <td class="border border-black p-2 text-center">${escapeCell(d.cat || '-')}</td>
+          <td class="border border-black p-2">${escLines(d.desc || '-')}</td>
+          <td class="border border-black p-2 text-center font-bold">${escapeCell(d.status || '-')}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function currentFilteredRowsForPdf(){
+    try {
+      if (Array.isArray(filtered)) return filtered.slice();
+    } catch(e) {}
+    try {
+      return (window.arikaData || []).filter(function(d){
+        return typeof personMatchesRow === 'function' ? personMatchesRow(d, window.currentUser) : true;
+      });
+    } catch(e) {
+      return [];
+    }
+  }
+
+  addPrintStyle();
+
+  // Simpan fungsi asli agar bisa dipanggil cepat saat export PDF.
+  var realRunFilter = typeof window.runFilter === 'function' ? window.runFilter : null;
+  var realRenderCharts = typeof window.renderCharts === 'function' ? window.renderCharts : null;
+  var realRenderTrendChart = typeof window.renderTrendChart === 'function' ? window.renderTrendChart : null;
+  var realRenderVisualCalendar = typeof window.renderVisualCalendar === 'function' ? window.renderVisualCalendar : null;
+
+  // Grafik dibuat di belakang layar agar dropdown dan input tanggal tidak terasa berat.
+  var chartTimer = null;
+  function scheduleCharts(){
+    clearTimeout(chartTimer);
+    chartTimer = setTimeout(function(){
+      try { if (realRenderCharts) realRenderCharts(); } catch(e) { console.warn('Render chart status gagal:', e); }
+      setTimeout(function(){
+        try { if (realRenderTrendChart) realRenderTrendChart(); } catch(e) { console.warn('Render chart tren gagal:', e); }
+      }, 20);
+    }, 120);
+  }
+  if (realRenderCharts) window.renderCharts = function(){ scheduleCharts(); };
+  if (realRenderTrendChart) window.renderTrendChart = function(){ scheduleCharts(); };
+
+  var filterTimer = null;
+  window.runFilterImmediate = function(options){
+    clearTimeout(filterTimer);
+    if (realRunFilter) return realRunFilter(options || {});
+  };
+  window.runFilter = function(options){
+    var opts = options || {};
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(function(){
+      try { if (realRunFilter) realRunFilter(opts); }
+      catch(e) { console.warn('Filter riwayat gagal:', e); }
+    }, opts.keepPage ? 0 : 70);
+  };
+  window.runFilterDebounced = window.runFilter;
+
+  var calendarTimer = null;
+  window.renderVisualCalendar = function(){
+    clearTimeout(calendarTimer);
+    calendarTimer = setTimeout(function(){
+      try { if (realRenderVisualCalendar) realRenderVisualCalendar(); }
+      catch(e) { console.warn('Render kalender gagal:', e); }
+    }, 90);
+  };
+  window.renderVisualCalendarDebounced = window.renderVisualCalendar;
+
+  window.printPersonalPDF = function(){
+    if (!window.currentUser) return;
+
+    // Pastikan filter terbaru sudah diterapkan sebelum isi area PDF dibuat.
+    try { if (typeof window.runFilterImmediate === 'function') window.runFilterImmediate({ keepPage: true }); } catch(e) {}
+
+    var printArea = document.getElementById('print-area-jurnal');
+    if (!printArea) return alert('Area cetak jurnal tidak ditemukan.');
+
+    try {
+      var setText = function(id, text){ var el = document.getElementById(id); if (el) el.innerText = text || '-'; };
+      setText('pdf-nama', window.currentUser.nama || '-');
+      setText('pdf-nip', window.currentUser.nip || '-');
+      setText('pdf-lab', window.currentUser.lab || '-');
+      setText('pdf-status', window.currentUser.status || '-');
+      setText('pdf-current-date', (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(new Date()) : new Date().toLocaleDateString('id-ID'));
+      setText('pdf-signer-name', window.currentUser.nama || '-');
+      buildPdfRows(currentFilteredRowsForPdf());
+
+      var old = preparePrintArea(printArea);
+      var cleaned = false;
+      var cleanup = function(){
+        if (cleaned) return;
+        cleaned = true;
+        restorePrintArea(printArea, old);
+      };
+      var afterPrintHandler = function(){
+        window.removeEventListener('afterprint', afterPrintHandler);
+        setTimeout(cleanup, 120);
+      };
+      window.addEventListener('afterprint', afterPrintHandler);
+
+      // Beri browser waktu satu frame untuk menghitung tinggi tabel; ini mencegah PDF putih kosong.
+      setTimeout(function(){
+        try { window.print(); }
+        finally { setTimeout(cleanup, 2200); }
+      }, 120);
+    } catch(err) {
+      console.error('Export PDF Jurnal gagal:', err);
+      alert('Export PDF Jurnal gagal disiapkan. Silakan refresh ARIKA dan coba kembali.');
+      document.body.classList.remove('arika-printing');
+    }
+  };
+})();
+</script>
+
+</body></html>
             `;
             const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -14049,7 +14279,237 @@
                     <div class="WordSection1">
                         ${htmlContent}
                     </div>
-                </body></html>
+                
+
+<script id="arika-v189-pdf-filter-fix">
+// v189: Perbaikan Export PDF Jurnal kosong + filter/dropdown kalender lebih responsif.
+(function(){
+  'use strict';
+
+  function escapeCell(value){
+    try {
+      if (typeof window.escapeHTML === 'function') return window.escapeHTML(value == null ? '' : String(value));
+    } catch(e) {}
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function escLines(value){
+    try {
+      if (typeof window.escapeHTMLPreserveLines === 'function') return window.escapeHTMLPreserveLines(value == null ? '' : String(value));
+    } catch(e) {}
+    return escapeCell(value).replace(/\r?\n/g, '<br>');
+  }
+
+  function addPrintStyle(){
+    if (document.getElementById('arika-v189-print-style')) return;
+    var style = document.createElement('style');
+    style.id = 'arika-v189-print-style';
+    style.textContent = `
+      @media print {
+        @page { size: A4 portrait; margin: 14mm 12mm; }
+        body.arika-printing { background: #fff !important; color: #000 !important; }
+        body.arika-printing > *:not(#print-area-jurnal):not(script):not(style) { display: none !important; }
+        body.arika-printing #print-area-jurnal,
+        body.arika-printing #print-area-jurnal.print-area {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: static !important;
+          width: auto !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff !important;
+          color: #000 !important;
+          transform: none !important;
+          clip: auto !important;
+        }
+        body.arika-printing #print-area-jurnal table { width: 100% !important; border-collapse: collapse !important; }
+        body.arika-printing #print-area-jurnal th,
+        body.arika-printing #print-area-jurnal td { border: 1px solid #000 !important; vertical-align: top !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function setImportantStyle(el, prop, value){
+    if (!el) return;
+    try { el.style.setProperty(prop, value, 'important'); }
+    catch(e) { el.style[prop] = value; }
+  }
+
+  function preparePrintArea(printArea){
+    if (!printArea) return null;
+    var old = {
+      className: printArea.className,
+      ariaHidden: printArea.getAttribute('aria-hidden'),
+      style: printArea.getAttribute('style') || ''
+    };
+    document.body.classList.add('arika-printing');
+    printArea.classList.remove('no-print');
+    printArea.removeAttribute('aria-hidden');
+    setImportantStyle(printArea, 'display', 'block');
+    setImportantStyle(printArea, 'visibility', 'visible');
+    setImportantStyle(printArea, 'opacity', '1');
+    setImportantStyle(printArea, 'height', 'auto');
+    setImportantStyle(printArea, 'min-height', '0');
+    setImportantStyle(printArea, 'max-height', 'none');
+    setImportantStyle(printArea, 'overflow', 'visible');
+    setImportantStyle(printArea, 'position', 'static');
+    setImportantStyle(printArea, 'clip', 'auto');
+    setImportantStyle(printArea, 'transform', 'none');
+    setImportantStyle(printArea, 'background', '#ffffff');
+    return old;
+  }
+
+  function restorePrintArea(printArea, old){
+    document.body.classList.remove('arika-printing');
+    if (!printArea || !old) return;
+    printArea.className = old.className;
+    if (old.ariaHidden === null) printArea.removeAttribute('aria-hidden');
+    else printArea.setAttribute('aria-hidden', old.ariaHidden);
+    if (old.style) printArea.setAttribute('style', old.style);
+    else printArea.removeAttribute('style');
+    if (typeof window.arikaV154FixGoogleSitesUi === 'function') {
+      setTimeout(function(){ try { window.arikaV154FixGoogleSitesUi(); } catch(e) {} }, 50);
+    }
+  }
+
+  function buildPdfRows(rows){
+    var tbody = document.getElementById('pdf-table-body');
+    if (!tbody) return;
+    if (!rows || !rows.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="border border-black p-4 text-center">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(function(d){
+      var dateText = (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(d.date) : (d.date || '-');
+      return `
+        <tr>
+          <td class="border border-black p-2 text-center">${escapeCell(dateText)}</td>
+          <td class="border border-black p-2 text-center">${escapeCell(d.cat || '-')}</td>
+          <td class="border border-black p-2">${escLines(d.desc || '-')}</td>
+          <td class="border border-black p-2 text-center font-bold">${escapeCell(d.status || '-')}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function currentFilteredRowsForPdf(){
+    try {
+      if (Array.isArray(filtered)) return filtered.slice();
+    } catch(e) {}
+    try {
+      return (window.arikaData || []).filter(function(d){
+        return typeof personMatchesRow === 'function' ? personMatchesRow(d, window.currentUser) : true;
+      });
+    } catch(e) {
+      return [];
+    }
+  }
+
+  addPrintStyle();
+
+  // Simpan fungsi asli agar bisa dipanggil cepat saat export PDF.
+  var realRunFilter = typeof window.runFilter === 'function' ? window.runFilter : null;
+  var realRenderCharts = typeof window.renderCharts === 'function' ? window.renderCharts : null;
+  var realRenderTrendChart = typeof window.renderTrendChart === 'function' ? window.renderTrendChart : null;
+  var realRenderVisualCalendar = typeof window.renderVisualCalendar === 'function' ? window.renderVisualCalendar : null;
+
+  // Grafik dibuat di belakang layar agar dropdown dan input tanggal tidak terasa berat.
+  var chartTimer = null;
+  function scheduleCharts(){
+    clearTimeout(chartTimer);
+    chartTimer = setTimeout(function(){
+      try { if (realRenderCharts) realRenderCharts(); } catch(e) { console.warn('Render chart status gagal:', e); }
+      setTimeout(function(){
+        try { if (realRenderTrendChart) realRenderTrendChart(); } catch(e) { console.warn('Render chart tren gagal:', e); }
+      }, 20);
+    }, 120);
+  }
+  if (realRenderCharts) window.renderCharts = function(){ scheduleCharts(); };
+  if (realRenderTrendChart) window.renderTrendChart = function(){ scheduleCharts(); };
+
+  var filterTimer = null;
+  window.runFilterImmediate = function(options){
+    clearTimeout(filterTimer);
+    if (realRunFilter) return realRunFilter(options || {});
+  };
+  window.runFilter = function(options){
+    var opts = options || {};
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(function(){
+      try { if (realRunFilter) realRunFilter(opts); }
+      catch(e) { console.warn('Filter riwayat gagal:', e); }
+    }, opts.keepPage ? 0 : 70);
+  };
+  window.runFilterDebounced = window.runFilter;
+
+  var calendarTimer = null;
+  window.renderVisualCalendar = function(){
+    clearTimeout(calendarTimer);
+    calendarTimer = setTimeout(function(){
+      try { if (realRenderVisualCalendar) realRenderVisualCalendar(); }
+      catch(e) { console.warn('Render kalender gagal:', e); }
+    }, 90);
+  };
+  window.renderVisualCalendarDebounced = window.renderVisualCalendar;
+
+  window.printPersonalPDF = function(){
+    if (!window.currentUser) return;
+
+    // Pastikan filter terbaru sudah diterapkan sebelum isi area PDF dibuat.
+    try { if (typeof window.runFilterImmediate === 'function') window.runFilterImmediate({ keepPage: true }); } catch(e) {}
+
+    var printArea = document.getElementById('print-area-jurnal');
+    if (!printArea) return alert('Area cetak jurnal tidak ditemukan.');
+
+    try {
+      var setText = function(id, text){ var el = document.getElementById(id); if (el) el.innerText = text || '-'; };
+      setText('pdf-nama', window.currentUser.nama || '-');
+      setText('pdf-nip', window.currentUser.nip || '-');
+      setText('pdf-lab', window.currentUser.lab || '-');
+      setText('pdf-status', window.currentUser.status || '-');
+      setText('pdf-current-date', (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(new Date()) : new Date().toLocaleDateString('id-ID'));
+      setText('pdf-signer-name', window.currentUser.nama || '-');
+      buildPdfRows(currentFilteredRowsForPdf());
+
+      var old = preparePrintArea(printArea);
+      var cleaned = false;
+      var cleanup = function(){
+        if (cleaned) return;
+        cleaned = true;
+        restorePrintArea(printArea, old);
+      };
+      var afterPrintHandler = function(){
+        window.removeEventListener('afterprint', afterPrintHandler);
+        setTimeout(cleanup, 120);
+      };
+      window.addEventListener('afterprint', afterPrintHandler);
+
+      // Beri browser waktu satu frame untuk menghitung tinggi tabel; ini mencegah PDF putih kosong.
+      setTimeout(function(){
+        try { window.print(); }
+        finally { setTimeout(cleanup, 2200); }
+      }, 120);
+    } catch(err) {
+      console.error('Export PDF Jurnal gagal:', err);
+      alert('Export PDF Jurnal gagal disiapkan. Silakan refresh ARIKA dan coba kembali.');
+      document.body.classList.remove('arika-printing');
+    }
+  };
+})();
+</script>
+
+</body></html>
             `;
             const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -15919,6 +16379,236 @@
 
   window.addEventListener('resize', fitReminderPanelFromCard);
   window.addEventListener('orientationchange', function(){ setTimeout(fitReminderPanelFromCard, 250); });
+})();
+</script>
+
+
+
+<script id="arika-v189-pdf-filter-fix">
+// v189: Perbaikan Export PDF Jurnal kosong + filter/dropdown kalender lebih responsif.
+(function(){
+  'use strict';
+
+  function escapeCell(value){
+    try {
+      if (typeof window.escapeHTML === 'function') return window.escapeHTML(value == null ? '' : String(value));
+    } catch(e) {}
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function escLines(value){
+    try {
+      if (typeof window.escapeHTMLPreserveLines === 'function') return window.escapeHTMLPreserveLines(value == null ? '' : String(value));
+    } catch(e) {}
+    return escapeCell(value).replace(/\r?\n/g, '<br>');
+  }
+
+  function addPrintStyle(){
+    if (document.getElementById('arika-v189-print-style')) return;
+    var style = document.createElement('style');
+    style.id = 'arika-v189-print-style';
+    style.textContent = `
+      @media print {
+        @page { size: A4 portrait; margin: 14mm 12mm; }
+        body.arika-printing { background: #fff !important; color: #000 !important; }
+        body.arika-printing > *:not(#print-area-jurnal):not(script):not(style) { display: none !important; }
+        body.arika-printing #print-area-jurnal,
+        body.arika-printing #print-area-jurnal.print-area {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: static !important;
+          width: auto !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff !important;
+          color: #000 !important;
+          transform: none !important;
+          clip: auto !important;
+        }
+        body.arika-printing #print-area-jurnal table { width: 100% !important; border-collapse: collapse !important; }
+        body.arika-printing #print-area-jurnal th,
+        body.arika-printing #print-area-jurnal td { border: 1px solid #000 !important; vertical-align: top !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function setImportantStyle(el, prop, value){
+    if (!el) return;
+    try { el.style.setProperty(prop, value, 'important'); }
+    catch(e) { el.style[prop] = value; }
+  }
+
+  function preparePrintArea(printArea){
+    if (!printArea) return null;
+    var old = {
+      className: printArea.className,
+      ariaHidden: printArea.getAttribute('aria-hidden'),
+      style: printArea.getAttribute('style') || ''
+    };
+    document.body.classList.add('arika-printing');
+    printArea.classList.remove('no-print');
+    printArea.removeAttribute('aria-hidden');
+    setImportantStyle(printArea, 'display', 'block');
+    setImportantStyle(printArea, 'visibility', 'visible');
+    setImportantStyle(printArea, 'opacity', '1');
+    setImportantStyle(printArea, 'height', 'auto');
+    setImportantStyle(printArea, 'min-height', '0');
+    setImportantStyle(printArea, 'max-height', 'none');
+    setImportantStyle(printArea, 'overflow', 'visible');
+    setImportantStyle(printArea, 'position', 'static');
+    setImportantStyle(printArea, 'clip', 'auto');
+    setImportantStyle(printArea, 'transform', 'none');
+    setImportantStyle(printArea, 'background', '#ffffff');
+    return old;
+  }
+
+  function restorePrintArea(printArea, old){
+    document.body.classList.remove('arika-printing');
+    if (!printArea || !old) return;
+    printArea.className = old.className;
+    if (old.ariaHidden === null) printArea.removeAttribute('aria-hidden');
+    else printArea.setAttribute('aria-hidden', old.ariaHidden);
+    if (old.style) printArea.setAttribute('style', old.style);
+    else printArea.removeAttribute('style');
+    if (typeof window.arikaV154FixGoogleSitesUi === 'function') {
+      setTimeout(function(){ try { window.arikaV154FixGoogleSitesUi(); } catch(e) {} }, 50);
+    }
+  }
+
+  function buildPdfRows(rows){
+    var tbody = document.getElementById('pdf-table-body');
+    if (!tbody) return;
+    if (!rows || !rows.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="border border-black p-4 text-center">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(function(d){
+      var dateText = (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(d.date) : (d.date || '-');
+      return `
+        <tr>
+          <td class="border border-black p-2 text-center">${escapeCell(dateText)}</td>
+          <td class="border border-black p-2 text-center">${escapeCell(d.cat || '-')}</td>
+          <td class="border border-black p-2">${escLines(d.desc || '-')}</td>
+          <td class="border border-black p-2 text-center font-bold">${escapeCell(d.status || '-')}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function currentFilteredRowsForPdf(){
+    try {
+      if (Array.isArray(filtered)) return filtered.slice();
+    } catch(e) {}
+    try {
+      return (window.arikaData || []).filter(function(d){
+        return typeof personMatchesRow === 'function' ? personMatchesRow(d, window.currentUser) : true;
+      });
+    } catch(e) {
+      return [];
+    }
+  }
+
+  addPrintStyle();
+
+  // Simpan fungsi asli agar bisa dipanggil cepat saat export PDF.
+  var realRunFilter = typeof window.runFilter === 'function' ? window.runFilter : null;
+  var realRenderCharts = typeof window.renderCharts === 'function' ? window.renderCharts : null;
+  var realRenderTrendChart = typeof window.renderTrendChart === 'function' ? window.renderTrendChart : null;
+  var realRenderVisualCalendar = typeof window.renderVisualCalendar === 'function' ? window.renderVisualCalendar : null;
+
+  // Grafik dibuat di belakang layar agar dropdown dan input tanggal tidak terasa berat.
+  var chartTimer = null;
+  function scheduleCharts(){
+    clearTimeout(chartTimer);
+    chartTimer = setTimeout(function(){
+      try { if (realRenderCharts) realRenderCharts(); } catch(e) { console.warn('Render chart status gagal:', e); }
+      setTimeout(function(){
+        try { if (realRenderTrendChart) realRenderTrendChart(); } catch(e) { console.warn('Render chart tren gagal:', e); }
+      }, 20);
+    }, 120);
+  }
+  if (realRenderCharts) window.renderCharts = function(){ scheduleCharts(); };
+  if (realRenderTrendChart) window.renderTrendChart = function(){ scheduleCharts(); };
+
+  var filterTimer = null;
+  window.runFilterImmediate = function(options){
+    clearTimeout(filterTimer);
+    if (realRunFilter) return realRunFilter(options || {});
+  };
+  window.runFilter = function(options){
+    var opts = options || {};
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(function(){
+      try { if (realRunFilter) realRunFilter(opts); }
+      catch(e) { console.warn('Filter riwayat gagal:', e); }
+    }, opts.keepPage ? 0 : 70);
+  };
+  window.runFilterDebounced = window.runFilter;
+
+  var calendarTimer = null;
+  window.renderVisualCalendar = function(){
+    clearTimeout(calendarTimer);
+    calendarTimer = setTimeout(function(){
+      try { if (realRenderVisualCalendar) realRenderVisualCalendar(); }
+      catch(e) { console.warn('Render kalender gagal:', e); }
+    }, 90);
+  };
+  window.renderVisualCalendarDebounced = window.renderVisualCalendar;
+
+  window.printPersonalPDF = function(){
+    if (!window.currentUser) return;
+
+    // Pastikan filter terbaru sudah diterapkan sebelum isi area PDF dibuat.
+    try { if (typeof window.runFilterImmediate === 'function') window.runFilterImmediate({ keepPage: true }); } catch(e) {}
+
+    var printArea = document.getElementById('print-area-jurnal');
+    if (!printArea) return alert('Area cetak jurnal tidak ditemukan.');
+
+    try {
+      var setText = function(id, text){ var el = document.getElementById(id); if (el) el.innerText = text || '-'; };
+      setText('pdf-nama', window.currentUser.nama || '-');
+      setText('pdf-nip', window.currentUser.nip || '-');
+      setText('pdf-lab', window.currentUser.lab || '-');
+      setText('pdf-status', window.currentUser.status || '-');
+      setText('pdf-current-date', (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(new Date()) : new Date().toLocaleDateString('id-ID'));
+      setText('pdf-signer-name', window.currentUser.nama || '-');
+      buildPdfRows(currentFilteredRowsForPdf());
+
+      var old = preparePrintArea(printArea);
+      var cleaned = false;
+      var cleanup = function(){
+        if (cleaned) return;
+        cleaned = true;
+        restorePrintArea(printArea, old);
+      };
+      var afterPrintHandler = function(){
+        window.removeEventListener('afterprint', afterPrintHandler);
+        setTimeout(cleanup, 120);
+      };
+      window.addEventListener('afterprint', afterPrintHandler);
+
+      // Beri browser waktu satu frame untuk menghitung tinggi tabel; ini mencegah PDF putih kosong.
+      setTimeout(function(){
+        try { window.print(); }
+        finally { setTimeout(cleanup, 2200); }
+      }, 120);
+    } catch(err) {
+      console.error('Export PDF Jurnal gagal:', err);
+      alert('Export PDF Jurnal gagal disiapkan. Silakan refresh ARIKA dan coba kembali.');
+      document.body.classList.remove('arika-printing');
+    }
+  };
 })();
 </script>
 
