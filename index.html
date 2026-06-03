@@ -4337,7 +4337,7 @@
                             <strong>🔊 Suara Alarm</strong>
                             <span id="reminder-sound-status" class="reminder-sound-status-pill">Belum aktif</span>
                         </div>
-                        <p class="reminder-sound-card-desc">Untuk bunyi lonceng dan suara pengingat dari ARIKA. Aktifkan sekali setelah login.</p>
+                        <p class="reminder-sound-card-desc">Untuk alarm MP3 custom dan suara pengingat dari ARIKA. Aktifkan sekali setelah login.</p>
                         <div class="reminder-sound-actions">
                             <button id="arika-sound-enable-btn" type="button" onclick="window.enableArikaReminderSound(true)" class="reminder-sound-btn reminder-sound-active">🔔 Aktifkan Suara</button>
                             <button type="button" onclick="window.testArikaReminderSound()" class="reminder-sound-btn reminder-sound-muted">Tes Suara</button>
@@ -5161,7 +5161,7 @@
                         </div>
                         <div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
                             <h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">Tes Suara</h3>
-                            <p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Tes</strong> untuk memastikan alarm aktif. Jika suara Bahasa Indonesia tidak tersedia, ARIKA memakai nada bel lonceng ARIKA.</p>
+                            <p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Tes</strong> untuk memastikan alarm aktif. Jika suara Bahasa Indonesia tidak tersedia, ARIKA memakai alarm MP3 custom atau bel cadangan ARIKA.</p>
                         </div>
                         <div id="panduan-pusat-reminder" class="panduan-inline-focus p-4 rounded-2xl bg-indigo-50 border border-indigo-100">
                             <h3 class="font-black text-indigo-700 uppercase text-[11px] tracking-widest mb-2">Pusat Reminder</h3>
@@ -5427,8 +5427,8 @@
                                 <p class="mt-3 text-sm text-slate-600 leading-relaxed">Sistem mengecek reminder secara berkala. Reminder pribadi akan mengikuti tanggal dan jam reminder yang dipilih. Reminder pribadi, jurnal, dan catatan tidak dibunyikan terus-menerus; ada jeda agar tidak mengganggu. Agenda yang mendekati waktu mulai dapat diingatkan lebih sering.</p>
                             </details>
                             <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-                                <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa suara manusia tidak tersedia atau berubah menjadi beep?<span class="text-slate-400">⌄</span></summary>
-                                <p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA hanya memakai suara Bahasa Indonesia jika tersedia di browser/perangkat. Jika tidak tersedia, ARIKA memakai nada bel lonceng ARIKA sebagai pengingat cadangan.</p>
+                                <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa suara manusia tidak tersedia atau alarm MP3 tidak berbunyi?<span class="text-slate-400">⌄</span></summary>
+                                <p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA hanya memakai suara Bahasa Indonesia jika tersedia di browser/perangkat. Jika tidak tersedia, ARIKA tetap memakai alarm MP3 custom sebagai pengingat utama; jika MP3 gagal dimuat, bel sintetis ARIKA dipakai sebagai cadangan.</p>
                             </details>
                             <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
                                 <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa saja yang bisa memicu reminder di Beranda?<span class="text-slate-400">⌄</span></summary>
@@ -8724,6 +8724,8 @@
         let arikaOriginalTitle = document.title || 'ARIKA';
         let arikaTitleFlashTimer = null;
         let arikaVoicesReadyPromise = null;
+        const ARIKA_REMINDER_MP3_SRC = 'alarm_reminder.mp3';
+        let arikaReminderMp3Audio = null;
 
         function getArikaSoundEnabled() {
             try { return localStorage.getItem(ARIKA_REMINDER_SOUND_KEY) === 'true'; } catch(e) { return false; }
@@ -8879,12 +8881,54 @@
             });
         }
 
+        function getArikaReminderMp3Audio() {
+            try {
+                if(!arikaReminderMp3Audio) {
+                    arikaReminderMp3Audio = new Audio(ARIKA_REMINDER_MP3_SRC);
+                    arikaReminderMp3Audio.preload = 'auto';
+                    arikaReminderMp3Audio.loop = false;
+                    arikaReminderMp3Audio.volume = 1.0;
+                }
+                return arikaReminderMp3Audio;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function prepareArikaReminderMp3Audio() {
+            try {
+                const audio = getArikaReminderMp3Audio();
+                if(audio && typeof audio.load === 'function') audio.load();
+                return !!audio;
+            } catch(e) {
+                return false;
+            }
+        }
+
+        async function playArikaReminderMp3(kind = 'default') {
+            if(!getArikaSoundEnabled()) return false;
+            const audio = getArikaReminderMp3Audio();
+            if(!audio) return false;
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = kind === 'urgent' ? 1.0 : 0.96;
+                await audio.play();
+                try {
+                    if(navigator.vibrate) navigator.vibrate(kind === 'urgent' ? [180, 80, 180, 80, 180] : [130, 70, 130]);
+                } catch(e) {}
+                return true;
+            } catch(e) {
+                return false;
+            }
+        }
+
         function playArikaBeepPattern(kind = 'default') {
             if(!getArikaSoundEnabled()) return false;
             const ctx = getArikaAudioContext();
             if(!ctx || ctx.state !== 'running') return false;
 
-            // v183: bunyi non-manusia dibuat seperti bel lonceng dua kali: “triiiing... triiiing”.
+            // Fallback: jika file MP3 tidak bisa diputar, ARIKA tetap memakai bel sintetis dua kali: “triiiing... triiiing”.
             // Setiap ring terdiri dari beberapa partial tinggi yang masuk sangat rapat agar terdengar jernih seperti lonceng.
             // Pola tetap berbeda untuk urgent, review, agenda, pengumuman, dan rencana.
             const patternMap = {
@@ -8933,7 +8977,7 @@
         }
 
         function getArikaReminderTimingText() {
-            return 'Durasi nada bel pengingat ARIKA sekitar 2,8–3,2 detik dengan pola “triiiing... triiiing” yang lebih jernih dan tetap diperkuat. Sistem mengecek reminder sekitar setiap 10 detik, termasuk dari data stabil lokal/cache, dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
+            return 'Alarm ARIKA sekarang memakai file MP3 custom alarm_reminder.mp3 sebagai suara utama. Jika file MP3 belum bisa diputar oleh browser, ARIKA otomatis memakai bel sintetis “triiiing... triiiing” sebagai cadangan. Sistem mengecek reminder sekitar setiap 10 detik, termasuk dari data stabil lokal/cache, dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
         }
 
         function arikaSpeechSupported() {
@@ -8986,7 +9030,7 @@
             const voice = getArikaPreferredVoice();
             if(voice) return `Suara Bahasa Indonesia terdeteksi: ${voice.name || 'Voice Indonesia'}.`;
             if(!voices.length) return 'Daftar suara belum terbaca. Klik Tes Suara kembali beberapa detik lagi.';
-            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai nada bel lonceng ARIKA. Silakan tambahkan voice Bahasa Indonesia di pengaturan Windows/Edge/Chrome jika ingin memakai suara narasi.';
+            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai alarm MP3 custom, atau bel sintetis ARIKA jika MP3 tidak tersedia. Silakan tambahkan voice Bahasa Indonesia di pengaturan Windows/Edge/Chrome jika ingin memakai suara narasi.';
         }
 
         function sanitizeArikaSpeechText(text) {
@@ -9300,12 +9344,17 @@
         async function triggerArikaReminderSoundNow(event) {
             if(!event || (!getArikaSoundEnabled() && !getArikaDesktopNotificationEnabled())) return false;
 
+            let playedMp3 = false;
             let playedBeep = false;
             let spoke = false;
 
             if(getArikaSoundEnabled()) {
-                const resumed = await resumeArikaAudioContext();
-                if(resumed) playedBeep = playArikaBeepPattern(event.kind);
+                // v184: gunakan alarm_reminder.mp3 sebagai suara utama. Jika gagal, gunakan bel sintetis sebagai fallback.
+                playedMp3 = await playArikaReminderMp3(event.kind);
+                if(!playedMp3) {
+                    const resumed = await resumeArikaAudioContext();
+                    if(resumed) playedBeep = playArikaBeepPattern(event.kind);
+                }
                 spoke = await speakArikaReminderText(getArikaReminderSpeech(event), event.kind);
             }
 
@@ -9314,12 +9363,12 @@
                 targetView: 'beranda'
             });
 
-            if(playedBeep || spoke || notified) {
+            if(playedMp3 || playedBeep || spoke || notified) {
                 flashArikaTitle(event.title);
             } else {
                 updateArikaReminderSoundPanel();
             }
-            return playedBeep || spoke || notified;
+            return playedMp3 || playedBeep || spoke || notified;
         }
 
         window.checkBerandaReminderSound = async function(options = {}) {
@@ -9349,15 +9398,17 @@
 
         window.enableArikaReminderSound = async function(showMessage = true) {
             setArikaSoundEnabled(true);
+            prepareArikaReminderMp3Audio();
             const ok = await resumeArikaAudioContext();
             await loadArikaVoices();
             updateArikaReminderSoundPanel();
             if(showMessage) {
+                const playedMp3 = await playArikaReminderMp3('default');
                 const voiceText = getArikaReminderSpeech({ speech: 'Suara pengingat ARIKA sudah aktif. Jika tersedia, saya akan membacakan reminder dengan suara Bahasa Indonesia.' });
                 const spoke = await speakArikaReminderText(voiceText, 'default');
-                if(ok || spoke) {
-                    if(ok) playArikaBeepPattern('default');
-                    window.showCustomAlert('Suara pengingat ARIKA sudah aktif. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
+                if(playedMp3 || ok || spoke) {
+                    if(!playedMp3 && ok) playArikaBeepPattern('default');
+                    window.showCustomAlert('Suara pengingat ARIKA sudah aktif. Alarm utama memakai file MP3 custom. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
                 } else {
                     window.showCustomAlert('Suara pengingat disimpan aktif, tetapi browser belum mengizinkan audio/suara. Klik tombol Tes Suara atau Aktifkan Suara sekali lagi.');
                 }
@@ -9368,22 +9419,25 @@
         window.disableArikaReminderSound = function() {
             setArikaSoundEnabled(false);
             try { if(window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) {}
+            try { if(arikaReminderMp3Audio) { arikaReminderMp3Audio.pause(); arikaReminderMp3Audio.currentTime = 0; } } catch(e) {}
             updateArikaReminderSoundPanel();
             window.showCustomAlert('Suara pengingat ARIKA dimatikan. Reminder visual di Beranda tetap muncul seperti biasa.');
         };
 
         window.testArikaReminderSound = async function() {
             setArikaSoundEnabled(true);
+            prepareArikaReminderMp3Audio();
             const ok = await resumeArikaAudioContext();
             await loadArikaVoices();
             updateArikaReminderSoundPanel();
-            if(ok) playArikaBeepPattern('urgent');
-            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi bel lonceng triiiing triiiing yang lebih jernih, lebih keras, dan lebih stabil di tab background. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
+            const playedMp3 = await playArikaReminderMp3('urgent');
+            if(!playedMp3 && ok) playArikaBeepPattern('urgent');
+            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA. Alarm utama sekarang memakai file MP3 custom. Jika MP3 tidak bisa diputar, ARIKA memakai bel cadangan triiiing triiiing. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
             flashArikaTitle('Tes Pengingat ARIKA');
-            if(spoke) {
-                window.showCustomAlert('Tes suara berhasil. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
+            if(playedMp3 || spoke) {
+                window.showCustomAlert('Tes suara berhasil. Alarm MP3 custom sudah dicoba. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
             } else {
-                window.showCustomAlert(getArikaVoiceDiagnosticText() + ' Jika nada bel lonceng ARIKA terdengar, pengingat tetap aktif tanpa suara manusia. ' + getArikaReminderTimingText());
+                window.showCustomAlert(getArikaVoiceDiagnosticText() + ' Jika alarm MP3 tidak terdengar, ARIKA akan mencoba bel sintetis cadangan. Pastikan file alarm_reminder.mp3 berada satu folder dengan index.html. ' + getArikaReminderTimingText());
             }
         };
 
