@@ -9666,282 +9666,23 @@
 
 // ARIKA v203 - Status Evaluasi pada Evaluasi Ketua Tim/Administrator memakai tombol/chip, bukan dropdown native.
 
-// ARIKA v204 - Dropdown global diganti menjadi tombol/chip ringan.
-// Pengecualian yang tetap memakai select asli: pengumuman-target-fungsi dan agenda-peserta.
-(function(){
-  'use strict';
-
-  const EXCLUDED_SELECT_IDS = new Set(['pengumuman-target-fungsi', 'agenda-peserta', 'mobile-nav-select']);
-  const PROCESSED_ATTR = 'data-arika-chip-select-installed';
-  const CHIP_GROUP_CLASS = 'arika-chip-select-group';
-  const CHIP_BUTTON_CLASS = 'arika-chip-select-button';
-
-  function injectChipSelectStyle(){
-    if(document.getElementById('arika-v204-chip-select-style')) return;
-    const style = document.createElement('style');
-    style.id = 'arika-v204-chip-select-style';
-    style.textContent = `
-      select.arika-native-select-hidden {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-      }
-      .arika-chip-select-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .45rem;
-        align-items: center;
-        margin-top: .2rem;
-      }
-      .arika-chip-select-group[data-select-id="mobile-nav-select"] {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .4rem;
-        width: 100%;
-        margin-top: .35rem;
-      }
-      .arika-chip-select-group[data-select-id="add-lab"],
-      .arika-chip-select-group[data-select-id="admin-analytics-lab"],
-      .arika-chip-select-group[data-select-id="admin-overtime-lab"],
-      .arika-chip-select-group[data-select-id="admin-filter-lab"] {
-        max-height: 9.5rem;
-        overflow: auto;
-        padding-right: .15rem;
-      }
-      .arika-chip-select-button {
-        appearance: none;
-        border: 1.8px solid rgba(148, 163, 184, .45);
-        background: linear-gradient(135deg, rgba(248,250,252,.98), rgba(241,245,249,.92));
-        color: rgb(51 65 85);
-        border-radius: 999px;
-        padding: .55rem .78rem;
-        font-size: .68rem;
-        line-height: 1.15;
-        font-weight: 900;
-        letter-spacing: .01em;
-        cursor: pointer;
-        transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease, color .14s ease;
-        box-shadow: 0 8px 18px rgba(15, 23, 42, .045);
-        text-align: center;
-        min-height: 2.25rem;
-      }
-      .arika-chip-select-group[data-select-id="mobile-nav-select"] .arika-chip-select-button {
-        border-radius: 1rem;
-        padding: .65rem .55rem;
-        font-size: .66rem;
-      }
-      .arika-chip-select-button:hover {
-        transform: translateY(-1px);
-        border-color: rgba(14, 165, 233, .65);
-        box-shadow: 0 12px 25px rgba(14, 165, 233, .12);
-      }
-      .arika-chip-select-button.active {
-        color: white;
-        border-color: rgba(8, 145, 178, .95);
-        background: linear-gradient(135deg, #0891b2, #0f766e);
-        box-shadow: 0 12px 28px rgba(8, 145, 178, .25);
-      }
-      .arika-chip-select-button:disabled,
-      .arika-chip-select-button[aria-disabled="true"] {
-        cursor: not-allowed;
-        opacity: .45;
-        transform: none !important;
-        box-shadow: none !important;
-      }
-      .arika-chip-select-button.hidden-by-option {
-        display: none !important;
-      }
-      .arika-chip-select-note {
-        width: 100%;
-        font-size: .58rem;
-        color: rgb(100 116 139);
-        font-weight: 800;
-        margin-top: -.15rem;
-      }
-      @media (max-width: 420px) {
-        .arika-chip-select-group[data-select-id="mobile-nav-select"] { grid-template-columns: 1fr; }
-        .arika-chip-select-button { width: 100%; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function getSelectsToConvert(){
-    return Array.from(document.querySelectorAll('select[id]')).filter(function(select){
-      return select.id && !EXCLUDED_SELECT_IDS.has(select.id);
-    });
-  }
-
-  function cleanText(text){
-    return String(text || '').replace(/\s+/g, ' ').trim();
-  }
-
-  function getOptionLabel(option){
-    const label = option.getAttribute('data-chip-label') || option.textContent || option.value || 'Pilihan';
-    return cleanText(label);
-  }
-
-  function getOptionValue(option){
-    return option.value || option.textContent || '';
-  }
-
-  function dispatchSelectChange(select){
-    try { select.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
-    try { select.dispatchEvent(new Event('change', { bubbles: true })); } catch(e) {}
-    setTimeout(function(){ syncChipGroup(select); }, 0);
-    setTimeout(function(){ syncChipGroup(select); }, 120);
-  }
-
-  function setSelectValue(select, value){
-    if(!select) return;
-    const previous = select.value;
-    select.value = value;
-    if(select.value !== value) {
-      const match = Array.from(select.options || []).find(function(opt){ return String(opt.value || opt.textContent || '') === String(value || ''); });
-      if(match) select.value = match.value;
-    }
-    if(previous !== select.value) dispatchSelectChange(select);
-    else syncChipGroup(select);
-  }
-
-  function createButtonForOption(select, option){
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = CHIP_BUTTON_CLASS;
-    button.dataset.selectId = select.id;
-    button.dataset.value = getOptionValue(option);
-    button.textContent = getOptionLabel(option);
-    button.title = getOptionLabel(option);
-    button.addEventListener('click', function(){
-      if(button.disabled || button.getAttribute('aria-disabled') === 'true') return;
-      setSelectValue(select, button.dataset.value || '');
-    });
-    return button;
-  }
-
-  function syncChipGroup(select){
-    if(!select || EXCLUDED_SELECT_IDS.has(select.id)) return;
-    const group = document.querySelector(`.${CHIP_GROUP_CLASS}[data-select-id="${CSS.escape(select.id)}"]`);
-    if(!group) return;
-    const buttons = Array.from(group.querySelectorAll('.' + CHIP_BUTTON_CLASS));
-    buttons.forEach(function(button){
-      const option = Array.from(select.options || []).find(function(opt){
-        return String(getOptionValue(opt)) === String(button.dataset.value || '');
-      });
-      const isSelected = String(select.value || '') === String(button.dataset.value || '');
-      button.classList.toggle('active', isSelected);
-      button.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
-      if(option) {
-        const hidden = !!option.hidden || option.classList.contains('hidden');
-        const disabled = !!option.disabled || !!select.disabled;
-        button.classList.toggle('hidden-by-option', hidden);
-        button.disabled = disabled;
-        button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-        const label = getOptionLabel(option);
-        if(button.textContent !== label) button.textContent = label;
-        button.title = label;
-      } else {
-        button.classList.add('hidden-by-option');
-        button.disabled = true;
-        button.setAttribute('aria-disabled', 'true');
-      }
-    });
-  }
-
-  function rebuildChipGroup(select){
-    if(!select || !select.id || EXCLUDED_SELECT_IDS.has(select.id)) return;
-    let group = document.querySelector(`.${CHIP_GROUP_CLASS}[data-select-id="${CSS.escape(select.id)}"]`);
-    if(!group) {
-      group = document.createElement('div');
-      group.className = CHIP_GROUP_CLASS;
-      group.dataset.selectId = select.id;
-      group.setAttribute('role', 'group');
-      group.setAttribute('aria-label', select.getAttribute('aria-label') || select.id.replace(/[-_]/g, ' '));
-      select.insertAdjacentElement('afterend', group);
-    }
-
-    const options = Array.from(select.options || []);
-    const existingSignature = group.dataset.signature || '';
-    const signature = options.map(function(opt){
-      return [getOptionValue(opt), getOptionLabel(opt), opt.disabled ? 'd' : '', opt.hidden ? 'h' : ''].join('|');
-    }).join('::');
-    if(existingSignature !== signature) {
-      group.innerHTML = '';
-      options.forEach(function(option){
-        if(option.value === '' && cleanText(option.textContent).toLowerCase().includes('pilih')) return;
-        group.appendChild(createButtonForOption(select, option));
-      });
-      group.dataset.signature = signature;
-    }
-    syncChipGroup(select);
-  }
-
-  function convertSelect(select){
-    if(!select || !select.id || EXCLUDED_SELECT_IDS.has(select.id)) return;
-    select.setAttribute(PROCESSED_ATTR, 'true');
-    select.classList.add('arika-native-select-hidden');
-    select.tabIndex = -1;
-    rebuildChipGroup(select);
-
-    if(!select.__arikaV204ChipSelectObserver) {
-      const observer = new MutationObserver(function(){ rebuildChipGroup(select); });
-      observer.observe(select, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'disabled', 'value', 'label', 'class'] });
-      select.__arikaV204ChipSelectObserver = observer;
-    }
-    if(!select.__arikaV204ChipSelectChangeInstalled) {
-      select.__arikaV204ChipSelectChangeInstalled = true;
-      select.addEventListener('change', function(){ setTimeout(function(){ syncChipGroup(select); }, 0); });
-      select.addEventListener('input', function(){ setTimeout(function(){ syncChipGroup(select); }, 0); });
-    }
-  }
-
-  function installChipSelects(){
-    try {
-      injectChipSelectStyle();
-      getSelectsToConvert().forEach(convertSelect);
-      // Pastikan dua pengecualian tetap memakai dropdown asli.
-      EXCLUDED_SELECT_IDS.forEach(function(id){
-        const select = document.getElementById(id);
-        if(select) select.classList.remove('arika-native-select-hidden');
-      });
-    } catch(err) {
-      console.warn('ARIKA v204 chip select gagal dipasang:', err);
-    }
-  }
-
-  function syncAllChipSelects(){
-    getSelectsToConvert().forEach(function(select){
-      if(select.getAttribute(PROCESSED_ATTR) !== 'true') convertSelect(select);
-      else syncChipGroup(select);
-    });
-  }
-
-  window.refreshArikaChipSelects = function(){
-    installChipSelects();
-    syncAllChipSelects();
-  };
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installChipSelects);
-  else installChipSelects();
-  setTimeout(installChipSelects, 400);
-  setTimeout(installChipSelects, 1200);
-  setInterval(syncAllChipSelects, 1200);
-})();
-
-
+// ARIKA v216 - Patch kebersihan dropdown chip.
+// Blok chip v204 dinonaktifkan agar pilihan tidak tampil berulang.
+// Sistem yang aktif hanya chip v206; pengecualian tetap: pengumuman-target-fungsi, agenda-peserta, dan mobile-nav-select.
 // ARIKA v206 - Parser tanggal/bulan angka murni + dropdown chip.
 (function(){
   'use strict';
 
   const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta', 'mobile-nav-select']);
+  const CONVERT_SELECT_IDS_V205 = new Set([
+    'survey-fitur',
+    'add-status', 'add-lab', 'add-peran',
+    'admin-analytics-lab',
+    'admin-overtime-lab', 'admin-overtime-status',
+    'admin-filter-lab', 'admin-filter-status', 'admin-filter-type',
+    'pengumuman-jenis',
+    'agenda-jenis'
+  ]);
   const CHIP_GROUP_CLASS_V205 = 'arika-v206-chip-group';
   const CHIP_BUTTON_CLASS_V205 = 'arika-v206-chip-btn';
   const DATE_SELECTOR_V205 = 'input[data-arika-manual-date]';
@@ -9989,8 +9730,20 @@
   function optionValueV205(option){ return option.value || option.textContent || ''; }
   function optionLabelV205(option){ return String(option.getAttribute('data-chip-label') || option.textContent || option.value || 'Pilihan').replace(/\s+/g, ' ').trim(); }
 
+  function getChipGroupsV205(select){
+    if(!select || !select.id) return [];
+    return Array.from(document.querySelectorAll('.' + CHIP_GROUP_CLASS_V205 + '[data-select-id="' + CSS.escape(select.id) + '"]'));
+  }
+
   function getChipGroupV205(select){
-    return Array.from(document.querySelectorAll('.' + CHIP_GROUP_CLASS_V205)).find(g => g.dataset.selectId === select.id) || null;
+    const groups = getChipGroupsV205(select);
+    if(!groups.length) return null;
+    let keep = groups.find(g => g.previousElementSibling === select) || groups[0];
+    groups.forEach(g => { if(g !== keep) { try { g.remove(); } catch(e) { g.style.display = 'none'; } } });
+    if(keep && keep.previousElementSibling !== select) {
+      try { select.insertAdjacentElement('afterend', keep); } catch(e) {}
+    }
+    return keep || null;
   }
 
   function dispatchSelectV205(select){
@@ -10070,8 +9823,10 @@
 
   function convertSelectV205(select){
     if(!select || !select.id) return;
-    if(EXCLUDED_SELECT_IDS_V205.has(select.id)){
+    const shouldConvert = CONVERT_SELECT_IDS_V205.has(select.id) && !EXCLUDED_SELECT_IDS_V205.has(select.id);
+    if(!shouldConvert){
       select.classList.remove('arika-v206-select-hidden', 'arika-native-select-hidden');
+      getChipGroupsV205(select).forEach(g => { try { g.remove(); } catch(e) { g.style.display='none'; } });
       return;
     }
     select.classList.add('arika-v206-select-hidden', 'arika-native-select-hidden');
@@ -10089,9 +9844,31 @@
     }
   }
 
+  function cleanupDuplicateChipGroupsV205(){
+    // Hapus sisa chip generator lama dari versi sebelumnya.
+    document.querySelectorAll('.arika-chip-select-group').forEach(g => { try { g.remove(); } catch(e) { g.style.display='none'; } });
+
+    const seen = new Set();
+    document.querySelectorAll('.' + CHIP_GROUP_CLASS_V205 + '[data-select-id]').forEach(group => {
+      const id = group.dataset.selectId || '';
+      const select = id ? document.getElementById(id) : null;
+      const keepable = !!select && CONVERT_SELECT_IDS_V205.has(id) && !EXCLUDED_SELECT_IDS_V205.has(id);
+      if(!keepable || seen.has(id)) {
+        try { group.remove(); } catch(e) { group.style.display='none'; }
+        return;
+      }
+      seen.add(id);
+      if(group.previousElementSibling !== select) {
+        try { select.insertAdjacentElement('afterend', group); } catch(e) {}
+      }
+    });
+  }
+
   function installChipV205(){
     injectV205Style();
+    cleanupDuplicateChipGroupsV205();
     Array.from(document.querySelectorAll('select[id]')).forEach(convertSelectV205);
+    cleanupDuplicateChipGroupsV205();
   }
 
   function parseDateV205(value){
@@ -10966,4 +10743,156 @@
   setTimeout(restoreMobileNavDropdown, 900);
   setTimeout(restoreMobileNavDropdown, 2000);
   setInterval(restoreMobileNavDropdown, 1800);
+})();
+
+
+// ARIKA v216 - Hapus/selaraskan chip duplikat dari versi lama.
+(function(){
+  'use strict';
+  function injectStyle(){
+    if(document.getElementById('arika-v216-duplicate-chip-style')) return;
+    const style = document.createElement('style');
+    style.id = 'arika-v216-duplicate-chip-style';
+    style.textContent = `
+      .arika-chip-select-group { display: none !important; visibility: hidden !important; }
+      #mobile-nav-select { display: block !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+      .arika-v206-chip-group[data-select-id="mobile-nav-select"] { display: none !important; visibility: hidden !important; }
+    `;
+    document.head.appendChild(style);
+  }
+  function cleanup(){
+    injectStyle();
+    document.querySelectorAll('.arika-chip-select-group').forEach(function(el){
+      try { el.remove(); } catch(e) { el.style.display='none'; }
+    });
+    // Pastikan setiap select hanya memiliki satu grup chip v206 yang aktif.
+    const seen = new Set();
+    document.querySelectorAll('.arika-v206-chip-group[data-select-id]').forEach(function(group){
+      const id = group.getAttribute('data-select-id') || '';
+      if(!id) return;
+      if(id === 'mobile-nav-select') { group.remove(); return; }
+      if(seen.has(id)) { group.remove(); return; }
+      seen.add(id);
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cleanup); else cleanup();
+  setTimeout(cleanup, 300);
+  setTimeout(cleanup, 1000);
+  setTimeout(cleanup, 2200);
+  setInterval(cleanup, 2500);
+})();
+
+
+// ARIKA v217 - Sanitasi global duplikat chip di seluruh sistem.
+(function(){
+  'use strict';
+  const KEEP_DROPDOWN_IDS = new Set(['mobile-nav-select', 'pengumuman-target-fungsi', 'agenda-peserta']);
+  const CHIP_SELECT_IDS = new Set([
+    'survey-fitur',
+    'add-status', 'add-lab', 'add-peran',
+    'admin-analytics-lab',
+    'admin-overtime-lab', 'admin-overtime-status',
+    'admin-filter-lab', 'admin-filter-status', 'admin-filter-type',
+    'pengumuman-jenis', 'agenda-jenis'
+  ]);
+  const CHIP_GROUP_SELECTOR = '.arika-v206-chip-group[data-select-id], .arika-chip-select-group[data-select-id]';
+
+  function safeRemove(el){
+    if(!el) return;
+    try { el.remove(); } catch(e) { try { el.style.display = 'none'; el.setAttribute('aria-hidden','true'); } catch(_) {} }
+  }
+
+  function ensureSelectVisibility(select){
+    if(!select) return;
+    if(KEEP_DROPDOWN_IDS.has(select.id)) {
+      select.classList.remove('arika-v206-select-hidden', 'arika-native-select-hidden');
+      select.hidden = false;
+      select.removeAttribute('aria-hidden');
+      select.style.pointerEvents = 'auto';
+      if(select.id === 'mobile-nav-select') {
+        select.style.display = 'block';
+        select.style.visibility = 'visible';
+        select.style.opacity = '1';
+        select.style.position = 'static';
+      }
+    }
+  }
+
+  function normalizeGroupForSelect(select){
+    if(!select || !select.id) return;
+    const id = select.id;
+    const groups = Array.from(document.querySelectorAll(CHIP_GROUP_SELECTOR)).filter(g => g.getAttribute('data-select-id') === id);
+
+    if(KEEP_DROPDOWN_IDS.has(id) || !CHIP_SELECT_IDS.has(id)) {
+      groups.forEach(safeRemove);
+      ensureSelectVisibility(select);
+      return;
+    }
+
+    if(!groups.length) return;
+    let keep = groups.find(g => g.classList.contains('arika-v206-chip-group') && g.previousElementSibling === select)
+            || groups.find(g => g.classList.contains('arika-v206-chip-group'))
+            || groups[0];
+    groups.forEach(g => { if(g !== keep) safeRemove(g); });
+    if(keep && keep.previousElementSibling !== select) {
+      try { select.insertAdjacentElement('afterend', keep); } catch(e) {}
+    }
+    if(keep) {
+      keep.style.display = '';
+      keep.style.visibility = '';
+      keep.removeAttribute('aria-hidden');
+    }
+  }
+
+  function removeOrphanAndDuplicateGroups(){
+    const seen = new Set();
+    Array.from(document.querySelectorAll(CHIP_GROUP_SELECTOR)).forEach(group => {
+      const id = group.getAttribute('data-select-id') || '';
+      const select = id ? document.getElementById(id) : null;
+      if(!select || KEEP_DROPDOWN_IDS.has(id) || !CHIP_SELECT_IDS.has(id)) {
+        safeRemove(group);
+        return;
+      }
+      if(seen.has(id)) {
+        safeRemove(group);
+        return;
+      }
+      seen.add(id);
+      if(group.previousElementSibling !== select) {
+        try { select.insertAdjacentElement('afterend', group); } catch(e) {}
+      }
+    });
+  }
+
+  function sanitizeDuplicateChips(){
+    try {
+      document.querySelectorAll('select[id]').forEach(select => normalizeGroupForSelect(select));
+      removeOrphanAndDuplicateGroups();
+      document.querySelectorAll('#arika-mobile-nav-chips, .arika-mobile-nav-chips').forEach(safeRemove);
+      document.querySelectorAll('.arika-v206-chip-group[data-select-id="mobile-nav-select"], .arika-chip-select-group[data-select-id="mobile-nav-select"]').forEach(safeRemove);
+      const mobile = document.getElementById('mobile-nav-select');
+      ensureSelectVisibility(mobile);
+    } catch(err) {
+      try { console.warn('ARIKA v217 sanitasi chip gagal:', err); } catch(_) {}
+    }
+  }
+
+  window.cleanArikaDuplicateChips = sanitizeDuplicateChips;
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sanitizeDuplicateChips);
+  else sanitizeDuplicateChips();
+  setTimeout(sanitizeDuplicateChips, 150);
+  setTimeout(sanitizeDuplicateChips, 600);
+  setTimeout(sanitizeDuplicateChips, 1400);
+  setTimeout(sanitizeDuplicateChips, 2600);
+
+  let timer = null;
+  function schedule(){
+    clearTimeout(timer);
+    timer = setTimeout(sanitizeDuplicateChips, 80);
+  }
+  try {
+    const observer = new MutationObserver(schedule);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  } catch(e) {}
 })();
