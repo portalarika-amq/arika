@@ -6715,7 +6715,158 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
 </footer>
-<script src="app-v224.js?v=224"></script>
+<script src="app-v225.js?v=225"></script>
+
+<!-- ARIKA v225: compact chip/filter layout -->
+<style id="arika-v225-compact-chip-style">
+  /* Chip filter dibuat lebih hemat ruang dan rapi di PC maupun mobile. */
+  :root {
+    --arika-chip-h: 28px;
+    --arika-chip-px: .62rem;
+    --arika-chip-gap: .35rem;
+  }
+
+  .rekap-filter-chip,
+  .review-status-chip,
+  #rekap-cat-chipbar button,
+  #rekap-status-chipbar button,
+  #rekap-month-actions button,
+  #lembur-month-actions button,
+  button[data-rekap-cat],
+  button[data-rekap-status],
+  button[data-jurnal-status],
+  button[data-review-status],
+  button[data-filter-status],
+  button[data-filter-lab],
+  button[data-admin-filter],
+  .arika-filter-chip,
+  .arika-compact-chip,
+  .arika-chip-select-group button,
+  .arika-v206-chip-group button {
+    min-height: var(--arika-chip-h) !important;
+    height: auto !important;
+    padding: .38rem var(--arika-chip-px) !important;
+    border-radius: 999px !important;
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+    letter-spacing: .055em !important;
+    gap: .25rem !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+  }
+
+  .rekap-filter-chip.active,
+  .review-status-chip.active,
+  button[data-rekap-cat].active,
+  button[data-rekap-status].active,
+  button[data-jurnal-status].active,
+  button[data-review-status].active,
+  .arika-filter-chip.active,
+  .arika-compact-chip.active {
+    box-shadow: 0 6px 12px rgba(8,145,178,.14) !important;
+  }
+
+  #rekap-cat-chipbar,
+  #rekap-status-chipbar,
+  #rekap-month-actions,
+  #lembur-month-actions,
+  .admin-filterbar,
+  .filter-chipbar,
+  .arika-chipbar,
+  .arika-filter-chipbar {
+    gap: var(--arika-chip-gap) !important;
+    row-gap: .38rem !important;
+    align-items: center !important;
+  }
+
+  /* Kategori Isi Jurnal tetap kartu, tetapi dibuat lebih rendah dan seragam. */
+  .jurnal-cat-grid {
+    gap: .55rem !important;
+  }
+  .jurnal-cat-option {
+    min-height: 58px !important;
+    padding: .55rem .65rem !important;
+    border-radius: 1rem !important;
+    gap: .35rem !important;
+    font-size: 9.5px !important;
+    line-height: 1.15 !important;
+  }
+  .jurnal-cat-icon {
+    font-size: 15px !important;
+  }
+
+  /* Status akhir dan evaluasi dibuat ringkas tanpa mengurangi keterbacaan. */
+  #jurnal-status-options,
+  #review-status-options {
+    gap: .4rem !important;
+  }
+  #jurnal-status-options button,
+  #review-status-options button,
+  .review-status-chip {
+    min-height: 30px !important;
+    padding: .42rem .65rem !important;
+    border-radius: .9rem !important;
+    font-size: 9px !important;
+    letter-spacing: .05em !important;
+  }
+
+  /* Area filter besar dirapatkan agar tidak mengambil banyak tinggi halaman. */
+  .admin-filterbar .admin-control,
+  .admin-filterbar select,
+  .admin-filterbar input {
+    min-height: 34px !important;
+    padding: .45rem .65rem !important;
+    border-radius: .85rem !important;
+    font-size: 11px !important;
+  }
+  .admin-filterbar .admin-action-btn {
+    min-height: 34px !important;
+    padding: .48rem .7rem !important;
+    border-radius: .85rem !important;
+    font-size: 9px !important;
+    letter-spacing: .08em !important;
+  }
+
+  /* Filter Riwayat/Lembur dibuat compact dan tetap mudah diklik. */
+  #filter-rekap-manual,
+  #lembur-month-filter,
+  #admin-overtime-month,
+  #admin-analytics-month {
+    min-height: 36px !important;
+    padding: .48rem .7rem !important;
+    border-radius: .85rem !important;
+    font-size: 12px !important;
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --arika-chip-h: 30px;
+      --arika-chip-px: .58rem;
+      --arika-chip-gap: .32rem;
+    }
+    .rekap-filter-chip,
+    .review-status-chip,
+    button[data-rekap-cat],
+    button[data-rekap-status],
+    button[data-jurnal-status],
+    button[data-review-status],
+    .arika-filter-chip,
+    .arika-compact-chip {
+      font-size: 8.5px !important;
+      padding: .4rem .56rem !important;
+      letter-spacing: .045em !important;
+    }
+    .jurnal-cat-option {
+      min-height: 54px !important;
+      padding: .5rem .55rem !important;
+      font-size: 8.5px !important;
+    }
+    .admin-filterbar {
+      justify-content: flex-start !important;
+    }
+  }
+</style>
+
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
