@@ -6715,7 +6715,7 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
 </footer>
-<script src="app-v223.js?v=223"></script>
+<script src="app-v224.js?v=224"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -7648,5 +7648,245 @@
   setTimeout(install, 1400);
 })();
 </script>
+
+<style id="arika-v224-pc-nav-final-clean-style">
+/* v224: Navbar PC final — satu baris memanjang, logo kiri tidak bertabrakan, dropdown hanya untuk mobile. */
+@media (min-width: 901px) {
+  html body #main-nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  html body #main-nav .max-w-7xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: clamp(.9rem, 1.8vw, 1.8rem) !important;
+    padding-right: clamp(.9rem, 1.8vw, 1.8rem) !important;
+  }
+
+  html body #main-nav .nav-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: clamp(.75rem, 1.6vw, 1.45rem) !important;
+    height: auto !important;
+    min-height: 78px !important;
+    padding-top: .48rem !important;
+    padding-bottom: .48rem !important;
+    overflow: visible !important;
+  }
+
+  html body #main-nav .nav-row > .group {
+    flex: 0 0 clamp(145px, 15vw, 205px) !important;
+    width: clamp(145px, 15vw, 205px) !important;
+    min-width: 145px !important;
+    max-width: 205px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  html body #main-nav .arika-logo-nav {
+    display: block !important;
+    width: clamp(138px, 14vw, 195px) !important;
+    max-width: 195px !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: 54px !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+    margin: 0 !important;
+  }
+
+  html body #main-nav #nav-menu {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: .32rem !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    padding: .34rem !important;
+    border-radius: 1.15rem !important;
+    scrollbar-width: thin !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  html body #main-nav #nav-menu::-webkit-scrollbar {
+    height: 4px !important;
+  }
+
+  html body #main-nav #nav-menu::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .42) !important;
+    border-radius: 999px !important;
+  }
+
+  html body #main-nav #nav-menu .nav-pill,
+  html body #main-nav #nav-menu .nav-logout {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 .72rem !important;
+    border-radius: .95rem !important;
+    font-size: clamp(.70rem, .72vw, .86rem) !important;
+    line-height: 1 !important;
+    letter-spacing: .01em !important;
+    margin: 0 !important;
+  }
+
+  html body #main-nav #nav-menu .nav-pill {
+    gap: .32rem !important;
+  }
+
+  html body #main-nav #nav-menu .nav-pill .nav-icon {
+    font-size: .9rem !important;
+    line-height: 1 !important;
+  }
+
+  html body #main-nav #nav-menu .nav-logout {
+    padding-left: .9rem !important;
+    padding-right: .9rem !important;
+    font-size: .61rem !important;
+    letter-spacing: .14em !important;
+  }
+
+  html body #main-nav .mobile-nav-wrap,
+  html body #mobile-nav-select {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1260px) {
+  html body #main-nav .nav-row {
+    gap: .7rem !important;
+  }
+  html body #main-nav .nav-row > .group {
+    flex-basis: 142px !important;
+    width: 142px !important;
+    min-width: 142px !important;
+    max-width: 142px !important;
+  }
+  html body #main-nav .arika-logo-nav {
+    width: 138px !important;
+    max-width: 138px !important;
+    max-height: 44px !important;
+  }
+  html body #main-nav #nav-menu {
+    gap: .22rem !important;
+    padding: .28rem !important;
+  }
+  html body #main-nav #nav-menu .nav-pill,
+  html body #main-nav #nav-menu .nav-logout {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding-left: .52rem !important;
+    padding-right: .52rem !important;
+    font-size: .64rem !important;
+  }
+  html body #main-nav #nav-menu .nav-logout {
+    font-size: .56rem !important;
+    padding-left: .7rem !important;
+    padding-right: .7rem !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html body #main-nav #nav-menu {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html body #main-nav .mobile-nav-wrap {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  html body #mobile-nav-select {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: static !important;
+    width: min(90vw, 330px) !important;
+    height: 46px !important;
+  }
+}
+</style>
+<script id="arika-v224-pc-nav-final-clean-script">
+(function(){
+  function applyPcNavFinal(){
+    try {
+      var isPc = window.matchMedia && window.matchMedia('(min-width: 901px)').matches;
+      var navMenu = document.getElementById('nav-menu');
+      var mobileWrap = document.querySelector('#main-nav .mobile-nav-wrap');
+      var mobileSelect = document.getElementById('mobile-nav-select');
+      if (isPc) {
+        if (navMenu) {
+          navMenu.style.display = 'flex';
+          navMenu.style.flexWrap = 'nowrap';
+          navMenu.style.overflowX = 'auto';
+        }
+        if (mobileWrap) {
+          mobileWrap.style.display = 'none';
+          mobileWrap.style.visibility = 'hidden';
+        }
+        if (mobileSelect) {
+          mobileSelect.style.display = 'none';
+          mobileSelect.style.visibility = 'hidden';
+        }
+      } else {
+        if (navMenu) {
+          navMenu.style.display = 'none';
+          navMenu.style.visibility = 'hidden';
+        }
+        if (mobileWrap) {
+          mobileWrap.style.display = 'flex';
+          mobileWrap.style.visibility = 'visible';
+        }
+        if (mobileSelect) {
+          mobileSelect.style.display = 'block';
+          mobileSelect.style.visibility = 'visible';
+        }
+      }
+    } catch(e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyPcNavFinal);
+  else applyPcNavFinal();
+  window.addEventListener('resize', applyPcNavFinal);
+  setTimeout(applyPcNavFinal, 300);
+  setTimeout(applyPcNavFinal, 1400);
+})();
+</script>
+
 </body>
 </html>
