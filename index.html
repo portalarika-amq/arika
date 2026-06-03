@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ARIKA - Portal Jurnal Harian & Lembur BPOM Ambon</title>
 
     
@@ -4251,6 +4251,457 @@
     box-shadow: 0 8px 18px rgba(8, 145, 178, .18);
 }
 </style>
+
+
+<style id="arika-v212-mobile-align-style">
+    /* v212: Penyelarasan tampilan mobile agar header, tombol, kartu, filter, dan tombol bantuan/reminder lebih rapi. */
+    @media (min-width: 901px) {
+        .arika-mobile-nav-chips { display: none !important; }
+    }
+
+    @media (max-width: 900px) {
+        html, body {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        body {
+            background: #f8fafc !important;
+            padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+
+        #main-nav {
+            top: 0 !important;
+            padding-top: env(safe-area-inset-top, 0px) !important;
+            background: rgba(255, 255, 255, .94) !important;
+            backdrop-filter: blur(18px) !important;
+            -webkit-backdrop-filter: blur(18px) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, .9) !important;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .08) !important;
+        }
+
+        #main-nav .max-w-7xl {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        #main-nav .nav-row {
+            min-height: auto !important;
+            height: auto !important;
+            padding: .55rem 0 .65rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            justify-content: center !important;
+            gap: .55rem !important;
+        }
+
+        #main-nav .nav-row > .group {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 !important;
+        }
+
+        #main-nav .arika-logo-nav {
+            width: min(154px, 48vw) !important;
+            min-width: 0 !important;
+            max-width: min(154px, 48vw) !important;
+            max-height: 46px !important;
+            object-fit: contain !important;
+            object-position: center !important;
+            margin: 0 auto !important;
+        }
+
+        #main-nav #nav-menu {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        #main-nav .mobile-nav-wrap {
+            width: 100% !important;
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+        }
+
+        #mobile-nav-select,
+        .mobile-nav-select-arika {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        .arika-mobile-nav-chips {
+            display: flex !important;
+            align-items: center !important;
+            gap: .45rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            padding: .12rem .1rem .28rem !important;
+            scrollbar-width: none !important;
+            -webkit-overflow-scrolling: touch !important;
+            scroll-snap-type: x proximity !important;
+        }
+
+        .arika-mobile-nav-chips::-webkit-scrollbar { display: none !important; }
+
+        .arika-mobile-nav-chip {
+            flex: 0 0 auto !important;
+            min-height: 42px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: .35rem !important;
+            padding: .65rem .85rem !important;
+            border-radius: 999px !important;
+            border: 1px solid rgba(203, 213, 225, .9) !important;
+            background: #ffffff !important;
+            color: #475569 !important;
+            font-family: var(--arika-font-heading), system-ui, sans-serif !important;
+            font-size: .68rem !important;
+            font-weight: 900 !important;
+            line-height: 1.15 !important;
+            letter-spacing: .03em !important;
+            white-space: nowrap !important;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, .055) !important;
+            scroll-snap-align: start !important;
+            touch-action: manipulation !important;
+            user-select: none !important;
+        }
+
+        .arika-mobile-nav-chip.is-active {
+            color: #ffffff !important;
+            border-color: transparent !important;
+            background: linear-gradient(135deg, #059669 0%, #06b6d4 100%) !important;
+            box-shadow: 0 12px 26px rgba(6, 182, 212, .22) !important;
+        }
+
+        .arika-mobile-nav-chip.is-logout {
+            color: #be123c !important;
+            background: #fff1f2 !important;
+            border-color: #fecdd3 !important;
+        }
+
+        #app, main, .main-content, [id^="view-"] {
+            max-width: 100% !important;
+        }
+
+        [id^="view-"] {
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        [id^="view-"] > .max-w-7xl,
+        [id^="view-"] > .max-w-6xl,
+        [id^="view-"] > .max-w-5xl,
+        [id^="view-"] .max-w-7xl,
+        [id^="view-"] .max-w-6xl,
+        [id^="view-"] .max-w-5xl {
+            max-width: 100% !important;
+            padding-left: .75rem !important;
+            padding-right: .75rem !important;
+        }
+
+        .arika-filter-panel,
+        .home-section-card,
+        .admin-panel,
+        .admin-data-card,
+        .admin-chart-card,
+        .admin-kpi-card,
+        .admin-overtime-kpi-card,
+        .role-command-card,
+        .role-command-panel,
+        .rounded-3xl,
+        .rounded-[2rem],
+        .rounded-[2.5rem] {
+            border-radius: 1.25rem !important;
+        }
+
+        input, textarea, select, button {
+            max-width: 100% !important;
+        }
+
+        input, textarea, select {
+            font-size: 16px !important;
+        }
+
+        .rekap-filter-chip,
+        .arika-select-chip,
+        .jurnal-status-chip,
+        .jurnal-cat-option,
+        .admin-chip,
+        .overtime-filter-chip {
+            touch-action: manipulation !important;
+        }
+
+        .rekap-filter-chip,
+        .arika-select-chip,
+        .jurnal-status-chip,
+        .admin-chip,
+        .overtime-filter-chip {
+            min-height: 42px !important;
+            padding: .62rem .82rem !important;
+        }
+    }
+
+    @media (max-width: 640px) {
+        #main-nav .arika-logo-nav {
+            width: min(136px, 54vw) !important;
+            max-width: min(136px, 54vw) !important;
+            max-height: 42px !important;
+        }
+
+        .arika-mobile-nav-chip {
+            min-height: 40px !important;
+            padding: .58rem .74rem !important;
+            font-size: .62rem !important;
+        }
+
+        [id^="view-"] {
+            padding-left: .65rem !important;
+            padding-right: .65rem !important;
+        }
+
+        [id^="view-"] > .max-w-7xl,
+        [id^="view-"] > .max-w-6xl,
+        [id^="view-"] > .max-w-5xl,
+        [id^="view-"] .max-w-7xl,
+        [id^="view-"] .max-w-6xl,
+        [id^="view-"] .max-w-5xl {
+            padding-left: .35rem !important;
+            padding-right: .35rem !important;
+        }
+
+        .grid,
+        .admin-grid,
+        .dashboard-grid,
+        .overtime-grid {
+            gap: .85rem !important;
+        }
+
+        .p-8 { padding: 1.1rem !important; }
+        .p-7 { padding: 1.05rem !important; }
+        .p-6 { padding: 1rem !important; }
+        .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
+        .py-8 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+        h1 { font-size: clamp(1.45rem, 7vw, 2.05rem) !important; line-height: 1.08 !important; }
+        h2 { font-size: clamp(1.15rem, 5.6vw, 1.55rem) !important; line-height: 1.16 !important; }
+        h3 { line-height: 1.22 !important; }
+
+        .jurnal-cat-option {
+            min-height: 64px !important;
+            padding: .62rem .55rem !important;
+            font-size: .56rem !important;
+            border-radius: 1rem !important;
+        }
+
+        .jurnal-cat-icon { font-size: 16px !important; }
+
+        .rekap-filter-chip,
+        .arika-select-chip,
+        .jurnal-status-chip,
+        .admin-chip,
+        .overtime-filter-chip {
+            min-height: 40px !important;
+            padding: .58rem .72rem !important;
+            font-size: .56rem !important;
+            letter-spacing: .08em !important;
+        }
+
+        #btn-arika-help-wa.arika-help-wa-btn {
+            right: .8rem !important;
+            bottom: calc(.8rem + env(safe-area-inset-bottom, 0px)) !important;
+            border-radius: 999px !important;
+            min-width: 52px !important;
+            height: 52px !important;
+            padding: .55rem !important;
+        }
+
+        #arika-reminder-center-fab.arika-reminder-center-fab {
+            left: .8rem !important;
+            bottom: calc(.8rem + env(safe-area-inset-bottom, 0px)) !important;
+            min-width: 52px !important;
+            height: 52px !important;
+            padding: .55rem !important;
+            border-radius: 999px !important;
+        }
+
+        .arika-reminder-center-panel {
+            left: .75rem !important;
+            right: .75rem !important;
+            bottom: calc(4.7rem + env(safe-area-inset-bottom, 0px)) !important;
+            width: auto !important;
+            max-width: none !important;
+            max-height: calc(100dvh - 7.2rem) !important;
+            border-radius: 1.35rem !important;
+        }
+
+        .arika-reminder-center-tools {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: .5rem !important;
+        }
+
+        .arika-reminder-center-tool-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            min-height: 38px !important;
+            font-size: .58rem !important;
+        }
+
+        #calendar-modal {
+            padding: 4.75rem .75rem 1rem !important;
+        }
+
+        #calendar-modal > div {
+            width: 100% !important;
+            max-width: 100% !important;
+            border-radius: 1.25rem !important;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .arika-mobile-nav-chip {
+            min-height: 38px !important;
+            padding: .54rem .66rem !important;
+            font-size: .58rem !important;
+        }
+        #main-nav .arika-logo-nav {
+            width: min(124px, 56vw) !important;
+            max-width: min(124px, 56vw) !important;
+        }
+    }
+</style>
+
+<script id="arika-v212-mobile-align-script">
+(function(){
+    function ready(fn){
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+        else fn();
+    }
+
+    var NAV_MAP = {
+        beranda: 'btn-beranda',
+        jurnal: 'btn-jurnal',
+        rekap: 'btn-rekap',
+        lembur: 'btn-lembur',
+        'dashboard-pegawai': 'btn-dashboard-pegawai',
+        panduan: 'btn-panduan',
+        admin: 'btn-admin-config'
+    };
+
+    function cleanLabel(text){
+        return String(text || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function ensureMobileNav(){
+        var select = document.getElementById('mobile-nav-select');
+        var wrap = select && select.parentElement;
+        if (!select || !wrap) return;
+
+        var panel = document.getElementById('arika-mobile-nav-chips');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'arika-mobile-nav-chips';
+            panel.className = 'arika-mobile-nav-chips';
+            panel.setAttribute('aria-label', 'Navigasi mobile ARIKA');
+            wrap.appendChild(panel);
+        }
+
+        var existing = {};
+        Array.prototype.forEach.call(panel.querySelectorAll('[data-arika-nav-value]'), function(btn){
+            existing[btn.getAttribute('data-arika-nav-value')] = btn;
+        });
+
+        Array.prototype.forEach.call(select.options || [], function(opt){
+            var value = opt.value;
+            if (!value) return;
+            var hidden = opt.hidden || opt.classList.contains('hidden') || opt.disabled;
+            var btn = existing[value];
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'arika-mobile-nav-chip';
+                btn.setAttribute('data-arika-nav-value', value);
+                btn.addEventListener('click', function(){
+                    var val = btn.getAttribute('data-arika-nav-value');
+                    if (!val) return;
+                    select.value = val;
+                    if (val === 'logout') {
+                        if (typeof window.logout === 'function') window.logout();
+                        return;
+                    }
+                    if (typeof window.nav === 'function') window.nav(val);
+                    setTimeout(syncMobileNavActive, 80);
+                });
+                panel.appendChild(btn);
+            }
+            btn.textContent = cleanLabel(opt.textContent);
+            btn.hidden = !!hidden;
+            btn.classList.toggle('is-logout', value === 'logout');
+        });
+
+        Object.keys(existing).forEach(function(value){
+            var still = false;
+            Array.prototype.forEach.call(select.options || [], function(opt){ if (opt.value === value) still = true; });
+            if (!still && existing[value] && existing[value].parentNode) existing[value].parentNode.removeChild(existing[value]);
+        });
+
+        syncMobileNavActive();
+    }
+
+    function activeValueFromDesktop(){
+        var active = document.querySelector('#nav-menu .nav-active[id]');
+        if (!active) return '';
+        var id = active.id;
+        for (var key in NAV_MAP) if (NAV_MAP[key] === id) return key;
+        return '';
+    }
+
+    function syncMobileNavActive(){
+        var panel = document.getElementById('arika-mobile-nav-chips');
+        var select = document.getElementById('mobile-nav-select');
+        if (!panel) return;
+        var activeValue = activeValueFromDesktop() || (select && select.value) || '';
+        Array.prototype.forEach.call(panel.querySelectorAll('[data-arika-nav-value]'), function(btn){
+            var value = btn.getAttribute('data-arika-nav-value');
+            btn.classList.toggle('is-active', value && value === activeValue && value !== 'logout');
+            if (value && value === activeValue) {
+                setTimeout(function(){ try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch(e) {} }, 90);
+            }
+        });
+    }
+
+    ready(function(){
+        ensureMobileNav();
+        setTimeout(ensureMobileNav, 350);
+        setTimeout(ensureMobileNav, 1400);
+        setInterval(syncMobileNavActive, 1200);
+
+        var navMenu = document.getElementById('nav-menu');
+        var mobileSelect = document.getElementById('mobile-nav-select');
+        if (window.MutationObserver) {
+            if (navMenu) new MutationObserver(syncMobileNavActive).observe(navMenu, { attributes: true, subtree: true, attributeFilter: ['class'] });
+            if (mobileSelect) new MutationObserver(function(){ ensureMobileNav(); }).observe(mobileSelect, { attributes: true, childList: true, subtree: true, attributeFilter: ['class','hidden','disabled'] });
+        }
+    });
+})();
+</script>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 
@@ -6493,7 +6944,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v209 filter tanggal & status clean</div>
     </footer>
 
-    <script src="app.js?v=211"></script>
+    <script src="app.js?v=212"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
