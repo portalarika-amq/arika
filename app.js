@@ -1072,7 +1072,8 @@
 
         window.logout = async function() {
             window.showLoader(true, "Keluar...");
-            clearSessionStorageAll();
+            const clearPromise = clearSessionStorageAll();
+            try { await resolveWithTimeout(clearPromise, 1200, null); } catch(e) {}
             window.currentUser = null;
             window.isAdmin = false;
             window.userRole = 'Pegawai';
@@ -1093,6 +1094,7 @@
         // ke 3 tempat: localStorage, sessionStorage, dan window.name sebagai fallback.
         const ARIKA_SESSION_KEY = 'arika_session_v53_cloud_cache_persist';
         const ARIKA_OLD_SESSION_KEYS = ['arika_session_v52_cloud_persist', 'arika_session_v51_persist', 'arika_session_v49_persist', 'arika_session_v43', 'arika_session_v12'];
+        const ARIKA_LOGOUT_MARKER_KEY = 'arika_logout_marker_v207';
 
         const getTodayKey = () => {
             const d = new Date();
@@ -1121,6 +1123,36 @@
         function readSessionFromStorage(storage, key) {
             try { return normalizeSessionObject(JSON.parse(storage.getItem(key) || 'null')); }
             catch(e) { return null; }
+        }
+
+        function setLogoutMarker() {
+            const raw = String(Date.now());
+            try { localStorage.setItem(ARIKA_LOGOUT_MARKER_KEY, raw); } catch(e) {}
+            try { sessionStorage.setItem(ARIKA_LOGOUT_MARKER_KEY, raw); } catch(e) {}
+            try { document.cookie = `${ARIKA_LOGOUT_MARKER_KEY}=${raw}; max-age=${24 * 60 * 60}; path=/; SameSite=Lax`; } catch(e) {}
+        }
+
+        function clearLogoutMarker() {
+            try { localStorage.removeItem(ARIKA_LOGOUT_MARKER_KEY); } catch(e) {}
+            try { sessionStorage.removeItem(ARIKA_LOGOUT_MARKER_KEY); } catch(e) {}
+            try { document.cookie = `${ARIKA_LOGOUT_MARKER_KEY}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
+        }
+
+        function getLogoutMarkerCookie() {
+            try {
+                const prefix = ARIKA_LOGOUT_MARKER_KEY + '=';
+                const found = String(document.cookie || '').split(';').map(v => v.trim()).find(v => v.indexOf(prefix) === 0);
+                return found ? found.slice(prefix.length) : '';
+            } catch(e) { return ''; }
+        }
+
+        function isRecentlyLoggedOut() {
+            let raw = '';
+            try { raw = localStorage.getItem(ARIKA_LOGOUT_MARKER_KEY) || ''; } catch(e) {}
+            if(!raw) { try { raw = sessionStorage.getItem(ARIKA_LOGOUT_MARKER_KEY) || ''; } catch(e) {} }
+            if(!raw) raw = getLogoutMarkerCookie();
+            const time = Number(raw || 0);
+            return Number.isFinite(time) && time > 0 && (Date.now() - time < 24 * 60 * 60 * 1000);
         }
 
         function hashArikaString(str) {
@@ -1169,6 +1201,7 @@
 
         async function restoreSessionFromCloud() {
             if(!SCRIPT_URL) return null;
+            if(isRecentlyLoggedOut()) return null;
             try {
                 const fingerprint = getArikaDeviceFingerprint();
                 const url = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') +
@@ -1212,10 +1245,12 @@
         }
 
         function deleteSessionFromCloud() {
-            if(!SCRIPT_URL) return;
+            if(!SCRIPT_URL) return Promise.resolve(null);
             try {
-                postToScript('delete_session', { fingerprint: getArikaDeviceFingerprint() }).catch(() => null);
-            } catch(e) {}
+                return postToScript('delete_session', { fingerprint: getArikaDeviceFingerprint() }).catch(() => null);
+            } catch(e) {
+                return Promise.resolve(null);
+            }
         }
 
         async function restoreDataCacheFromCloud() {
@@ -1461,6 +1496,7 @@
         }
 
         async function readSessionAnyStorage() {
+            if(isRecentlyLoggedOut()) return null;
             let session = readLocalSession();
             if(session) return session;
 
@@ -1483,6 +1519,7 @@
         function persistSession(session) {
             const safeSession = normalizeSessionObject(session);
             if (!safeSession) return;
+            clearLogoutMarker();
             const raw = JSON.stringify(safeSession);
 
             try { localStorage.setItem(ARIKA_SESSION_KEY, raw); } catch(e) {}
@@ -1494,6 +1531,8 @@
         }
 
         function clearSessionStorageAll() {
+            try { clearTimeout(cloudSessionSaveTimer); } catch(e) {}
+            setLogoutMarker();
             try { localStorage.removeItem(ARIKA_SESSION_KEY); } catch(e) {}
             try { sessionStorage.removeItem(ARIKA_SESSION_KEY); } catch(e) {}
             deleteSessionFromIndexedDB(ARIKA_SESSION_KEY);
@@ -1505,11 +1544,12 @@
             });
             try { document.cookie = `${ARIKA_SESSION_KEY}=; max-age=0; path=/; SameSite=Lax`; } catch(e) {}
             try { window.__ARIKA_SESSION_MEMORY__ = ''; } catch(e) {}
-            deleteSessionFromCloud();
+            const cloudDeletePromise = deleteSessionFromCloud();
             try {
                 const parsedName = JSON.parse(window.name || '{}');
                 if (parsedName && parsedName.__arikaSession === true) window.name = '';
             } catch(e) {}
+            return cloudDeletePromise;
         }
 
         async function checkSession() {
@@ -9028,27 +9068,55 @@
     return dt.getFullYear() === year && dt.getMonth() === month - 1 && dt.getDate() === day;
   }
   function parseMonthKey(value){
-    var val = String(value || '').trim();
+    var val = String(value || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
+    if(!val) return null;
     var m = /^(\d{4})[-\/](\d{1,2})$/.exec(val) || /^(\d{1,2})[-\/](\d{4})$/.exec(val);
-    if(!m) return null;
     var year, month;
-    if(m[1].length === 4) { year = Number(m[1]); month = Number(m[2]); }
-    else { month = Number(m[1]); year = Number(m[2]); }
+    if(m) {
+      if(m[1].length === 4) { year = Number(m[1]); month = Number(m[2]); }
+      else { month = Number(m[1]); year = Number(m[2]); }
+    } else if((m = /^(\d{2})(\d{4})$/.exec(val))) {
+      // Angka murni: 062026 -> 2026-06
+      month = Number(m[1]); year = Number(m[2]);
+    } else if((m = /^(\d{4})(\d{2})$/.exec(val)) && /^(19|20)\d{2}$/.test(m[1])) {
+      // Angka murni alternatif: 202606 -> 2026-06
+      year = Number(m[1]); month = Number(m[2]);
+    } else {
+      return null;
+    }
     if(!year || month < 1 || month > 12) return null;
     return year + '-' + pad2(month);
   }
   function parseDateKey(value){
-    var val = String(value || '').trim();
+    var val = String(value || '').trim().replace(/[.]/g, '/').replace(/\s+/g, '');
     var m = /^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/.exec(val);
     var year, month, day;
     if(m) { year = Number(m[1]); month = Number(m[2]); day = Number(m[3]); }
     else {
       m = /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/.exec(val);
-      if(!m) return null;
-      day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+      if(m) {
+        day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+      } else if((m = /^(\d{2})(\d{2})(\d{4})$/.exec(val))) {
+        // Angka murni: 03062026 -> 2026-06-03
+        day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+      } else if((m = /^(\d{4})(\d{2})(\d{2})$/.exec(val)) && /^(19|20)\d{2}$/.test(m[1])) {
+        // Angka murni alternatif: 20260603 -> 2026-06-03
+        year = Number(m[1]); month = Number(m[2]); day = Number(m[3]);
+      } else {
+        return null;
+      }
     }
     if(!isValidDateParts(year, month, day)) return null;
     return year + '-' + pad2(month) + '-' + pad2(day);
+  }
+  function formatMonthInput(value){
+    var val = String(value || '').slice(0, 7);
+    var m = /^(\d{4})-(\d{2})$/.exec(val);
+    return m ? (m[2] + '/' + m[1]) : (value || '');
+  }
+  function formatDateInput(value){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ''));
+    return m ? (m[3] + '/' + m[2] + '/' + m[1]) : (value || '');
   }
   function parseManualPeriod(value){
     var raw = String(value || '').trim();
@@ -9114,6 +9182,15 @@
     if(input) {
       input.classList.toggle('border-rose-300', !parsed.valid);
       input.classList.toggle('bg-rose-50', !parsed.valid);
+      input.title = 'Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026';
+      // Setelah angka lengkap terbaca, tampilkan otomatis dengan pemisah agar user yakin inputnya valid.
+      if(parsed.valid) {
+        var raw = String(value || '').trim();
+        var digitsOnly = /^\d+$/.test(raw.replace(/\s+/g, ''));
+        if(digitsOnly && (raw.replace(/\D/g, '').length === 6 || raw.replace(/\D/g, '').length === 8)) {
+          input.value = parsed.date ? formatDateInput(parsed.date) : formatMonthInput(parsed.month);
+        }
+      }
     }
     if(!parsed.valid) return;
     setHiddenValue('filter-rekap-month', parsed.month);
@@ -9129,7 +9206,7 @@
     var date = getHiddenValue('filter-rekap-date', '') || '';
     setActiveByData('data-rekap-cat', cat);
     setActiveByData('data-rekap-status', status);
-    setManualInput(date || month || '', false);
+    setManualInput(date ? formatDateInput(date) : formatMonthInput(month), false);
     var label = document.getElementById('rekap-month-label');
     if(label) {
       label.textContent = date ? ('Tanggal ' + formatDateLabel(date)) : formatMonthLabel(month || currentMonthKey());
@@ -9153,7 +9230,7 @@
   window.setRekapMonthToCurrent = function(){
     setHiddenValue('filter-rekap-month', currentMonthKey());
     setHiddenValue('filter-rekap-date', '');
-    setManualInput(currentMonthKey(), true);
+    setManualInput(formatMonthInput(currentMonthKey()), true);
     window.updateRekapFilterUI();
     safeRunFilter();
   };
@@ -9171,7 +9248,7 @@
     var next = addMonths(cur, Number(delta || 0));
     setHiddenValue('filter-rekap-month', next);
     setHiddenValue('filter-rekap-date', '');
-    setManualInput(next, true);
+    setManualInput(formatMonthInput(next), true);
     window.updateRekapFilterUI();
     safeRunFilter();
   };
@@ -10068,4 +10145,104 @@
   setTimeout(refreshAllV205, 900);
   setTimeout(refreshAllV205, 1800);
   setInterval(refreshAllV205, 2000);
+})();
+
+
+// ARIKA v207 - Perbaikan khusus filter Riwayat Jurnal manual dan logout bersih.
+// 1) Filter bulan/tanggal manual di Riwayat membaca angka murni: 062026 -> 06/2026, 03062026 -> 03/06/2026.
+// 2) Logout diberi marker lokal agar reload tidak otomatis restore session cloud lama.
+(function(){
+  'use strict';
+  function pad2(n){ return String(n).padStart(2, '0'); }
+  function validDate(y,m,d){ const dt = new Date(y, m - 1, d); return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d; }
+  function parseMonth(value){
+    const raw = String(value || '').trim().replace(/[.]/g,'/').replace(/\s+/g,'');
+    if(!raw) return '';
+    let m, y, mo;
+    if((m=/^(\d{4})[-/](\d{1,2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; }
+    else if((m=/^(\d{1,2})[-/](\d{4})$/.exec(raw))){ mo=+m[1]; y=+m[2]; }
+    else if((m=/^(\d{2})(\d{4})$/.exec(raw))){ mo=+m[1]; y=+m[2]; }
+    else if((m=/^(\d{4})(\d{2})$/.exec(raw)) && /^(19|20)\d{2}$/.test(m[1])){ y=+m[1]; mo=+m[2]; }
+    else return null;
+    return y && mo >= 1 && mo <= 12 ? `${y}-${pad2(mo)}` : null;
+  }
+  function parseDate(value){
+    const raw = String(value || '').trim().replace(/[.]/g,'/').replace(/\s+/g,'');
+    if(!raw) return '';
+    let m, y, mo, d;
+    if((m=/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+    else if((m=/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/.exec(raw))){ d=+m[1]; mo=+m[2]; y=+m[3]; }
+    else if((m=/^(\d{2})(\d{2})(\d{4})$/.exec(raw))){ d=+m[1]; mo=+m[2]; y=+m[3]; }
+    else if((m=/^(\d{4})(\d{2})(\d{2})$/.exec(raw)) && /^(19|20)\d{2}$/.test(m[1])){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+    else return null;
+    return validDate(y,mo,d) ? `${y}-${pad2(mo)}-${pad2(d)}` : null;
+  }
+  function displayMonth(iso){ const m = /^(\d{4})-(\d{2})$/.exec(String(iso || '')); return m ? `${m[2]}/${m[1]}` : String(iso || ''); }
+  function displayDate(iso){ const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(iso || ''); }
+  function parsePeriod(value){
+    const date = parseDate(value);
+    if(date) return {valid:true, date, month:date.slice(0,7), display:displayDate(date)};
+    const month = parseMonth(value);
+    if(month) return {valid:true, date:'', month, display:displayMonth(month)};
+    return String(value || '').trim() ? {valid:false, date:'', month:'', display:String(value || '')} : {valid:true, date:'', month:'', display:''};
+  }
+  function setHidden(id, value){ const el = document.getElementById(id); if(el) el.value = value || ''; }
+  function normalizeRekapManualInput(runFilter){
+    const input = document.getElementById('filter-rekap-manual');
+    if(!input) return true;
+    const parsed = parsePeriod(input.value);
+    input.classList.toggle('border-rose-300', !parsed.valid);
+    input.classList.toggle('bg-rose-50', !parsed.valid);
+    input.setAttribute('placeholder','Ketik 062026 atau 03062026');
+    input.title = 'Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026';
+    if(!parsed.valid) return false;
+    setHidden('filter-rekap-month', parsed.month);
+    setHidden('filter-rekap-date', parsed.date);
+    const digits = String(input.value || '').replace(/\D/g,'');
+    if(digits.length === 6 || digits.length === 8 || /[-/]/.test(input.value)) input.value = parsed.display;
+    if(typeof window.updateRekapFilterUI === 'function') window.updateRekapFilterUI();
+    if(runFilter && typeof window.runFilter === 'function') {
+      try { if(typeof window.showLoader === 'function') window.showLoader(false); } catch(e) {}
+      clearTimeout(window.__arikaV207RekapTimer);
+      window.__arikaV207RekapTimer = setTimeout(() => window.runFilter({deferHeavy:true}), 120);
+    }
+    return true;
+  }
+  const oldApply = window.applyRekapManualPeriod;
+  window.applyRekapManualPeriod = function(value){
+    const input = document.getElementById('filter-rekap-manual');
+    if(input && document.activeElement === input) {
+      // Saat input dipanggil dari atribut oninput, value adalah nilai sebelum formatter final.
+      const parsed = parsePeriod(value);
+      input.classList.toggle('border-rose-300', !parsed.valid);
+      input.classList.toggle('bg-rose-50', !parsed.valid);
+      if(parsed.valid) {
+        setHidden('filter-rekap-month', parsed.month);
+        setHidden('filter-rekap-date', parsed.date);
+        const digits = String(value || '').replace(/\D/g,'');
+        if(digits.length === 6 || digits.length === 8 || /[-/]/.test(String(value || ''))) input.value = parsed.display;
+        if(typeof window.updateRekapFilterUI === 'function') window.updateRekapFilterUI();
+        clearTimeout(window.__arikaV207RekapTimer);
+        window.__arikaV207RekapTimer = setTimeout(() => { try { window.runFilter && window.runFilter({deferHeavy:true}); } catch(e){} }, 120);
+      }
+      return;
+    }
+    if(typeof oldApply === 'function') return oldApply.apply(this, arguments);
+    return normalizeRekapManualInput(true);
+  };
+  function install(){
+    const input = document.getElementById('filter-rekap-manual');
+    if(!input || input.__arikaV207ManualInstalled) return;
+    input.__arikaV207ManualInstalled = true;
+    input.setAttribute('type','text');
+    input.setAttribute('inputmode','numeric');
+    input.setAttribute('autocomplete','off');
+    input.setAttribute('placeholder','Ketik 062026 atau 03062026');
+    input.title = 'Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026';
+    input.addEventListener('input', function(){ normalizeRekapManualInput(true); }, true);
+    input.addEventListener('blur', function(){ normalizeRekapManualInput(true); }, true);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  setTimeout(install, 500);
+  setTimeout(install, 1500);
 })();

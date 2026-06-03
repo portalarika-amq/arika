@@ -4920,7 +4920,7 @@
                         <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Filter Bulan / Tanggal Manual</label>
                         <input type="hidden" id="filter-rekap-month" value="">
                         <input type="hidden" id="filter-rekap-date" value="">
-                        <input type="text" id="filter-rekap-manual" inputmode="numeric" autocomplete="off" oninput="window.applyRekapManualPeriod(this.value)" placeholder="Ketik 062026 atau 03062026" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
+                        <input type="text" id="filter-rekap-manual" inputmode="numeric" autocomplete="off" oninput="window.applyRekapManualPeriod(this.value)" placeholder="Ketik 062026 atau 03062026" title="Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
                         <div class="flex flex-wrap items-center gap-2 mt-2">
                             <button type="button" onclick="window.shiftRekapMonth(-1)" class="rekap-filter-chip" title="Bulan sebelumnya">‹ Bulan Sebelumnya</button>
                             <button type="button" id="rekap-month-label" onclick="window.setRekapMonthToCurrent()" class="rekap-filter-chip active min-w-[150px]">Bulan Ini</button>
@@ -6480,7 +6480,7 @@
         <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v205 dropdown chip & tanggal otomatis</div>
     </footer>
 
-    <script src="app.js?v=206"></script>
+    <script src="app.js?v=207"></script>
 
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
