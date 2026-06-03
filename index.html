@@ -11568,6 +11568,7 @@
             if(warningEl) warningEl.classList.add('hidden');
             if(successActions) successActions.classList.add('hidden');
             if(successMsg) successMsg.classList.add('hidden');
+            if(typeof setJurnalSavingState === 'function') setJurnalSavingState(false, false);
             const dName = document.getElementById('user-display-name');
             const dNip = document.getElementById('user-display-nip');
             const dStatus = document.getElementById('user-display-status');
@@ -11697,6 +11698,7 @@
 
         async function handleJurnalSubmit(e) {
             e.preventDefault();
+            if(window.arikaJurnalSaving) return;
             let payload;
             try {
                 payload = buildJurnalPayload();
@@ -11709,7 +11711,10 @@
             setJurnalSavingState(true, isEditing);
             window.showLoader(true, isEditing ? 'Menyimpan Perubahan...' : 'Menyimpan Riwayat...');
             try {
-                await postToScript(isEditing ? 'update_jurnal' : 'add_jurnal', payload);
+                await Promise.race([
+                    postToScript(isEditing ? 'update_jurnal' : 'add_jurnal', payload),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Proses simpan terlalu lama. Cek koneksi lalu buka Riwayat Jurnal untuk memastikan data sudah masuk.')), 30000))
+                ]);
                 if(isEditing) {
                     const existingRow = (window.arikaData || []).find(d => String(d.id) === String(payload.id)) || {};
                     const mergedPayload = { ...existingRow, ...payload };
@@ -11744,6 +11749,7 @@
                 console.error(err);
                 window.showCustomAlert('Gagal menyimpan jurnal: ' + err.message);
             } finally {
+                setJurnalSavingState(false, false);
                 window.showLoader(false);
             }
         }
