@@ -9674,15 +9674,9 @@
   'use strict';
 
   const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta', 'mobile-nav-select']);
-  const CONVERT_SELECT_IDS_V205 = new Set([
-    'survey-fitur',
-    'add-status', 'add-lab', 'add-peran',
-    'admin-analytics-lab',
-    'admin-overtime-lab', 'admin-overtime-status',
-    'admin-filter-lab', 'admin-filter-status', 'admin-filter-type',
-    'pengumuman-jenis',
-    'agenda-jenis'
-  ]);
+  const CONVERT_SELECT_IDS_V205 = new Set([]);
+  // v218: konversi dropdown global dinonaktifkan karena menimbulkan duplikasi chip dan layout berantakan.
+  // Dropdown asli dipakai kembali agar stabil; komponen chip yang dibuat khusus tetap berjalan terpisah.
   const CHIP_GROUP_CLASS_V205 = 'arika-v206-chip-group';
   const CHIP_BUTTON_CLASS_V205 = 'arika-v206-chip-btn';
   const DATE_SELECTOR_V205 = 'input[data-arika-manual-date]';
@@ -10787,14 +10781,8 @@
 (function(){
   'use strict';
   const KEEP_DROPDOWN_IDS = new Set(['mobile-nav-select', 'pengumuman-target-fungsi', 'agenda-peserta']);
-  const CHIP_SELECT_IDS = new Set([
-    'survey-fitur',
-    'add-status', 'add-lab', 'add-peran',
-    'admin-analytics-lab',
-    'admin-overtime-lab', 'admin-overtime-status',
-    'admin-filter-lab', 'admin-filter-status', 'admin-filter-type',
-    'pengumuman-jenis', 'agenda-jenis'
-  ]);
+  const CHIP_SELECT_IDS = new Set([]);
+  // v218: tidak ada select yang dikonversi global menjadi chip. Semua chip otomatis lama dibersihkan.
   const CHIP_GROUP_SELECTOR = '.arika-v206-chip-group[data-select-id], .arika-chip-select-group[data-select-id]';
 
   function safeRemove(el){
@@ -10895,4 +10883,122 @@
     const observer = new MutationObserver(schedule);
     observer.observe(document.documentElement, { childList: true, subtree: true });
   } catch(e) {}
+})();
+
+
+// ARIKA v218 - Stabilkan tampilan: nonaktifkan chip otomatis global dan pulihkan dropdown asli.
+// Alasan: konversi dropdown otomatis versi sebelumnya membuat chip berulang dan layout berantakan.
+(function(){
+  'use strict';
+  const SELECTS_TO_RESTORE = [
+    'survey-fitur',
+    'add-status', 'add-lab', 'add-peran',
+    'admin-analytics-lab',
+    'admin-overtime-lab', 'admin-overtime-status',
+    'admin-filter-lab', 'admin-filter-status', 'admin-filter-type',
+    'pengumuman-jenis', 'agenda-jenis',
+    'mobile-nav-select', 'pengumuman-target-fungsi', 'agenda-peserta'
+  ];
+
+  function injectStyle(){
+    if(document.getElementById('arika-v218-dropdown-restore-style')) return;
+    const style = document.createElement('style');
+    style.id = 'arika-v218-dropdown-restore-style';
+    style.textContent = `
+      .arika-v206-chip-group,
+      .arika-chip-select-group,
+      #arika-mobile-nav-chips,
+      .arika-mobile-nav-chips {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
+      select.arika-v206-select-hidden,
+      select.arika-native-select-hidden {
+        clip: auto !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        overflow: visible !important;
+        white-space: normal !important;
+        border-width: 1px !important;
+        margin: 0 !important;
+      }
+      select[id]:not([hidden]) {
+        max-width: 100%;
+      }
+      @media (max-width: 768px) {
+        #mobile-nav-select {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: static !important;
+          width: min(92vw, 360px) !important;
+          max-width: min(92vw, 360px) !important;
+          pointer-events: auto !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function removeAutoChips(){
+    document.querySelectorAll('.arika-v206-chip-group, .arika-chip-select-group, #arika-mobile-nav-chips, .arika-mobile-nav-chips').forEach(function(el){
+      try { el.remove(); } catch(e) {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  function restoreSelect(select){
+    if(!select) return;
+    select.classList.remove('arika-v206-select-hidden', 'arika-native-select-hidden');
+    select.removeAttribute('aria-hidden');
+    select.style.clip = '';
+    select.style.opacity = '';
+    select.style.pointerEvents = '';
+    select.style.overflow = '';
+    select.style.whiteSpace = '';
+    select.style.borderWidth = '';
+    select.style.margin = '';
+    select.style.position = '';
+    select.style.width = '';
+    select.style.height = '';
+    select.style.padding = '';
+    select.style.display = '';
+    select.style.visibility = '';
+    select.style.maxWidth = '';
+    if(select.id === 'mobile-nav-select') {
+      select.hidden = false;
+      select.style.display = 'block';
+      select.style.visibility = 'visible';
+      select.style.opacity = '1';
+      select.style.position = 'static';
+      select.style.width = 'min(92vw, 360px)';
+      select.style.maxWidth = 'min(92vw, 360px)';
+      select.style.pointerEvents = 'auto';
+    }
+  }
+
+  function stabilize(){
+    injectStyle();
+    removeAutoChips();
+    SELECTS_TO_RESTORE.forEach(function(id){ restoreSelect(document.getElementById(id)); });
+    // Jangan sentuh chip/kartu khusus yang memang dibuat manual: kategori Isi Jurnal, status akhir, status evaluasi.
+  }
+
+  window.stabilkanDropdownArika = stabilize;
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', stabilize); else stabilize();
+  setTimeout(stabilize, 200);
+  setTimeout(stabilize, 800);
+  setTimeout(stabilize, 1800);
+  setInterval(stabilize, 1200);
 })();
