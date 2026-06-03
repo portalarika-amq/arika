@@ -4869,7 +4869,7 @@
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-wrap gap-3">
                     <h3 class="font-extrabold text-slate-900 uppercase tracking-wider text-xs">Daftar Riwayat Jurnal</h3>
                     <button onclick="window.downloadPersonalJurnalExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-2">
-                        <span>📊</span> Export Excel Jurnal
+                        <span>📥</span> Export Excel Jurnal
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -10177,33 +10177,78 @@
             }
         };
 
-        // --- 📤 EXPORT PDF LAPORAN JURNAL PRIBADI ---
-        window.printPersonalPDF = function() {
-            if(!window.currentUser) return;
+        // --- 📥 EXPORT EXCEL LAPORAN JURNAL PRIBADI ---
+        window.downloadPersonalJurnalExcel = function() {
+            if(!window.currentUser) {
+                if(typeof window.showCustomAlert === 'function') window.showCustomAlert('Silakan login terlebih dahulu.');
+                else alert('Silakan login terlebih dahulu.');
+                return;
+            }
 
-            document.getElementById('pdf-nama').innerText = window.currentUser.nama;
-            document.getElementById('pdf-nip').innerText = window.currentUser.nip || '-';
-            document.getElementById('pdf-lab').innerText = window.currentUser.lab || '-';
-            document.getElementById('pdf-status').innerText = window.currentUser.status || '-';
-            document.getElementById('pdf-current-date').innerText = formatDateIndo(new Date());
-            document.getElementById('pdf-signer-name').innerText = window.currentUser.nama;
+            const rows = Array.isArray(filtered) ? filtered : [];
+            const startFilter = document.getElementById('filter-rekap-start')?.value || '';
+            const endFilter = document.getElementById('filter-rekap-end')?.value || '';
+            const catFilter = document.getElementById('filter-rekap-cat')?.value || 'Semua';
+            const statusFilter = document.getElementById('filter-rekap-status')?.value || 'Semua';
+            const periode = startFilter || endFilter ? `${startFilter || 'awal'} s.d. ${endFilter || 'akhir'}` : 'Semua waktu';
+            const safeName = String(window.currentUser.nama || 'pegawai')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'pegawai';
+            const tanggalUnduh = formatDateIndo(new Date());
+            const filename = `riwayat-jurnal-${safeName}-${startFilter || 'awal'}-${endFilter || 'akhir'}.xls`;
 
-            const tbody = document.getElementById('pdf-table-body');
-            if(tbody) {
-                tbody.innerHTML = '';
-                filtered.forEach(d => {
-                    tbody.innerHTML += `
+            const cellStyle = 'border:1px solid #999;padding:7px;vertical-align:top;';
+            const headStyle = cellStyle + 'background:#e2e8f0;font-weight:bold;text-align:center;';
+            let bodyRows = '';
+
+            if(rows.length) {
+                rows.forEach((d, i) => {
+                    bodyRows += `
                         <tr>
-                            <td class="border border-black p-2 text-center">${formatDateIndo(d.date)}</td>
-                            <td class="border border-black p-2 text-center">${d.cat}</td>
-                            <td class="border border-black p-2 uppercase">${d.desc}</td>
-                            <td class="border border-black p-2 text-center font-bold">${d.status}</td>
+                            <td style="${cellStyle}text-align:center;">${i + 1}</td>
+                            <td style="${cellStyle}text-align:center;">${escapeHTML(formatDateIndo(d.date))}</td>
+                            <td style="${cellStyle}text-align:center;">${escapeHTML(d.cat || '-')}</td>
+                            <td style="${cellStyle}">${escapeHTML(d.desc || '-')}</td>
+                            <td style="${cellStyle}text-align:center;font-weight:bold;">${escapeHTML(d.status || '-')}</td>
+                            <td style="${cellStyle}">${escapeHTML(d.review || d.catatan || d.note || '-')}</td>
                         </tr>
                     `;
                 });
+            } else {
+                bodyRows = `<tr><td colspan="6" style="${cellStyle}text-align:center;">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>`;
             }
 
-            window.print();
+            const tableHtml = `
+                <table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:11pt;">
+                    <tr><td colspan="6" style="font-size:16pt;font-weight:bold;text-align:center;padding:8px;">RIWAYAT JURNAL KEGIATAN HARIAN</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:6px;">ARIKA - BPOM AMBON</td></tr>
+                    <tr><td colspan="6" style="padding:6px;"></td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">Nama</td><td colspan="5" style="${cellStyle}">${escapeHTML(window.currentUser.nama || '-')}</td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">NIP</td><td colspan="5" style="${cellStyle}">${escapeHTML(window.currentUser.nip || '-')}</td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">Laboratorium/Fungsi</td><td colspan="5" style="${cellStyle}">${escapeHTML(window.currentUser.lab || '-')}</td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">Periode</td><td colspan="5" style="${cellStyle}">${escapeHTML(periode)}</td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">Filter</td><td colspan="5" style="${cellStyle}">Kategori: ${escapeHTML(catFilter)} | Status: ${escapeHTML(statusFilter)}</td></tr>
+                    <tr><td style="font-weight:bold;${cellStyle}">Tanggal Unduh</td><td colspan="5" style="${cellStyle}">${escapeHTML(tanggalUnduh)}</td></tr>
+                    <tr><td colspan="6" style="padding:6px;"></td></tr>
+                    <tr>
+                        <td style="${headStyle}">No.</td>
+                        <td style="${headStyle}">Tanggal</td>
+                        <td style="${headStyle}">Kategori</td>
+                        <td style="${headStyle}">Uraian Kegiatan / Pekerjaan</td>
+                        <td style="${headStyle}">Status</td>
+                        <td style="${headStyle}">Catatan / Review</td>
+                    </tr>
+                    ${bodyRows}
+                </table>
+            `;
+
+            downloadXls(filename, tableHtml);
+        };
+
+        // Alias lama tetap diarahkan ke Excel agar tidak ada pemanggilan PDF dari cache/tombol lama.
+        window.printPersonalPDF = function() {
+            return window.downloadPersonalJurnalExcel();
         };
 
         // --- 👥 REKAP JURNAL PEGAWAI (ADMIN EXCLUSIVE) ---
@@ -15919,389 +15964,6 @@
 
   window.addEventListener('resize', fitReminderPanelFromCard);
   window.addEventListener('orientationchange', function(){ setTimeout(fitReminderPanelFromCard, 250); });
-})();
-</script>
-
-
-
-<script id="arika-v190-pdf-filter-fix">
-// v190: Perbaikan Export PDF Jurnal kosong + filter/dropdown kalender lebih responsif tanpa merusak struktur HTML.
-(function(){
-  'use strict';
-
-  function escapeCell(value){
-    try {
-      if (typeof window.escapeHTML === 'function') return window.escapeHTML(value == null ? '' : String(value));
-    } catch(e) {}
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function escLines(value){
-    try {
-      if (typeof window.escapeHTMLPreserveLines === 'function') return window.escapeHTMLPreserveLines(value == null ? '' : String(value));
-    } catch(e) {}
-    return escapeCell(value).replace(/\r?\n/g, '<br>');
-  }
-
-  function addPrintStyle(){
-    if (document.getElementById('arika-v190-print-style')) return;
-    var style = document.createElement('style');
-    style.id = 'arika-v190-print-style';
-    style.textContent = `
-      @media print {
-        @page { size: A4 portrait; margin: 14mm 12mm; }
-        body.arika-printing { background: #fff !important; color: #000 !important; }
-        body.arika-printing > *:not(#print-area-jurnal):not(script):not(style) { display: none !important; }
-        body.arika-printing #print-area-jurnal,
-        body.arika-printing #print-area-jurnal.print-area {
-          display: block !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          position: static !important;
-          width: auto !important;
-          height: auto !important;
-          min-height: 0 !important;
-          max-height: none !important;
-          overflow: visible !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: #fff !important;
-          color: #000 !important;
-          transform: none !important;
-          clip: auto !important;
-        }
-        body.arika-printing #print-area-jurnal table { width: 100% !important; border-collapse: collapse !important; }
-        body.arika-printing #print-area-jurnal th,
-        body.arika-printing #print-area-jurnal td { border: 1px solid #000 !important; vertical-align: top !important; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function setImportantStyle(el, prop, value){
-    if (!el) return;
-    try { el.style.setProperty(prop, value, 'important'); }
-    catch(e) { el.style[prop] = value; }
-  }
-
-  function preparePrintArea(printArea){
-    if (!printArea) return null;
-    var old = {
-      className: printArea.className,
-      ariaHidden: printArea.getAttribute('aria-hidden'),
-      style: printArea.getAttribute('style') || ''
-    };
-    document.body.classList.add('arika-printing');
-    printArea.classList.remove('no-print');
-    printArea.removeAttribute('aria-hidden');
-    setImportantStyle(printArea, 'display', 'block');
-    setImportantStyle(printArea, 'visibility', 'visible');
-    setImportantStyle(printArea, 'opacity', '1');
-    setImportantStyle(printArea, 'height', 'auto');
-    setImportantStyle(printArea, 'min-height', '0');
-    setImportantStyle(printArea, 'max-height', 'none');
-    setImportantStyle(printArea, 'overflow', 'visible');
-    setImportantStyle(printArea, 'position', 'static');
-    setImportantStyle(printArea, 'clip', 'auto');
-    setImportantStyle(printArea, 'transform', 'none');
-    setImportantStyle(printArea, 'background', '#ffffff');
-    return old;
-  }
-
-  function restorePrintArea(printArea, old){
-    document.body.classList.remove('arika-printing');
-    if (!printArea || !old) return;
-    printArea.className = old.className;
-    if (old.ariaHidden === null) printArea.removeAttribute('aria-hidden');
-    else printArea.setAttribute('aria-hidden', old.ariaHidden);
-    if (old.style) printArea.setAttribute('style', old.style);
-    else printArea.removeAttribute('style');
-    if (typeof window.arikaV154FixGoogleSitesUi === 'function') {
-      setTimeout(function(){ try { window.arikaV154FixGoogleSitesUi(); } catch(e) {} }, 50);
-    }
-  }
-
-  function buildPdfRows(rows){
-    var tbody = document.getElementById('pdf-table-body');
-    if (!tbody) return;
-    if (!rows || !rows.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="border border-black p-4 text-center">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.map(function(d){
-      var dateText = (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(d.date) : (d.date || '-');
-      return `
-        <tr>
-          <td class="border border-black p-2 text-center">${escapeCell(dateText)}</td>
-          <td class="border border-black p-2 text-center">${escapeCell(d.cat || '-')}</td>
-          <td class="border border-black p-2">${escLines(d.desc || '-')}</td>
-          <td class="border border-black p-2 text-center font-bold">${escapeCell(d.status || '-')}</td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  function currentFilteredRowsForPdf(){
-    try {
-      if (Array.isArray(filtered)) return filtered.slice();
-    } catch(e) {}
-    try {
-      return (window.arikaData || []).filter(function(d){
-        return typeof personMatchesRow === 'function' ? personMatchesRow(d, window.currentUser) : true;
-      });
-    } catch(e) {
-      return [];
-    }
-  }
-
-  addPrintStyle();
-
-  // Simpan fungsi asli agar bisa dipanggil cepat saat export PDF.
-  var realRunFilter = typeof window.runFilter === 'function' ? window.runFilter : null;
-  var realRenderCharts = typeof window.renderCharts === 'function' ? window.renderCharts : null;
-  var realRenderTrendChart = typeof window.renderTrendChart === 'function' ? window.renderTrendChart : null;
-  var realRenderVisualCalendar = typeof window.renderVisualCalendar === 'function' ? window.renderVisualCalendar : null;
-
-  // Grafik dibuat di belakang layar agar dropdown dan input tanggal tidak terasa berat.
-  var chartTimer = null;
-  function scheduleCharts(){
-    clearTimeout(chartTimer);
-    chartTimer = setTimeout(function(){
-      try { if (realRenderCharts) realRenderCharts(); } catch(e) { console.warn('Render chart status gagal:', e); }
-      setTimeout(function(){
-        try { if (realRenderTrendChart) realRenderTrendChart(); } catch(e) { console.warn('Render chart tren gagal:', e); }
-      }, 20);
-    }, 120);
-  }
-  if (realRenderCharts) window.renderCharts = function(){ scheduleCharts(); };
-  if (realRenderTrendChart) window.renderTrendChart = function(){ scheduleCharts(); };
-
-  var filterTimer = null;
-  window.runFilterImmediate = function(options){
-    clearTimeout(filterTimer);
-    if (realRunFilter) return realRunFilter(options || {});
-  };
-  window.runFilter = function(options){
-    var opts = options || {};
-    clearTimeout(filterTimer);
-    filterTimer = setTimeout(function(){
-      try { if (realRunFilter) realRunFilter(opts); }
-      catch(e) { console.warn('Filter riwayat gagal:', e); }
-    }, opts.keepPage ? 0 : 70);
-  };
-  window.runFilterDebounced = window.runFilter;
-
-  var calendarTimer = null;
-  window.renderVisualCalendar = function(){
-    clearTimeout(calendarTimer);
-    calendarTimer = setTimeout(function(){
-      try { if (realRenderVisualCalendar) realRenderVisualCalendar(); }
-      catch(e) { console.warn('Render kalender gagal:', e); }
-    }, 90);
-  };
-  window.renderVisualCalendarDebounced = window.renderVisualCalendar;
-
-  window.printPersonalPDF = function(){
-    if (!window.currentUser) return;
-
-    // Pastikan filter terbaru sudah diterapkan sebelum isi area PDF dibuat.
-    try { if (typeof window.runFilterImmediate === 'function') window.runFilterImmediate({ keepPage: true }); } catch(e) {}
-
-    var printArea = document.getElementById('print-area-jurnal');
-    if (!printArea) return alert('Area cetak jurnal tidak ditemukan.');
-
-    try {
-      var setText = function(id, text){ var el = document.getElementById(id); if (el) el.innerText = text || '-'; };
-      setText('pdf-nama', window.currentUser.nama || '-');
-      setText('pdf-nip', window.currentUser.nip || '-');
-      setText('pdf-lab', window.currentUser.lab || '-');
-      setText('pdf-status', window.currentUser.status || '-');
-      setText('pdf-current-date', (typeof window.formatDateIndo === 'function') ? window.formatDateIndo(new Date()) : new Date().toLocaleDateString('id-ID'));
-      setText('pdf-signer-name', window.currentUser.nama || '-');
-      buildPdfRows(currentFilteredRowsForPdf());
-
-      var old = preparePrintArea(printArea);
-      var cleaned = false;
-      var cleanup = function(){
-        if (cleaned) return;
-        cleaned = true;
-        restorePrintArea(printArea, old);
-      };
-      var afterPrintHandler = function(){
-        window.removeEventListener('afterprint', afterPrintHandler);
-        setTimeout(cleanup, 120);
-      };
-      window.addEventListener('afterprint', afterPrintHandler);
-
-      // Beri browser waktu satu frame untuk menghitung tinggi tabel; ini mencegah PDF putih kosong.
-      setTimeout(function(){
-        try { window.print(); }
-        finally { setTimeout(cleanup, 2200); }
-      }, 120);
-    } catch(err) {
-      console.error('Export PDF Jurnal gagal:', err);
-      alert('Export PDF Jurnal gagal disiapkan. Silakan refresh ARIKA dan coba kembali.');
-      document.body.classList.remove('arika-printing');
-    }
-  };
-})();
-</script>
-
-
-
-<script id="arika-v191-excel-riwayat-export">
-// v191: Export Riwayat Jurnal dialihkan ke Excel agar tidak tergantung print/PDF browser.
-(function(){
-  'use strict';
-
-  function norm(value){
-    try { return typeof window.normalize === 'function' ? window.normalize(value) : String(value || '').toLowerCase().trim(); }
-    catch(e) { return String(value || '').toLowerCase().trim(); }
-  }
-
-  function escapeCell(value){
-    var text = value == null ? '' : String(value);
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function textLines(value){
-    return escapeCell(value == null ? '' : String(value)).replace(/\r?\n/g, '<br>');
-  }
-
-  function formatDate(value){
-    try { return typeof window.formatDateIndo === 'function' ? window.formatDateIndo(value) : (value || '-'); }
-    catch(e) { return value || '-'; }
-  }
-
-  function dateInRangeSafe(date, start, end){
-    try { return typeof window.dateInRange === 'function' ? window.dateInRange(date, start, end) : ((!start || String(date || '') >= start) && (!end || String(date || '') <= end)); }
-    catch(e) { return (!start || String(date || '') >= start) && (!end || String(date || '') <= end); }
-  }
-
-  function getRange(){
-    try {
-      if (typeof window.getDateRangeValues === 'function') return window.getDateRangeValues('filter-rekap-start', 'filter-rekap-end');
-    } catch(e) {}
-    return {
-      start: document.getElementById('filter-rekap-start')?.value || '',
-      end: document.getElementById('filter-rekap-end')?.value || ''
-    };
-  }
-
-  function matchesCurrentUser(row){
-    try { if (typeof window.personMatchesRow === 'function') return window.personMatchesRow(row, window.currentUser); }
-    catch(e) {}
-    var targetName = norm(window.currentUser && window.currentUser.nama);
-    var targetNip = norm(window.currentUser && window.currentUser.nip);
-    return (!!targetNip && norm(row && row.nip) === targetNip) || (!!targetName && norm(row && row.name) === targetName);
-  }
-
-  function getRowsForExcel(){
-    // Paksa filter terakhir diterapkan, tetapi export tetap bisa jalan walau fungsi filter sedang debounce.
-    try { if (typeof window.runFilterImmediate === 'function') window.runFilterImmediate({ keepPage: true }); }
-    catch(e) {}
-
-    var rows = [];
-    try {
-      if (Array.isArray(filtered)) rows = filtered.slice();
-    } catch(e) {}
-
-    if (!rows.length) {
-      var searchKeyword = norm(document.getElementById('search-keyword')?.value || '');
-      var categorySelect = document.getElementById('filter-rekap-cat')?.value || 'Semua';
-      var statusSelect = document.getElementById('filter-rekap-status')?.value || 'Semua';
-      var range = getRange();
-      var source = [];
-      try { source = typeof window.applyJurnalDeleteTombstones === 'function' ? window.applyJurnalDeleteTombstones(window.arikaData || []) : (window.arikaData || []); }
-      catch(e) { source = window.arikaData || []; }
-      rows = source.filter(function(d){
-        var matchesKeyword = !searchKeyword || norm(d && d.desc).indexOf(searchKeyword) >= 0;
-        var matchesCategory = categorySelect === 'Semua' || String(d && d.cat || '') === categorySelect;
-        var matchesStatus = statusSelect === 'Semua' || String(d && d.status || '') === statusSelect;
-        var matchesRange = dateInRangeSafe(d && d.date, range.start, range.end);
-        return matchesCurrentUser(d || {}) && matchesKeyword && matchesCategory && matchesStatus && matchesRange;
-      }).sort(function(a,b){
-        return String((b && b.date) || '').localeCompare(String((a && a.date) || '')) || String((b && b.createdAt) || '').localeCompare(String((a && a.createdAt) || ''));
-      });
-    }
-    return rows;
-  }
-
-  function buildExcelHtml(rows){
-    var user = window.currentUser || {};
-    var range = getRange();
-    var periode = range.start || range.end ? ((range.start || 'awal') + ' s.d. ' + (range.end || 'akhir')) : 'Semua waktu';
-    var printedAt = new Date().toLocaleString('id-ID');
-    var bodyRows = rows.length ? rows.map(function(d, idx){
-      return '<tr>' +
-        '<td style="border:1px solid #999;padding:6px;text-align:center;">' + (idx + 1) + '</td>' +
-        '<td style="border:1px solid #999;padding:6px;text-align:center;">' + escapeCell(formatDate(d.date || '')) + '</td>' +
-        '<td style="border:1px solid #999;padding:6px;text-align:center;">' + escapeCell(d.cat || '-') + '</td>' +
-        '<td style="border:1px solid #999;padding:6px;white-space:normal;">' + textLines(d.desc || '-') + '</td>' +
-        '<td style="border:1px solid #999;padding:6px;text-align:center;">' + escapeCell(d.status || '-') + '</td>' +
-        '<td style="border:1px solid #999;padding:6px;white-space:normal;">' + textLines(d.catatanAtasan || d.review || d.catatan || '') + '</td>' +
-      '</tr>';
-    }).join('') : '<tr><td colspan="6" style="border:1px solid #999;padding:10px;text-align:center;">Belum ada riwayat jurnal pada filter yang dipilih.</td></tr>';
-
-    return '<html><head><meta charset="UTF-8"></head><body>' +
-      '<table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;">' +
-        '<tr><td colspan="6" style="font-size:18px;font-weight:bold;text-align:center;padding:8px;">RIWAYAT JURNAL AKTIVITAS PEGAWAI</td></tr>' +
-        '<tr><td colspan="6" style="font-size:13px;font-weight:bold;text-align:center;padding:4px;">ARIKA - BPOM Ambon</td></tr>' +
-        '<tr><td colspan="6" style="padding:6px;"></td></tr>' +
-        '<tr><td style="font-weight:bold;">Nama</td><td colspan="5">' + escapeCell(user.nama || '-') + '</td></tr>' +
-        '<tr><td style="font-weight:bold;">NIP</td><td colspan="5">' + escapeCell(user.nip || '-') + '</td></tr>' +
-        '<tr><td style="font-weight:bold;">Laboratorium</td><td colspan="5">' + escapeCell(user.lab || '-') + '</td></tr>' +
-        '<tr><td style="font-weight:bold;">Status</td><td colspan="5">' + escapeCell(user.status || '-') + '</td></tr>' +
-        '<tr><td style="font-weight:bold;">Periode Filter</td><td colspan="5">' + escapeCell(periode) + '</td></tr>' +
-        '<tr><td style="font-weight:bold;">Tanggal Unduh</td><td colspan="5">' + escapeCell(printedAt) + '</td></tr>' +
-        '<tr><td colspan="6" style="padding:6px;"></td></tr>' +
-        '<tr style="background:#e2e8f0;font-weight:bold;text-align:center;">' +
-          '<td style="border:1px solid #999;padding:7px;">No.</td>' +
-          '<td style="border:1px solid #999;padding:7px;">Tanggal</td>' +
-          '<td style="border:1px solid #999;padding:7px;">Kategori</td>' +
-          '<td style="border:1px solid #999;padding:7px;">Uraian Kegiatan / Pekerjaan</td>' +
-          '<td style="border:1px solid #999;padding:7px;">Status</td>' +
-          '<td style="border:1px solid #999;padding:7px;">Catatan / Review</td>' +
-        '</tr>' + bodyRows +
-      '</table></body></html>';
-  }
-
-  function downloadHtmlXls(filename, html){
-    var blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-  }
-
-  window.downloadPersonalJurnalExcel = function(){
-    if (!window.currentUser) return alert('Silakan login terlebih dahulu.');
-    var rows = getRowsForExcel();
-    var safeName = norm(window.currentUser.nama || 'pegawai').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pegawai';
-    var range = getRange();
-    var periode = (range.start || 'awal') + '-' + (range.end || 'akhir');
-    var filename = 'riwayat-jurnal-' + safeName + '-' + periode + '.xls';
-    downloadHtmlXls(filename, buildExcelHtml(rows));
-  };
-
-  // Alias lama tetap diarahkan ke Excel agar tombol lama/cache browser tidak memanggil print/PDF.
-  window.printPersonalPDF = function(){
-    return window.downloadPersonalJurnalExcel();
-  };
 })();
 </script>
 
