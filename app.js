@@ -3319,10 +3319,11 @@
 
         // --- FITUR SMART DAY DETECTION (Libur & Weekend) ---
         window.checkHariLibur = function() {
-            const dateInput = document.getElementById('in-date').value;
+            const rawDateInput = document.getElementById('in-date')?.value || '';
+            const dateInput = normalizeDateKeyFromSheet(rawDateInput);
             if (!dateInput) return;
             
-            const d = new Date(dateInput);
+            const d = new Date(dateInput + 'T00:00:00');
             const day = d.getDay(); 
             const isWeekend = (day === 0 || day === 6);
             const isHoliday = liburNasional.includes(dateInput);
@@ -4869,8 +4870,8 @@
         }
 
         function getDateRangeValues(startId, endId) {
-            let start = document.getElementById(startId)?.value || '';
-            let end = document.getElementById(endId)?.value || '';
+            let start = normalizeDateKeyFromSheet(document.getElementById(startId)?.value || '') || '';
+            let end = normalizeDateKeyFromSheet(document.getElementById(endId)?.value || '') || '';
             if(start && end && start > end) {
                 const temp = start;
                 start = end;
@@ -4880,10 +4881,12 @@
         }
 
         function dateInRange(dateValue, start, end) {
-            const dateKey = String(dateValue || '').slice(0, 10);
+            const dateKey = normalizeDateKeyFromSheet(dateValue) || String(dateValue || '').slice(0, 10);
+            const startKey = normalizeDateKeyFromSheet(start) || start;
+            const endKey = normalizeDateKeyFromSheet(end) || end;
             if(!dateKey) return false;
-            if(start && dateKey < start) return false;
-            if(end && dateKey > end) return false;
+            if(startKey && dateKey < startKey) return false;
+            if(endKey && dateKey > endKey) return false;
             return true;
         }
 
@@ -5674,7 +5677,7 @@
         }
 
         function buildJurnalPayload() {
-            const date = document.getElementById('in-date')?.value || getTodayKey();
+            const date = normalizeDateKeyFromSheet(document.getElementById('in-date')?.value || '') || getTodayKey();
             const cat = document.getElementById('in-cat')?.value.trim() || '';
             const desc = document.getElementById('in-desc')?.value.trim() || '';
             const status = document.getElementById('in-status')?.value || 'Selesai';
@@ -6071,7 +6074,7 @@
                 id: makeLocalId('rencana'),
                 ownerName: window.currentUser.nama || '',
                 ownerNip: window.currentUser.nip || '',
-                tanggal: document.getElementById('rencana-tanggal')?.value || getTodayKey(),
+                tanggal: normalizeDateKeyFromSheet(document.getElementById('rencana-tanggal')?.value || '') || getTodayKey(),
                 jamReminder: document.getElementById('rencana-jam')?.value || '',
                 periode: 'Reminder',
                 judul: document.getElementById('rencana-judul')?.value.trim() || '',
@@ -9739,4 +9742,271 @@
   setTimeout(installChipSelects, 400);
   setTimeout(installChipSelects, 1200);
   setInterval(syncAllChipSelects, 1200);
+})();
+
+
+// ARIKA v205 - Perbaikan nyata: dropdown jadi chip/tombol + tanggal/bulan otomatis memakai garis miring.
+(function(){
+  'use strict';
+
+  const EXCLUDED_SELECT_IDS_V205 = new Set(['pengumuman-target-fungsi', 'agenda-peserta']);
+  const CHIP_GROUP_CLASS_V205 = 'arika-v205-chip-group';
+  const CHIP_BUTTON_CLASS_V205 = 'arika-v205-chip-btn';
+  const DATE_SELECTOR_V205 = 'input[data-arika-manual-date]';
+
+  function pad2V205(n){ return String(n).padStart(2, '0'); }
+
+  function injectV205Style(){
+    if(document.getElementById('arika-v205-style')) return;
+    const style = document.createElement('style');
+    style.id = 'arika-v205-style';
+    style.textContent = `
+      select.arika-v205-select-hidden,
+      select.arika-native-select-hidden:not(#pengumuman-target-fungsi):not(#agenda-peserta) {
+        position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+        overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+        opacity:0!important;pointer-events:none!important;appearance:none!important;
+      }
+      #pengumuman-target-fungsi,
+      #agenda-peserta { position:static!important;width:auto!important;height:auto!important;opacity:1!important;pointer-events:auto!important;clip:auto!important; }
+      .arika-v205-chip-group{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:.35rem;width:100%;}
+      .arika-v205-chip-group[data-select-id="mobile-nav-select"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;}
+      .arika-v205-chip-group[data-select-id="add-lab"],
+      .arika-v205-chip-group[data-select-id="admin-analytics-lab"],
+      .arika-v205-chip-group[data-select-id="admin-overtime-lab"],
+      .arika-v205-chip-group[data-select-id="admin-filter-lab"]{max-height:10rem;overflow:auto;padding:.1rem .15rem .25rem 0;}
+      .arika-v205-chip-btn{border:1.8px solid rgba(148,163,184,.45);background:linear-gradient(135deg,#fff,#f8fafc);color:#334155;border-radius:999px;padding:.58rem .82rem;font-size:.68rem;font-weight:900;line-height:1.15;letter-spacing:.01em;cursor:pointer;box-shadow:0 8px 18px rgba(15,23,42,.05);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,border-color .12s ease,color .12s ease;text-align:center;min-height:2.25rem;}
+      .arika-v205-chip-group[data-select-id="mobile-nav-select"] .arika-v205-chip-btn{border-radius:1rem;padding:.66rem .55rem;font-size:.66rem;}
+      .arika-v205-chip-btn:hover{transform:translateY(-1px);border-color:rgba(8,145,178,.65);box-shadow:0 12px 25px rgba(8,145,178,.12);}
+      .arika-v205-chip-btn.active{color:#fff;border-color:rgba(8,145,178,.95);background:linear-gradient(135deg,#0891b2,#0f766e);box-shadow:0 12px 28px rgba(8,145,178,.25);}
+      .arika-v205-chip-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+      .arika-v205-chip-btn.v205-hidden-option{display:none!important;}
+      .arika-v205-date-hint{display:block;margin-top:.32rem;font-size:.62rem;font-weight:800;color:#64748b;line-height:1.35;}
+      input[data-arika-manual-date]{letter-spacing:.02em;}
+      input[data-arika-manual-date]::placeholder{color:#64748b!important;opacity:.95!important;font-weight:800!important;}
+      @media(max-width:480px){.arika-v205-chip-group[data-select-id="mobile-nav-select"]{grid-template-columns:1fr}.arika-v205-chip-btn{width:100%;}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function selectLabelV205(select){
+    const label = document.querySelector(`label[for="${select.id}"]`);
+    return (label && label.textContent.trim()) || select.getAttribute('aria-label') || select.id.replace(/[-_]/g, ' ');
+  }
+
+  function optionValueV205(option){ return option.value || option.textContent || ''; }
+  function optionLabelV205(option){ return String(option.getAttribute('data-chip-label') || option.textContent || option.value || 'Pilihan').replace(/\s+/g, ' ').trim(); }
+
+  function getChipGroupV205(select){
+    return Array.from(document.querySelectorAll('.' + CHIP_GROUP_CLASS_V205)).find(g => g.dataset.selectId === select.id) || null;
+  }
+
+  function dispatchSelectV205(select){
+    try{ select.dispatchEvent(new Event('input', { bubbles:true })); }catch(e){}
+    try{ select.dispatchEvent(new Event('change', { bubbles:true })); }catch(e){}
+    setTimeout(() => syncChipV205(select), 0);
+    setTimeout(() => syncChipV205(select), 160);
+  }
+
+  function setSelectValueV205(select, value){
+    if(!select) return;
+    const old = select.value;
+    select.value = value;
+    if(select.value !== value){
+      const match = Array.from(select.options || []).find(o => String(optionValueV205(o)) === String(value));
+      if(match) select.value = match.value;
+    }
+    if(old !== select.value) dispatchSelectV205(select);
+    else syncChipV205(select);
+  }
+
+  function syncChipV205(select){
+    const group = getChipGroupV205(select);
+    if(!group) return;
+    const options = Array.from(select.options || []);
+    const buttons = Array.from(group.querySelectorAll('.' + CHIP_BUTTON_CLASS_V205));
+    buttons.forEach(btn => {
+      const opt = options.find(o => String(optionValueV205(o)) === String(btn.dataset.value || ''));
+      if(!opt){ btn.classList.add('v205-hidden-option'); btn.disabled = true; return; }
+      const selected = String(select.value || '') === String(btn.dataset.value || '');
+      btn.classList.toggle('active', selected);
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      btn.disabled = !!select.disabled || !!opt.disabled;
+      btn.classList.toggle('v205-hidden-option', !!opt.hidden || opt.classList.contains('hidden'));
+      const label = optionLabelV205(opt);
+      if(btn.textContent !== label) btn.textContent = label;
+      btn.title = label;
+    });
+  }
+
+  function rebuildChipV205(select){
+    if(!select || !select.id || EXCLUDED_SELECT_IDS_V205.has(select.id)) return;
+    let group = getChipGroupV205(select);
+    if(!group){
+      group = document.createElement('div');
+      group.className = CHIP_GROUP_CLASS_V205;
+      group.dataset.selectId = select.id;
+      group.setAttribute('role', 'group');
+      group.setAttribute('aria-label', selectLabelV205(select));
+      select.insertAdjacentElement('afterend', group);
+    }
+    const options = Array.from(select.options || []);
+    const signature = options.map(o => [optionValueV205(o), optionLabelV205(o), o.disabled?'d':'', o.hidden?'h':''].join('|')).join('::');
+    if(group.dataset.signature !== signature){
+      group.innerHTML = '';
+      options.forEach(option => {
+        const val = optionValueV205(option);
+        const label = optionLabelV205(option);
+        if(!val && /pilih|--/i.test(label)) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = CHIP_BUTTON_CLASS_V205;
+        btn.dataset.value = val;
+        btn.dataset.selectId = select.id;
+        btn.textContent = label;
+        btn.title = label;
+        btn.addEventListener('click', () => {
+          if(btn.disabled) return;
+          setSelectValueV205(select, btn.dataset.value || '');
+        });
+        group.appendChild(btn);
+      });
+      group.dataset.signature = signature;
+    }
+    syncChipV205(select);
+  }
+
+  function convertSelectV205(select){
+    if(!select || !select.id) return;
+    if(EXCLUDED_SELECT_IDS_V205.has(select.id)){
+      select.classList.remove('arika-v205-select-hidden', 'arika-native-select-hidden');
+      return;
+    }
+    select.classList.add('arika-v205-select-hidden', 'arika-native-select-hidden');
+    select.tabIndex = -1;
+    rebuildChipV205(select);
+    if(!select.__arikaV205Observer){
+      const observer = new MutationObserver(() => rebuildChipV205(select));
+      observer.observe(select, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','disabled','class','label','value']});
+      select.__arikaV205Observer = observer;
+    }
+    if(!select.__arikaV205Events){
+      select.__arikaV205Events = true;
+      select.addEventListener('change', () => setTimeout(() => syncChipV205(select), 0));
+      select.addEventListener('input', () => setTimeout(() => syncChipV205(select), 0));
+    }
+  }
+
+  function installChipV205(){
+    injectV205Style();
+    Array.from(document.querySelectorAll('select[id]')).forEach(convertSelectV205);
+  }
+
+  function parseDateV205(value){
+    const raw = String(value || '').trim().replace(/\s+/g, '');
+    if(!raw) return '';
+    let m, y, mo, d;
+    if((m = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+    else if((m = /^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/.exec(raw))){ d=+m[1]; mo=+m[2]; y=+m[3]; }
+    else if((m = /^(\d{2})(\d{2})(\d{4})$/.exec(raw))){ d=+m[1]; mo=+m[2]; y=+m[3]; }
+    else if((m = /^(\d{4})(\d{2})(\d{2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+    else return null;
+    const dt = new Date(y, mo-1, d);
+    if(dt.getFullYear() !== y || dt.getMonth() !== mo-1 || dt.getDate() !== d) return null;
+    return `${y}-${pad2V205(mo)}-${pad2V205(d)}`;
+  }
+
+  function parseMonthV205(value){
+    const raw = String(value || '').trim().replace(/\s+/g, '');
+    if(!raw) return '';
+    const asDate = parseDateV205(raw);
+    if(asDate) return asDate.slice(0,7);
+    let m, y, mo;
+    if((m = /^(\d{4})[-/](\d{1,2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; }
+    else if((m = /^(\d{1,2})[-/](\d{4})$/.exec(raw))){ mo=+m[1]; y=+m[2]; }
+    else if((m = /^(\d{2})(\d{4})$/.exec(raw))){ mo=+m[1]; y=+m[2]; }
+    else if((m = /^(\d{4})(\d{2})$/.exec(raw))){ y=+m[1]; mo=+m[2]; }
+    else return null;
+    if(!y || mo < 1 || mo > 12) return null;
+    return `${y}-${pad2V205(mo)}`;
+  }
+
+  function formatDateDisplayV205(iso){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : String(iso || '');
+  }
+  function formatMonthDisplayV205(iso){
+    const m = /^(\d{4})-(\d{2})$/.exec(String(iso || ''));
+    return m ? `${m[2]}/${m[1]}` : String(iso || '');
+  }
+
+  function kindV205(el){ return String(el?.dataset?.arikaManualDate || '').toLowerCase() === 'month' ? 'month' : 'date'; }
+
+  function maskManualDateV205(el, force){
+    if(!el || !el.matches || !el.matches(DATE_SELECTOR_V205)) return true;
+    const kind = kindV205(el);
+    const raw = String(el.value || '').trim();
+    if(!raw){ el.dataset.arikaIsoValue=''; return true; }
+    const digits = raw.replace(/\D/g, '');
+    if(digits && (force || /^\d+$/.test(raw) || raw.includes('-') || raw.includes('/'))){
+      if(kind === 'month'){
+        const iso = parseMonthV205(raw);
+        if(iso){ el.value = formatMonthDisplayV205(iso); el.dataset.arikaIsoValue = iso; return true; }
+        const d = digits.slice(0,6);
+        if(d.length <= 2) el.value = d;
+        else el.value = d.slice(0,2) + '/' + d.slice(2,6);
+        return false;
+      }
+      const iso = parseDateV205(raw);
+      if(iso){ el.value = formatDateDisplayV205(iso); el.dataset.arikaIsoValue = iso; return true; }
+      const d = digits.slice(0,8);
+      if(d.length <= 2) el.value = d;
+      else if(d.length <= 4) el.value = d.slice(0,2) + '/' + d.slice(2);
+      else el.value = d.slice(0,2) + '/' + d.slice(2,4) + '/' + d.slice(4,8);
+      return false;
+    }
+    const iso = kind === 'month' ? parseMonthV205(raw) : parseDateV205(raw);
+    if(iso){
+      el.value = kind === 'month' ? formatMonthDisplayV205(iso) : formatDateDisplayV205(iso);
+      el.dataset.arikaIsoValue = iso;
+      return true;
+    }
+    return false;
+  }
+
+  function installDateV205(){
+    document.querySelectorAll(DATE_SELECTOR_V205).forEach(el => {
+      el.setAttribute('type','text');
+      el.setAttribute('inputmode','numeric');
+      el.setAttribute('autocomplete','off');
+      const kind = kindV205(el);
+      el.setAttribute('placeholder', kind === 'month' ? 'mm/yyyy' : 'dd/mm/yyyy');
+      el.setAttribute('maxlength', kind === 'month' ? '7' : '10');
+      el.title = kind === 'month'
+        ? 'Cukup ketik angka 062026, ARIKA otomatis menjadi 06/2026.'
+        : 'Cukup ketik angka 03062026, ARIKA otomatis menjadi 03/06/2026.';
+      if(!el.__arikaV205DateEvents){
+        el.__arikaV205DateEvents = true;
+        el.addEventListener('input', () => maskManualDateV205(el, false));
+        el.addEventListener('blur', () => setTimeout(() => maskManualDateV205(el, true), 0));
+        el.addEventListener('change', () => setTimeout(() => maskManualDateV205(el, true), 0));
+      }
+      setTimeout(() => maskManualDateV205(el, true), 0);
+    });
+  }
+
+  function refreshAllV205(){
+    try{ installChipV205(); }catch(err){ console.warn('ARIKA v205 chip gagal:', err); }
+    try{ installDateV205(); }catch(err){ console.warn('ARIKA v205 tanggal gagal:', err); }
+  }
+
+  window.refreshArikaChipSelects = refreshAllV205;
+  window.refreshArikaManualDateDisplay = function(){ document.querySelectorAll(DATE_SELECTOR_V205).forEach(el => maskManualDateV205(el, true)); };
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshAllV205);
+  else refreshAllV205();
+  setTimeout(refreshAllV205, 250);
+  setTimeout(refreshAllV205, 900);
+  setTimeout(refreshAllV205, 1800);
+  setInterval(refreshAllV205, 2000);
 })();
