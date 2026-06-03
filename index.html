@@ -4337,7 +4337,7 @@
                             <strong>🔊 Suara Alarm</strong>
                             <span id="reminder-sound-status" class="reminder-sound-status-pill">Belum aktif</span>
                         </div>
-                        <p class="reminder-sound-card-desc">Untuk bunyi/chime dan suara pengingat dari ARIKA. Aktifkan sekali setelah login.</p>
+                        <p class="reminder-sound-card-desc">Untuk bunyi lonceng dan suara pengingat dari ARIKA. Aktifkan sekali setelah login.</p>
                         <div class="reminder-sound-actions">
                             <button id="arika-sound-enable-btn" type="button" onclick="window.enableArikaReminderSound(true)" class="reminder-sound-btn reminder-sound-active">🔔 Aktifkan Suara</button>
                             <button type="button" onclick="window.testArikaReminderSound()" class="reminder-sound-btn reminder-sound-muted">Tes Suara</button>
@@ -5161,7 +5161,7 @@
                         </div>
                         <div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
                             <h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">Tes Suara</h3>
-                            <p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Tes</strong> untuk memastikan alarm aktif. Jika suara Bahasa Indonesia tidak tersedia, ARIKA memakai nada chime ARIKA.</p>
+                            <p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Tes</strong> untuk memastikan alarm aktif. Jika suara Bahasa Indonesia tidak tersedia, ARIKA memakai nada bel lonceng ARIKA.</p>
                         </div>
                         <div id="panduan-pusat-reminder" class="panduan-inline-focus p-4 rounded-2xl bg-indigo-50 border border-indigo-100">
                             <h3 class="font-black text-indigo-700 uppercase text-[11px] tracking-widest mb-2">Pusat Reminder</h3>
@@ -5428,7 +5428,7 @@
                             </details>
                             <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
                                 <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa suara manusia tidak tersedia atau berubah menjadi beep?<span class="text-slate-400">⌄</span></summary>
-                                <p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA hanya memakai suara Bahasa Indonesia jika tersedia di browser/perangkat. Jika tidak tersedia, ARIKA memakai nada chime ARIKA sebagai pengingat cadangan.</p>
+                                <p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA hanya memakai suara Bahasa Indonesia jika tersedia di browser/perangkat. Jika tidak tersedia, ARIKA memakai nada bel lonceng ARIKA sebagai pengingat cadangan.</p>
                             </details>
                             <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
                                 <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa saja yang bisa memicu reminder di Beranda?<span class="text-slate-400">⌄</span></summary>
@@ -8823,40 +8823,60 @@
         }
 
         function playArikaTone(ctx, startAt, frequency, duration, options = {}) {
-            const master = ctx.createGain();
-            const oscA = ctx.createOscillator();
-            const oscB = ctx.createOscillator();
+            // v181: nada alarm dibuat menyerupai lonceng yang lebih jernih.
+            // Tetap memakai Web Audio murni agar aman untuk GitHub Pages tanpa file MP3 tambahan.
+            const output = ctx.createGain();
             const filter = ctx.createBiquadFilter();
-            const gain = ctx.createGain();
+            const compressor = ctx.createDynamicsCompressor();
 
-            const type = options.type || 'sine';
-            const harmony = options.harmony || 1.5;
-            const peak = options.peak || 0.95;
-
-            oscA.type = type;
-            oscB.type = options.typeB || 'triangle';
-            oscA.frequency.setValueAtTime(frequency, startAt);
-            oscB.frequency.setValueAtTime(frequency * harmony, startAt);
+            const master = Math.min(1.0, Math.max(0.18, Number(options.master || 0.86)));
+            const peak = Math.min(0.98, Math.max(0.12, Number(options.peak || 0.78)));
+            const bright = Number(options.filter || 7200);
+            const bellDuration = Math.max(0.45, Number(duration || 1.15));
 
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(options.filter || 2800, startAt);
-            filter.Q.setValueAtTime(0.8, startAt);
+            filter.frequency.setValueAtTime(bright, startAt);
+            filter.Q.setValueAtTime(0.55, startAt);
 
-            gain.gain.setValueAtTime(0.0001, startAt);
-            gain.gain.exponentialRampToValueAtTime(peak, startAt + 0.035);
-            gain.gain.exponentialRampToValueAtTime(0.0001, startAt + Math.max(0.05, duration));
+            compressor.threshold.setValueAtTime(-8, startAt);
+            compressor.knee.setValueAtTime(18, startAt);
+            compressor.ratio.setValueAtTime(4, startAt);
+            compressor.attack.setValueAtTime(0.004, startAt);
+            compressor.release.setValueAtTime(0.16, startAt);
 
-            master.gain.setValueAtTime(options.master || 0.95, startAt);
-            oscA.connect(gain);
-            oscB.connect(gain);
-            gain.connect(filter);
-            filter.connect(master);
-            master.connect(ctx.destination);
+            output.gain.setValueAtTime(master, startAt);
+            filter.connect(output);
+            output.connect(compressor);
+            compressor.connect(ctx.destination);
 
-            oscA.start(startAt);
-            oscB.start(startAt);
-            oscA.stop(startAt + duration + 0.08);
-            oscB.stop(startAt + duration + 0.08);
+            const partials = options.partials || [
+                { ratio: 1.00, gain: 0.70, decay: 1.00 },
+                { ratio: 2.01, gain: 0.34, decay: 0.82 },
+                { ratio: 2.78, gain: 0.20, decay: 0.62 },
+                { ratio: 4.05, gain: 0.12, decay: 0.45 },
+                { ratio: 5.42, gain: 0.08, decay: 0.34 }
+            ];
+
+            partials.forEach((part, index) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const tonePeak = Math.max(0.0001, peak * part.gain);
+                const attack = 0.010 + (index * 0.002);
+                const decayEnd = startAt + Math.max(0.16, bellDuration * (part.decay || 0.8));
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(frequency * part.ratio, startAt);
+                try { osc.detune.setValueAtTime((index - 2) * 1.5, startAt); } catch(e) {}
+
+                gain.gain.setValueAtTime(0.0001, startAt);
+                gain.gain.exponentialRampToValueAtTime(tonePeak, startAt + attack);
+                gain.gain.exponentialRampToValueAtTime(0.0001, decayEnd);
+
+                osc.connect(gain);
+                gain.connect(filter);
+                osc.start(startAt);
+                osc.stop(startAt + bellDuration + 0.14);
+            });
         }
 
         function playArikaBeepPattern(kind = 'default') {
@@ -8864,47 +8884,44 @@
             const ctx = getArikaAudioContext();
             if(!ctx || ctx.state !== 'running') return false;
 
-            // v179: Volume chime reminder diperkuat agar lebih terdengar saat user membuka tab lain/Office.
-            // Nada tetap memakai sine/triangle agar tidak kasar, tetapi gain dibuat lebih tegas dan durasi sedikit lebih panjang.
-            // Durasi efektif sekitar 2,3-3,2 detik.
+            // v183: bunyi non-manusia dibuat seperti bel lonceng dua kali: “triiiing... triiiing”.
+            // Setiap ring terdiri dari beberapa partial tinggi yang masuk sangat rapat agar terdengar jernih seperti lonceng.
+            // Pola tetap berbeda untuk urgent, review, agenda, pengumuman, dan rencana.
             const patternMap = {
                 urgent: [
-                    [0.00, 523.25, .24, 'triangle'], [0.28, 659.25, .25, 'triangle'], [0.58, 783.99, .27, 'triangle'],
-                    [0.96, 1046.50, .24, 'triangle'], [1.26, 783.99, .32, 'triangle'], [1.72, 659.25, .40, 'triangle'],
-                    [2.32, 1046.50, .26, 'triangle'], [2.66, 783.99, .34, 'triangle']
+                    [0.00, 1046.50, 1.18], [0.055, 1318.51, 1.08], [0.115, 1567.98, .92],
+                    [0.82, 1174.66, 1.12], [0.875, 1479.98, 1.02], [0.935, 1760.00, .88],
+                    [1.64, 1046.50, 1.24], [1.700, 1318.51, 1.12], [1.765, 1567.98, .96]
                 ],
                 review: [
-                    [0.00, 493.88, .25, 'triangle'], [0.32, 659.25, .27, 'triangle'], [0.70, 880.00, .28, 'triangle'],
-                    [1.16, 659.25, .38, 'triangle'], [1.76, 880.00, .30, 'triangle']
+                    [0.00, 880.00, 1.20], [0.060, 1174.66, 1.08], [0.125, 1396.91, .92],
+                    [1.38, 880.00, 1.24], [1.440, 1174.66, 1.10], [1.505, 1396.91, .96]
                 ],
                 agenda: [
-                    [0.00, 587.33, .24, 'triangle'], [0.30, 739.99, .26, 'triangle'], [0.66, 987.77, .27, 'triangle'],
-                    [1.12, 739.99, .38, 'triangle'], [1.72, 987.77, .30, 'triangle']
+                    [0.00, 987.77, 1.18], [0.060, 1318.51, 1.06], [0.125, 1567.98, .92],
+                    [1.36, 987.77, 1.22], [1.420, 1318.51, 1.10], [1.485, 1567.98, .96]
                 ],
                 pengumuman: [
-                    [0.00, 440.00, .25, 'triangle'], [0.34, 554.37, .27, 'triangle'], [0.72, 659.25, .30, 'triangle'],
-                    [1.20, 554.37, .38, 'triangle'], [1.82, 659.25, .30, 'triangle']
+                    [0.00, 783.99, 1.22], [0.065, 1046.50, 1.10], [0.135, 1318.51, .96],
+                    [1.42, 783.99, 1.26], [1.485, 1046.50, 1.12], [1.555, 1318.51, 1.00]
                 ],
                 rencana: [
-                    [0.00, 523.25, .25, 'triangle'], [0.32, 659.25, .25, 'triangle'], [0.68, 783.99, .30, 'triangle'],
-                    [1.16, 659.25, .34, 'triangle'], [1.64, 523.25, .38, 'triangle'], [2.24, 783.99, .32, 'triangle']
+                    [0.00, 987.77, 1.24], [0.060, 1318.51, 1.12], [0.125, 1567.98, .98],
+                    [1.40, 987.77, 1.28], [1.460, 1318.51, 1.16], [1.525, 1567.98, 1.02]
                 ],
                 default: [
-                    [0.00, 523.25, .25, 'triangle'], [0.32, 659.25, .27, 'triangle'], [0.70, 783.99, .30, 'triangle'],
-                    [1.18, 659.25, .38, 'triangle'], [1.78, 783.99, .30, 'triangle']
+                    [0.00, 987.77, 1.22], [0.060, 1318.51, 1.10], [0.125, 1567.98, .96],
+                    [1.40, 987.77, 1.26], [1.460, 1318.51, 1.14], [1.525, 1567.98, 1.00]
                 ]
             };
             const pattern = patternMap[kind] || patternMap.default;
             const now = ctx.currentTime + 0.03;
 
-            pattern.forEach(([offset, frequency, duration, type]) => {
+            pattern.forEach(([offset, frequency, duration]) => {
                 playArikaTone(ctx, now + offset, frequency, duration, {
-                    type,
-                    typeB: 'triangle',
-                    harmony: 2.0,
-                    peak: kind === 'urgent' ? 0.98 : 0.90,
-                    master: kind === 'urgent' ? 1.00 : 0.96,
-                    filter: 5600
+                    peak: kind === 'urgent' ? 0.94 : 0.82,
+                    master: kind === 'urgent' ? 0.92 : 0.86,
+                    filter: kind === 'urgent' ? 8200 : 7400
                 });
             });
 
@@ -8916,7 +8933,7 @@
         }
 
         function getArikaReminderTimingText() {
-            return 'Durasi nada pengingat ARIKA sekitar 2–3 detik dengan volume chime yang sudah diperkuat. Sistem mengecek reminder sekitar setiap 15 detik saat tab aktif dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
+            return 'Durasi nada bel pengingat ARIKA sekitar 2,8–3,2 detik dengan pola “triiiing... triiiing” yang lebih jernih dan tetap diperkuat. Sistem mengecek reminder sekitar setiap 10 detik, termasuk dari data stabil lokal/cache, dan akan mencoba ulang bila suara belum sempat keluar pada tab background. Reminder yang sama tidak dibunyikan terus-menerus; jurnal/catatan/rencana pribadi maksimal berulang sekitar 60 menit sekali setelah berhasil berbunyi, pengumuman sekitar 120 menit sekali, dan agenda mendekati waktu mulai sekitar 15 menit sekali.';
         }
 
         function arikaSpeechSupported() {
@@ -8969,7 +8986,7 @@
             const voice = getArikaPreferredVoice();
             if(voice) return `Suara Bahasa Indonesia terdeteksi: ${voice.name || 'Voice Indonesia'}.`;
             if(!voices.length) return 'Daftar suara belum terbaca. Klik Tes Suara kembali beberapa detik lagi.';
-            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai nada chime ARIKA. Silakan tambahkan voice Bahasa Indonesia di pengaturan Windows/Edge/Chrome jika ingin memakai suara narasi.';
+            return 'Suara Bahasa Indonesia tidak ditemukan di browser/perangkat ini. ARIKA akan memakai nada bel lonceng ARIKA. Silakan tambahkan voice Bahasa Indonesia di pengaturan Windows/Edge/Chrome jika ingin memakai suara narasi.';
         }
 
         function sanitizeArikaSpeechText(text) {
@@ -9183,24 +9200,47 @@
             } catch(e) {}
 
             try {
-                const rencanaList = dedupeRencanaList((window.rencanaData || [])
+                // v182: ambil rencana dari sumber stabil, bukan hanya window.rencanaData.
+                // Saat tab berpindah/background, window.rencanaData kadang belum terbarui penuh,
+                // sementara data baru sudah tersimpan di localStorage/cache. Jika hanya membaca window.rencanaData,
+                // alarm rencana pada menit yang sama bisa terlewat.
+                const rencanaSource = (typeof getStableRencanaData === 'function')
+                    ? getStableRencanaData(window.rencanaData || [])
+                    : (window.rencanaData || []);
+                const rencanaList = dedupeRencanaList((rencanaSource || [])
                     .filter(isCurrentUserRencana)
                     .filter(isRencanaDalamRentangMinggu)
                     .filter(item => !isRencanaSelesai(item))
-                    .filter(item => isRencanaHariIni(item) || isRencanaTerlewat(item)));
+                    .filter(item => isRencanaHariIni(item) || isRencanaTerlewat(item)))
+                    .sort((a, b) => {
+                        const ad = getRencanaDueMinutes(a);
+                        const bd = getRencanaDueMinutes(b);
+                        if(ad === null && bd === null) return 0;
+                        if(ad === null) return 1;
+                        if(bd === null) return -1;
+                        return ad - bd;
+                    });
                 if(rencanaList.length) {
-                    const overdueCount = rencanaList.filter(isRencanaTerlewat).length;
-                    const todayCount = rencanaList.filter(isRencanaHariIni).length;
-                    const nearestDue = rencanaList.find(isRencanaHariIni) || rencanaList[0];
+                    const dueTodayList = rencanaList.filter(isRencanaHariIni);
+                    const overdueList = rencanaList.filter(isRencanaTerlewat);
+                    const overdueCount = overdueList.length;
+                    const todayCount = dueTodayList.length;
+                    const nearestDue = dueTodayList[0] || overdueList[0] || rencanaList[0];
                     const jamText = nearestDue && getRencanaJamReminder(nearestDue) ? ` pukul ${getRencanaJamReminder(nearestDue)}` : '';
+                    const planTitle = nearestDue && nearestDue.judul ? `: ${nearestDue.judul}` : '';
+                    const dueKeyBase = nearestDue ? `${nearestDue.id || getRencanaKey(nearestDue)}-${nearestDue.tanggal || today}-${getRencanaJamReminder(nearestDue)}` : today;
                     addReminderEvent(events, {
-                        priority: overdueCount ? 2 : 3,
+                        // Rencana yang sudah masuk jamnya harus menang dari reminder jurnal biasa,
+                        // supaya alarm pada jam pilihan user tidak tertunda oleh event lain.
+                        priority: todayCount ? 1 : 2,
                         kind: 'rencana',
-                        key: `rencana-pribadi-${userKey}-${today}-${todayCount}-${overdueCount}-${rencanaList.map(x => `${x.id || x.judul || x.tanggal}-${getRencanaJamReminder(x)}`).slice(0, 5).join('|')}`,
-                        title: overdueCount ? 'Reminder Pribadi Terlewat' : 'Reminder Pribadi Hari Ini',
-                        body: overdueCount ? `${overdueCount} rencana pribadi melewati target.` : `${todayCount} rencana pribadi sudah memasuki jam reminder${jamText}.`,
-                        speech: overdueCount ? `Halo, ada ${overdueCount} reminder pribadi yang sudah melewati target.` : `Halo, ada ${todayCount} reminder pribadi yang sudah memasuki jam reminder${jamText}.`,
-                        repeatMinutes: 60
+                        key: `rencana-pribadi-${userKey}-${todayCount ? 'due' : 'overdue'}-${dueKeyBase}`,
+                        title: overdueCount && !todayCount ? 'Reminder Pribadi Terlewat' : 'Reminder Pribadi Sekarang',
+                        body: overdueCount && !todayCount ? `${overdueCount} rencana pribadi melewati target.` : `${todayCount || 1} rencana pribadi sudah memasuki jam reminder${jamText}${planTitle}.`,
+                        speech: overdueCount && !todayCount ? `Halo, ada ${overdueCount} reminder pribadi yang sudah melewati target.` : `Halo, reminder pribadi${planTitle} sudah memasuki jam pengingat${jamText}.`,
+                        // Pada 60 menit pertama setelah jam rencana, ulang lebih cepat agar tidak mudah terlewat
+                        // bila timer browser sempat tertahan ketika tab berada di background.
+                        repeatMinutes: todayCount ? 10 : 60
                     });
                 }
             } catch(e) {}
@@ -9338,12 +9378,12 @@
             await loadArikaVoices();
             updateArikaReminderSoundPanel();
             if(ok) playArikaBeepPattern('urgent');
-            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi lebih keras dan lebih stabil di tab background. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
+            const spoke = await speakArikaReminderText(getArikaReminderSpeech({ speech: 'Ini tes suara pengingat ARIKA versi bel lonceng triiiing triiiing yang lebih jernih, lebih keras, dan lebih stabil di tab background. Jika kalimat ini terdengar, berarti suara Bahasa Indonesia tersedia di perangkat ini. Silakan pastikan volume perangkat juga aktif.' }), 'urgent');
             flashArikaTitle('Tes Pengingat ARIKA');
             if(spoke) {
                 window.showCustomAlert('Tes suara berhasil. ' + getArikaVoiceDiagnosticText() + ' ' + getArikaReminderTimingText());
             } else {
-                window.showCustomAlert(getArikaVoiceDiagnosticText() + ' Jika nada chime ARIKA terdengar, pengingat tetap aktif tanpa suara manusia. ' + getArikaReminderTimingText());
+                window.showCustomAlert(getArikaVoiceDiagnosticText() + ' Jika nada bel lonceng ARIKA terdengar, pengingat tetap aktif tanpa suara manusia. ' + getArikaReminderTimingText());
             }
         };
 
@@ -9379,15 +9419,26 @@
             updateArikaReminderSoundPanel();
             if(arikaReminderWatcherTimer) clearInterval(arikaReminderWatcherTimer);
             if(!window.currentUser || window.isAdmin) return;
-            arikaReminderWatcherTimer = setInterval(() => {
+
+            const tickReminderWatcher = (source) => {
+                try {
+                    // v182: segarkan rencana dari data stabil sebelum cek suara.
+                    // Ini penting untuk rencana yang baru dibuat dan user langsung pindah tab.
+                    if(typeof getStableRencanaData === 'function') {
+                        window.rencanaData = getStableRencanaData(window.rencanaData || []);
+                    }
+                } catch(e) {}
                 try {
                     const beranda = document.getElementById('view-beranda');
                     if(beranda && !beranda.classList.contains('hidden')) {
                         window.renderRencanaPribadi && window.renderRencanaPribadi({ silent: true });
                     }
                 } catch(e) {}
-                try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: document.hidden ? 'timer-hidden' : 'timer' }); } catch(e) {}
-            }, 15000);
+                try { window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: source || (document.hidden ? 'timer-hidden' : 'timer') }); } catch(e) {}
+            };
+
+            tickReminderWatcher('watcher-start');
+            arikaReminderWatcherTimer = setInterval(() => tickReminderWatcher(document.hidden ? 'timer-hidden' : 'timer'), 10000);
         };
 
         document.addEventListener('visibilitychange', () => {
@@ -12177,8 +12228,18 @@
                 window.showLoader(false);
                 window.isSavingRencana = false;
 
-                // Setelah reminder baru disimpan, cek alarm langsung agar tidak menunggu interval berikutnya.
-                setTimeout(() => window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'save-rencana', forceRencana: true }), 650);
+                // Setelah reminder baru disimpan, cek alarm langsung dan pastikan watcher aktif.
+                // v182: lakukan beberapa cek awal. Jika rencana dibuat mendekati jam reminder lalu user pindah tab,
+                // alarm tetap punya beberapa kesempatan sebelum timer background ditahan browser.
+                try { window.startArikaReminderSoundWatcher && window.startArikaReminderSoundWatcher(); } catch(e) {}
+                [650, 5000, 12000].forEach((delay) => {
+                    setTimeout(() => {
+                        try {
+                            if(typeof getStableRencanaData === 'function') window.rencanaData = getStableRencanaData(window.rencanaData || []);
+                            window.checkBerandaReminderSound && window.checkBerandaReminderSound({ source: 'save-rencana-' + delay, forceRencana: true });
+                        } catch(e) {}
+                    }, delay);
+                });
 
                 postToScript('save_rencana', payload)
                     .then(function(resp) {
