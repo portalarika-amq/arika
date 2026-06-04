@@ -1964,6 +1964,23 @@
                 max-height: 44px !important;
             }
         }
+
+/* v239: fix penyemangat hari ini agar teks tidak terpotong */
+.home-motivation-card{height:auto !important;min-height:0;}
+.home-motivation-card .home-motivation-quote{font-size:1rem;line-height:1.55;letter-spacing:-0.01em;word-break:break-word;white-space:normal;overflow:visible;text-overflow:clip;display:block;}
+.home-motivation-card .home-motivation-source{margin-top:.75rem;font-size:.64rem;line-height:1.35;letter-spacing:.18em;word-break:break-word;white-space:normal;overflow:visible;text-overflow:clip;}
+@media (min-width:1024px){
+  .home-motivation-card{padding:1.4rem 1.5rem !important;}
+  .home-motivation-card .home-section-title{font-size:1.05rem;}
+  .home-motivation-card .home-section-desc{font-size:.74rem;}
+  .home-motivation-card .home-motivation-quote{font-size:1.08rem;line-height:1.6;}
+}
+@media (max-width:640px){
+  .home-motivation-card{padding:1.1rem 1rem !important;}
+  .home-motivation-card .home-motivation-quote{font-size:.96rem;line-height:1.5;}
+  .home-motivation-card .home-motivation-source{font-size:.58rem;letter-spacing:.12em;}
+}
+
 </style>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
@@ -4771,6 +4788,59 @@
 @media (max-width: 640px){.arika-board-card{padding:.78rem .82rem;border-radius:.95rem;gap:.62rem}.arika-board-card-icon{width:1.8rem;height:1.8rem;border-radius:.72rem;font-size:.9rem}.arika-board-title{font-size:.74rem}.arika-board-card-desc{font-size:.64rem;-webkit-line-clamp:2}.arika-board-pill{font-size:.44rem;padding:.2rem .45rem}.arika-board-meta{font-size:.55rem}}
 </style>
 
+
+<style id="arika-v240-motivation-top-style">
+/* v240: Penyemangat Hari Ini diletakkan di bagian atas kanan dan tidak dipotong. */
+#view-beranda .home-motivation-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+#view-beranda .home-motivation-card .home-section-header {
+  margin-bottom: .72rem !important;
+  padding-bottom: .72rem !important;
+}
+#view-beranda .home-motivation-card #motivation-text,
+#view-beranda .home-motivation-card .home-motivation-quote {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+  max-height: none !important;
+  line-height: 1.5 !important;
+  font-size: .95rem !important;
+}
+#view-beranda .home-motivation-card #motivation-source,
+#view-beranda .home-motivation-card .home-motivation-source {
+  display: block !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  max-height: none !important;
+  margin-top: .55rem !important;
+}
+@media (min-width: 1024px) {
+  #view-beranda .home-motivation-card { padding: 1.25rem 1.35rem !important; }
+  #view-beranda .home-motivation-card #motivation-text { font-size: .98rem !important; line-height: 1.5 !important; }
+}
+@media (max-width: 640px) {
+  #view-beranda .home-motivation-card { padding: 1rem !important; }
+  #view-beranda .home-motivation-card #motivation-text { font-size: .9rem !important; line-height: 1.45 !important; }
+}
+</style>
+
+<style id="arika-v240-motivation-placement-style">
+/* v240: letakkan Penyemangat Hari Ini di atas Rencana Saya pada kolom kanan Beranda. */
+#view-beranda .home-motivation-card { order: -10; }
+@media (max-width: 1023px) {
+  #view-beranda .home-motivation-card { order: 0; }
+}
+</style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -5054,24 +5124,26 @@
 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center text-slate-400 text-[10px] uppercase tracking-widest font-black">Belum ada agenda khusus untuk kamu</div>
 </div>
 </div>
-<div class="home-section-card p-6 md:p-8 text-center relative">
+
+</div>
+<div class="space-y-6 md:space-y-8">
+<div class="home-section-card home-motivation-card p-6 md:p-8 text-left relative">
 <div class="home-section-header">
 <div class="home-section-title-wrap text-left">
 <span class="home-section-icon">✨</span>
 <div>
 <span class="home-section-kicker">Penyemangat</span>
-<h2 class="home-section-title">Motivasi Hari Ini</h2>
-<p class="home-section-desc">Kutipan singkat untuk menjaga semangat kerja</p>
+<h2 class="home-section-title">Penyemangat Hari Ini</h2>
+<p class="home-section-desc">Kutipan singkat untuk menjaga semangat kerja.</p>
 </div>
 </div>
 </div>
 <div class="relative">
-<p class="text-base md:text-lg italic font-bold text-slate-700 leading-relaxed tracking-tight" id="motivation-text"></p>
-<p class="mt-4 text-[10px] font-black uppercase tracking-[0.24em] text-slate-400" id="motivation-source"></p>
+<p class="home-motivation-quote italic font-bold text-slate-700" id="motivation-text"></p>
+<p class="home-motivation-source font-black uppercase text-slate-400" id="motivation-source"></p>
 </div>
 </div>
-</div>
-<div class="space-y-6 md:space-y-8">
+
 <div class="home-section-card p-6 md:p-8 text-left arika-home-jump-target" id="personal-reminder-card">
 <div class="home-section-header">
 <div class="home-section-title-wrap">
@@ -6887,9 +6959,9 @@
 </button>
 <footer class="bg-white border-t py-6 no-print text-center">
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
-<div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
+<div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v240 penyemangat di atas</div>
 </footer>
-<script src="app-v237.js?v=237"></script>
+<script src="app-v241.js?v=241"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
