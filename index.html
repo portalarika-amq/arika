@@ -4731,8 +4731,9 @@
 <div class="login-logo-wrap">
 <img alt="Logo ARIKA - Aplikasi Riwayat Interaktif Kegiatan Harian" class="arika-logo-login" decoding="async" fetchpriority="high" src="assets/arika-logo.png"/>
 </div>
-<h2 class="text-xl md:text-2xl font-black text-slate-900 mb-2 leading-tight text-center">Halo, selamat beraktivitas!</h2>
-<p class="text-slate-500 text-xs md:text-sm mb-8 text-center font-bold opacity-75 leading-relaxed">Yuk masuk ke ARIKA untuk mencatat kegiatan hari ini dengan lebih mudah.</p>
+<h2 class="text-lg sm:text-xl md:text-2xl font-black text-slate-900 mb-1 leading-tight text-center whitespace-nowrap">Selamat datang kembali!</h2>
+<p class="text-slate-600 text-sm md:text-base mb-2 text-center font-bold italic leading-relaxed">“Catat Hari Ini, Rancang Esok Hari”</p>
+<p class="text-slate-500 text-xs md:text-sm mb-8 text-center font-bold opacity-75 leading-relaxed">Yuk masuk ke ARIKA untuk memulai.</p>
 <form class="space-y-4 md:space-y-6 text-left" onsubmit="window.handleUserLogin(event)">
 <div>
 <div class="flex justify-between items-center mb-2 ml-2">
@@ -4747,9 +4748,9 @@
 <p class="hidden mt-2 text-[9px] text-rose-500 font-bold uppercase text-center" id="login-status-msg"></p>
 </div>
 <div>
-<label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-[0.2em]">Kata Sandi (NIP)</label>
+<label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-[0.2em]">Kata Sandi</label>
 <div class="relative">
-<input class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 pr-12 font-bold text-slate-700 text-xs md:text-sm text-center outline-none input-focus text-center" id="login-user-nip" placeholder="Masukkan NIP" required="" type="password"/>
+<input class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 pr-12 font-bold text-slate-700 text-xs md:text-sm text-center outline-none input-focus text-center" id="login-user-nip" placeholder="Masukkan kata sandi" required="" type="password"/>
 <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-emerald-600" onclick="window.togglePasswordVisibility('login-user-nip', 'eye-user')" type="button">
 <svg class="h-5 w-5" fill="none" id="eye-user" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
@@ -5531,7 +5532,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
 <h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">1. Login Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pilih nama pada daftar pegawai, masukkan NIP, lalu klik <strong>Masuk Portal</strong>. Pastikan nama dan NIP sesuai dengan data pada Sheet Pegawai.</p>
+<p class="text-sm text-slate-600 leading-relaxed">Pilih nama pada daftar pegawai, masukkan kata sandi, lalu klik <strong>Masuk Portal</strong>.</p>
 </div>
 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
 <h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">2. Beranda Pegawai</h3>
@@ -5765,7 +5766,7 @@
 </details>
 <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
 <summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah Ketua Tim perlu menggunakan akun admin utama?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Tidak. Ketua Tim cukup login sebagai pegawai biasa menggunakan nama dan NIP masing-masing. Jika kolom Peran sudah diisi Ketua Tim, menu Ketua Tim akan muncul otomatis.</p>
+<p class="mt-3 text-sm text-slate-600 leading-relaxed">Tidak. Ketua Tim cukup login sebagai pegawai biasa menggunakan nama dan kata sandi masing-masing. Jika kolom Peran sudah diisi Ketua Tim, menu Ketua Tim akan muncul otomatis.</p>
 </details>
 <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">B. Jurnal Harian dan Riwayat</h3>
 <details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
@@ -6715,158 +6716,7 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
 </footer>
-<script src="app-v225.js?v=225"></script>
-
-<!-- ARIKA v225: compact chip/filter layout -->
-<style id="arika-v225-compact-chip-style">
-  /* Chip filter dibuat lebih hemat ruang dan rapi di PC maupun mobile. */
-  :root {
-    --arika-chip-h: 28px;
-    --arika-chip-px: .62rem;
-    --arika-chip-gap: .35rem;
-  }
-
-  .rekap-filter-chip,
-  .review-status-chip,
-  #rekap-cat-chipbar button,
-  #rekap-status-chipbar button,
-  #rekap-month-actions button,
-  #lembur-month-actions button,
-  button[data-rekap-cat],
-  button[data-rekap-status],
-  button[data-jurnal-status],
-  button[data-review-status],
-  button[data-filter-status],
-  button[data-filter-lab],
-  button[data-admin-filter],
-  .arika-filter-chip,
-  .arika-compact-chip,
-  .arika-chip-select-group button,
-  .arika-v206-chip-group button {
-    min-height: var(--arika-chip-h) !important;
-    height: auto !important;
-    padding: .38rem var(--arika-chip-px) !important;
-    border-radius: 999px !important;
-    font-size: 9px !important;
-    line-height: 1.05 !important;
-    letter-spacing: .055em !important;
-    gap: .25rem !important;
-    box-shadow: none !important;
-    white-space: nowrap !important;
-  }
-
-  .rekap-filter-chip.active,
-  .review-status-chip.active,
-  button[data-rekap-cat].active,
-  button[data-rekap-status].active,
-  button[data-jurnal-status].active,
-  button[data-review-status].active,
-  .arika-filter-chip.active,
-  .arika-compact-chip.active {
-    box-shadow: 0 6px 12px rgba(8,145,178,.14) !important;
-  }
-
-  #rekap-cat-chipbar,
-  #rekap-status-chipbar,
-  #rekap-month-actions,
-  #lembur-month-actions,
-  .admin-filterbar,
-  .filter-chipbar,
-  .arika-chipbar,
-  .arika-filter-chipbar {
-    gap: var(--arika-chip-gap) !important;
-    row-gap: .38rem !important;
-    align-items: center !important;
-  }
-
-  /* Kategori Isi Jurnal tetap kartu, tetapi dibuat lebih rendah dan seragam. */
-  .jurnal-cat-grid {
-    gap: .55rem !important;
-  }
-  .jurnal-cat-option {
-    min-height: 58px !important;
-    padding: .55rem .65rem !important;
-    border-radius: 1rem !important;
-    gap: .35rem !important;
-    font-size: 9.5px !important;
-    line-height: 1.15 !important;
-  }
-  .jurnal-cat-icon {
-    font-size: 15px !important;
-  }
-
-  /* Status akhir dan evaluasi dibuat ringkas tanpa mengurangi keterbacaan. */
-  #jurnal-status-options,
-  #review-status-options {
-    gap: .4rem !important;
-  }
-  #jurnal-status-options button,
-  #review-status-options button,
-  .review-status-chip {
-    min-height: 30px !important;
-    padding: .42rem .65rem !important;
-    border-radius: .9rem !important;
-    font-size: 9px !important;
-    letter-spacing: .05em !important;
-  }
-
-  /* Area filter besar dirapatkan agar tidak mengambil banyak tinggi halaman. */
-  .admin-filterbar .admin-control,
-  .admin-filterbar select,
-  .admin-filterbar input {
-    min-height: 34px !important;
-    padding: .45rem .65rem !important;
-    border-radius: .85rem !important;
-    font-size: 11px !important;
-  }
-  .admin-filterbar .admin-action-btn {
-    min-height: 34px !important;
-    padding: .48rem .7rem !important;
-    border-radius: .85rem !important;
-    font-size: 9px !important;
-    letter-spacing: .08em !important;
-  }
-
-  /* Filter Riwayat/Lembur dibuat compact dan tetap mudah diklik. */
-  #filter-rekap-manual,
-  #lembur-month-filter,
-  #admin-overtime-month,
-  #admin-analytics-month {
-    min-height: 36px !important;
-    padding: .48rem .7rem !important;
-    border-radius: .85rem !important;
-    font-size: 12px !important;
-  }
-
-  @media (max-width: 768px) {
-    :root {
-      --arika-chip-h: 30px;
-      --arika-chip-px: .58rem;
-      --arika-chip-gap: .32rem;
-    }
-    .rekap-filter-chip,
-    .review-status-chip,
-    button[data-rekap-cat],
-    button[data-rekap-status],
-    button[data-jurnal-status],
-    button[data-review-status],
-    .arika-filter-chip,
-    .arika-compact-chip {
-      font-size: 8.5px !important;
-      padding: .4rem .56rem !important;
-      letter-spacing: .045em !important;
-    }
-    .jurnal-cat-option {
-      min-height: 54px !important;
-      padding: .5rem .55rem !important;
-      font-size: 8.5px !important;
-    }
-    .admin-filterbar {
-      justify-content: flex-start !important;
-    }
-  }
-</style>
-
+<script src="app-v233.js?v=233"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -7799,245 +7649,5 @@
   setTimeout(install, 1400);
 })();
 </script>
-
-<style id="arika-v224-pc-nav-final-clean-style">
-/* v224: Navbar PC final — satu baris memanjang, logo kiri tidak bertabrakan, dropdown hanya untuk mobile. */
-@media (min-width: 901px) {
-  html body #main-nav {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
-
-  html body #main-nav .max-w-7xl {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: clamp(.9rem, 1.8vw, 1.8rem) !important;
-    padding-right: clamp(.9rem, 1.8vw, 1.8rem) !important;
-  }
-
-  html body #main-nav .nav-row {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: clamp(.75rem, 1.6vw, 1.45rem) !important;
-    height: auto !important;
-    min-height: 78px !important;
-    padding-top: .48rem !important;
-    padding-bottom: .48rem !important;
-    overflow: visible !important;
-  }
-
-  html body #main-nav .nav-row > .group {
-    flex: 0 0 clamp(145px, 15vw, 205px) !important;
-    width: clamp(145px, 15vw, 205px) !important;
-    min-width: 145px !important;
-    max-width: 205px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-
-  html body #main-nav .arika-logo-nav {
-    display: block !important;
-    width: clamp(138px, 14vw, 195px) !important;
-    max-width: 195px !important;
-    min-width: 0 !important;
-    height: auto !important;
-    max-height: 54px !important;
-    object-fit: contain !important;
-    object-position: left center !important;
-    margin: 0 !important;
-  }
-
-  html body #main-nav #nav-menu {
-    flex: 1 1 auto !important;
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: .32rem !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    white-space: nowrap !important;
-    padding: .34rem !important;
-    border-radius: 1.15rem !important;
-    scrollbar-width: thin !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  html body #main-nav #nav-menu::-webkit-scrollbar {
-    height: 4px !important;
-  }
-
-  html body #main-nav #nav-menu::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, .42) !important;
-    border-radius: 999px !important;
-  }
-
-  html body #main-nav #nav-menu .nav-pill,
-  html body #main-nav #nav-menu .nav-logout {
-    flex: 0 0 auto !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    white-space: nowrap !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    padding: 0 .72rem !important;
-    border-radius: .95rem !important;
-    font-size: clamp(.70rem, .72vw, .86rem) !important;
-    line-height: 1 !important;
-    letter-spacing: .01em !important;
-    margin: 0 !important;
-  }
-
-  html body #main-nav #nav-menu .nav-pill {
-    gap: .32rem !important;
-  }
-
-  html body #main-nav #nav-menu .nav-pill .nav-icon {
-    font-size: .9rem !important;
-    line-height: 1 !important;
-  }
-
-  html body #main-nav #nav-menu .nav-logout {
-    padding-left: .9rem !important;
-    padding-right: .9rem !important;
-    font-size: .61rem !important;
-    letter-spacing: .14em !important;
-  }
-
-  html body #main-nav .mobile-nav-wrap,
-  html body #mobile-nav-select {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-  }
-}
-
-@media (min-width: 901px) and (max-width: 1260px) {
-  html body #main-nav .nav-row {
-    gap: .7rem !important;
-  }
-  html body #main-nav .nav-row > .group {
-    flex-basis: 142px !important;
-    width: 142px !important;
-    min-width: 142px !important;
-    max-width: 142px !important;
-  }
-  html body #main-nav .arika-logo-nav {
-    width: 138px !important;
-    max-width: 138px !important;
-    max-height: 44px !important;
-  }
-  html body #main-nav #nav-menu {
-    gap: .22rem !important;
-    padding: .28rem !important;
-  }
-  html body #main-nav #nav-menu .nav-pill,
-  html body #main-nav #nav-menu .nav-logout {
-    height: 38px !important;
-    min-height: 38px !important;
-    padding-left: .52rem !important;
-    padding-right: .52rem !important;
-    font-size: .64rem !important;
-  }
-  html body #main-nav #nav-menu .nav-logout {
-    font-size: .56rem !important;
-    padding-left: .7rem !important;
-    padding-right: .7rem !important;
-  }
-}
-
-@media (max-width: 900px) {
-  html body #main-nav #nav-menu {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-  html body #main-nav .mobile-nav-wrap {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    position: static !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-  html body #mobile-nav-select {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    position: static !important;
-    width: min(90vw, 330px) !important;
-    height: 46px !important;
-  }
-}
-</style>
-<script id="arika-v224-pc-nav-final-clean-script">
-(function(){
-  function applyPcNavFinal(){
-    try {
-      var isPc = window.matchMedia && window.matchMedia('(min-width: 901px)').matches;
-      var navMenu = document.getElementById('nav-menu');
-      var mobileWrap = document.querySelector('#main-nav .mobile-nav-wrap');
-      var mobileSelect = document.getElementById('mobile-nav-select');
-      if (isPc) {
-        if (navMenu) {
-          navMenu.style.display = 'flex';
-          navMenu.style.flexWrap = 'nowrap';
-          navMenu.style.overflowX = 'auto';
-        }
-        if (mobileWrap) {
-          mobileWrap.style.display = 'none';
-          mobileWrap.style.visibility = 'hidden';
-        }
-        if (mobileSelect) {
-          mobileSelect.style.display = 'none';
-          mobileSelect.style.visibility = 'hidden';
-        }
-      } else {
-        if (navMenu) {
-          navMenu.style.display = 'none';
-          navMenu.style.visibility = 'hidden';
-        }
-        if (mobileWrap) {
-          mobileWrap.style.display = 'flex';
-          mobileWrap.style.visibility = 'visible';
-        }
-        if (mobileSelect) {
-          mobileSelect.style.display = 'block';
-          mobileSelect.style.visibility = 'visible';
-        }
-      }
-    } catch(e) {}
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyPcNavFinal);
-  else applyPcNavFinal();
-  window.addEventListener('resize', applyPcNavFinal);
-  setTimeout(applyPcNavFinal, 300);
-  setTimeout(applyPcNavFinal, 1400);
-})();
-</script>
-
 </body>
 </html>
