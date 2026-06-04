@@ -4598,6 +4598,121 @@
 }
 </style>
 
+
+<style id="arika-v235-beranda-ringkas-css">
+/* v235: Beranda dibuat lebih ringkas, terutama bagian Kontributor */
+#view-beranda .home-section-card.home-contributor-compact-card {
+    padding: 1rem !important;
+}
+#view-beranda .home-contributor-compact-card .home-section-header {
+    margin-bottom: 0 !important;
+    align-items: center !important;
+}
+#view-beranda .home-contributor-compact-card .home-section-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+    font-size: 1rem !important;
+}
+#view-beranda .home-contributor-compact-card .home-section-kicker,
+#view-beranda .home-contributor-compact-card .home-section-desc {
+    display: none !important;
+}
+#view-beranda .home-contributor-compact-card .home-section-title {
+    font-size: .92rem !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+}
+#view-beranda .arika-contributor-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .65rem;
+}
+#view-beranda .arika-contributor-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    max-width: 100%;
+    padding: .35rem .55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(16, 185, 129, .16);
+    background: rgba(236, 253, 245, .75);
+    color: #047857;
+    font-size: .62rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+#view-beranda details.arika-contributor-details {
+    margin-top: .55rem;
+    border-top: 1px dashed rgba(148, 163, 184, .35);
+    padding-top: .45rem;
+}
+#view-beranda details.arika-contributor-details > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: #0f766e;
+    font-size: .62rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    user-select: none;
+}
+#view-beranda details.arika-contributor-details > summary::-webkit-details-marker {
+    display: none;
+}
+#view-beranda .arika-contributor-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    margin-top: .55rem;
+}
+#view-beranda .arika-contributor-mini-title {
+    font-size: .58rem;
+    font-weight: 900;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: .25rem;
+}
+#view-beranda .arika-contributor-mini-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+    padding: .45rem .55rem;
+    border-radius: .85rem;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+}
+#view-beranda .arika-contributor-mini-row span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .68rem;
+    font-weight: 800;
+    color: #334155;
+}
+#view-beranda .arika-contributor-mini-row span:last-child {
+    flex-shrink: 0;
+    font-size: .58rem;
+    font-weight: 900;
+    color: #059669;
+    background: #ecfdf5;
+    border-radius: 999px;
+    padding: .2rem .42rem;
+}
+@media (min-width: 768px) {
+    #view-beranda .arika-contributor-detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -4936,18 +5051,18 @@
 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center text-slate-400 text-[10px] uppercase tracking-widest font-black">Belum ada rencana pribadi</div>
 </div>
 </div>
-<div class="home-section-card p-6 md:p-8 text-center">
+<div class="home-section-card home-contributor-compact-card text-left">
 <div class="home-section-header">
 <div class="home-section-title-wrap text-left">
 <span class="home-section-icon">🏆</span>
 <div>
 <span class="home-section-kicker">Ringkasan Tim</span>
-<h3 class="home-section-title">Kontributor</h3>
-<p class="home-section-desc">Pegawai paling aktif bulan ini</p>
+<h3 class="home-section-title">Kontributor Bulan Ini</h3>
+<p class="home-section-desc">Ringkasan kontributor dibuat ringkas agar Beranda lebih ringan.</p>
 </div>
 </div>
 </div>
-<div class="space-y-3" id="leaderboard-list"></div>
+<div id="leaderboard-list"></div>
 </div>
 <div class="home-section-card p-6 md:p-8 text-left arika-home-jump-target" id="survey-arika-card">
 <div class="home-section-header">
@@ -6716,7 +6831,7 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v216 pilihan tidak berulang</div>
 </footer>
-<script src="app-v233.js?v=233"></script>
+<script src="app-v235.js?v=235"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
