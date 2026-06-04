@@ -4916,6 +4916,267 @@
     }
   }
 </style>
+
+<style id="arika-v249-calendar-arsip-style">
+  #view-rekap .arika-archive-calendar-card { overflow: visible; }
+  #view-rekap #calendar-grid { min-height: 220px; }
+  #view-rekap .calendar-day-card { min-height: 46px; padding: .45rem; border-radius: .85rem; }
+  #view-rekap .calendar-day-number { font-size: .72rem; }
+  #view-rekap .calendar-day-label { font-size: .48rem; line-height: 1.15; max-height: 1.25rem; overflow: hidden; }
+  @media (min-width: 768px) {
+    #view-rekap .calendar-day-card { min-height: 56px; }
+  }
+  @media (max-width: 640px) {
+    #view-rekap .arika-archive-calendar-card { padding: .85rem; }
+    #view-rekap #calendar-grid { gap: .2rem; padding: .35rem; }
+    #view-rekap .calendar-day-card { min-height: 42px; padding: .35rem; border-radius: .65rem; }
+    #view-rekap .calendar-day-label { display: none; }
+  }
+</style>
+
+<style id="arika-v253-visual-theme-consistency">
+  :root {
+    --arika-blue: #0284c7;
+    --arika-cyan: #06b6d4;
+    --arika-teal: #0d9488;
+    --arika-green: #10b981;
+    --arika-primary: #059669;
+    --arika-primary-2: #06b6d4;
+    --arika-soft: rgba(16,185,129,.08);
+    --arika-danger: #fb7185;
+    --arika-danger-deep: #e11d48;
+    --arika-border: rgba(226,232,240,.92);
+    --arika-radius-card: 1.65rem;
+    --arika-radius-control: 1rem;
+    --arika-page-x: clamp(1rem, 3.6vw, 2.75rem);
+    --arika-section-gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  /* v253: Tema visual konsisten lintas desktop dan mobile. */
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(6,182,212,.08), transparent 30rem),
+      linear-gradient(180deg, #f8fafc 0%, #eefdf8 100%) !important;
+  }
+
+  .view-section {
+    padding-left: var(--arika-page-x) !important;
+    padding-right: var(--arika-page-x) !important;
+  }
+
+  #main-nav,
+  #view-beranda .home-section-card,
+  #view-rekap .home-section-card,
+  #view-panduan > div,
+  .admin-card,
+  .admin-section-card,
+  .rounded-3xl.bg-white,
+  .home-section-card {
+    border-radius: var(--arika-radius-card) !important;
+    border-color: var(--arika-border) !important;
+  }
+
+  /* Judul utama dibuat seragam: kapital, padat, dan tegas. */
+  .home-section-title-clean,
+  .home-section-title,
+  .admin-section-title,
+  .admin-hero-title,
+  #view-rekap h1,
+  #view-rekap h2,
+  #view-lembur h1,
+  #view-lembur h2,
+  #view-dashboard-pegawai h1,
+  #view-dashboard-pegawai h2,
+  #view-panduan h1,
+  #view-admin h1,
+  #view-admin h2,
+  #view-admin h3,
+  #view-jurnal h1,
+  #view-jurnal h2 {
+    text-transform: uppercase !important;
+    letter-spacing: .075em !important;
+    font-weight: 950 !important;
+    line-height: 1.18 !important;
+  }
+
+  .home-section-kicker,
+  .admin-section-kicker,
+  .admin-card-kicker,
+  .text-\[10px\].uppercase,
+  .text-\[11px\].uppercase {
+    letter-spacing: .13em !important;
+    font-weight: 950 !important;
+  }
+
+  /* Aksen brand ARIKA: biru–toska–hijau mengikuti logo. */
+  .arika-brand-word,
+  .brand-gradient,
+  .arika-gradient-text {
+    background: linear-gradient(90deg, var(--arika-blue), var(--arika-cyan) 48%, var(--arika-green)) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: var(--arika-cyan) !important;
+  }
+
+  .home-section-card::before,
+  #view-beranda .home-section-card::before,
+  .admin-section-card::before {
+    background: linear-gradient(90deg, var(--arika-green), var(--arika-cyan), var(--arika-blue)) !important;
+  }
+
+  /* Tombol utama: hijau–toska konsisten. */
+  button[class*="bg-emerald"],
+  button[class*="bg-teal"],
+  button[class*="bg-cyan"],
+  .home-section-action button,
+  .home-refresh-btn,
+  .arika-home-jump-btn,
+  #toggle-rencana-form-btn,
+  #btn-submit-rencana,
+  #btn-export-history,
+  #btn-export-lembur,
+  #btn-export-admin,
+  .admin-export-btn,
+  .reminder-sound-btn.primary,
+  .arika-reminder-center-fab,
+  .arika-help-wa-btn {
+    border-radius: var(--arika-radius-control) !important;
+    background: linear-gradient(135deg, var(--arika-primary), var(--arika-primary-2)) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.42) !important;
+    box-shadow: 0 12px 24px rgba(5,150,105,.16) !important;
+  }
+
+  button[class*="bg-emerald"]:hover,
+  button[class*="bg-teal"]:hover,
+  button[class*="bg-cyan"]:hover,
+  .home-section-action button:hover,
+  .home-refresh-btn:hover,
+  .arika-home-jump-btn:hover,
+  #toggle-rencana-form-btn:hover,
+  #btn-submit-rencana:hover,
+  .admin-export-btn:hover {
+    filter: brightness(1.02) saturate(1.05);
+    transform: translateY(-1px);
+  }
+
+  /* Tombol bahaya: merah lembut, tidak terlalu keras. */
+  .nav-logout,
+  .admin-logout-btn,
+  #custom-confirm-yes,
+  button[class*="bg-rose"],
+  button[class*="bg-red"],
+  .arika-archive-action.delete {
+    border-radius: var(--arika-radius-control) !important;
+    background: linear-gradient(135deg, #fff1f2, #ffe4e6) !important;
+    color: var(--arika-danger-deep) !important;
+    border: 1px solid rgba(251,113,133,.28) !important;
+    box-shadow: 0 10px 20px rgba(225,29,72,.08) !important;
+  }
+
+  .nav-logout:hover,
+  .admin-logout-btn:hover,
+  #custom-confirm-yes:hover,
+  button[class*="bg-rose"]:hover,
+  button[class*="bg-red"]:hover,
+  .arika-archive-action.delete:hover {
+    background: linear-gradient(135deg, var(--arika-danger), #f43f5e) !important;
+    color: #ffffff !important;
+  }
+
+  /* Input dan filter lebih seragam. */
+  input,
+  textarea,
+  select,
+  .mobile-nav-select-arika {
+    border-radius: var(--arika-radius-control) !important;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .mobile-nav-select-arika:focus {
+    border-color: rgba(6,182,212,.65) !important;
+    box-shadow: 0 0 0 3px rgba(6,182,212,.14) !important;
+  }
+
+  .filter-chip,
+  .arika-filter-chip,
+  .arika-status-chip,
+  .arika-category-card,
+  .agenda-chip,
+  .survey-choice-chip,
+  .arika-target-chip {
+    border-radius: 999px !important;
+    letter-spacing: .075em !important;
+  }
+
+  .filter-chip.is-active,
+  .arika-filter-chip.is-active,
+  .arika-status-chip.is-active,
+  .arika-category-card.is-active,
+  .survey-choice-chip.is-active,
+  .arika-target-chip.is-active {
+    background: linear-gradient(135deg, var(--arika-primary), var(--arika-primary-2)) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+
+  /* Jarak desktop/mobile konsisten dan tidak terlalu penuh. */
+  #view-beranda,
+  #view-jurnal,
+  #view-rekap,
+  #view-lembur,
+  #view-dashboard-pegawai,
+  #view-panduan,
+  #view-admin {
+    gap: var(--arika-section-gap) !important;
+  }
+
+  @media (min-width: 768px) {
+    .home-section-card,
+    .admin-section-card,
+    #view-panduan > div {
+      padding: clamp(1.35rem, 2.3vw, 2rem) !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    :root {
+      --arika-page-x: .85rem;
+      --arika-section-gap: .9rem;
+      --arika-radius-card: 1.25rem;
+      --arika-radius-control: .85rem;
+    }
+    .view-section {
+      padding-left: var(--arika-page-x) !important;
+      padding-right: var(--arika-page-x) !important;
+    }
+    .home-section-card,
+    .admin-section-card,
+    #view-panduan > div {
+      padding: 1rem !important;
+    }
+    .home-section-title-clean,
+    .home-section-title,
+    .admin-section-title,
+    .admin-hero-title,
+    #view-panduan h1,
+    #view-rekap h1,
+    #view-jurnal h1 {
+      font-size: clamp(1rem, 5vw, 1.35rem) !important;
+      letter-spacing: .055em !important;
+    }
+    button,
+    .filter-chip,
+    .arika-filter-chip,
+    .arika-status-chip {
+      min-height: 38px;
+    }
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -5404,18 +5665,18 @@
 <input autocomplete="off" class="w-full bg-emerald-50/70 border-2 border-emerald-100 rounded-2xl p-3 font-black text-xs md:text-sm outline-none input-focus text-center sm:text-left text-slate-700 arika-manual-date-input" data-arika-manual-date="date" id="in-date" inputmode="numeric" onchange="window.checkHariLibur()" placeholder="dd/mm/yyyy" required="" title="" type="text"/>
 <div class="hidden mt-2 p-2 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-[10px] font-black uppercase text-center animate-pulse shadow-sm" id="holiday-warning"></div>
 </div>
-<div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-<div class="sm:col-span-1">
+<div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-3">
+<div class="sm:col-span-1 md:col-span-2 arika-identity-name-wrap">
 <label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-widest">Pelaksana</label>
-<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-name" readonly="" type="text"/>
+<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-name" readonly="" type="text" data-arika-fit-field="identity-name"/>
 </div>
 <div>
 <label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-widest">NIP</label>
-<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-nip" readonly="" type="text"/>
+<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-nip" readonly="" type="text" data-arika-fit-field="identity"/>
 </div>
 <div>
 <label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-widest">Status</label>
-<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-status" readonly="" type="text"/>
+<input class="w-full bg-slate-100 border-2 border-slate-100 rounded-2xl p-3 font-black text-slate-500 text-xs md:text-sm cursor-not-allowed text-center sm:text-left" id="user-display-status" readonly="" type="text" data-arika-fit-field="identity"/>
 </div>
 </div>
 </div>
@@ -5431,9 +5692,13 @@
 <span class="jurnal-cat-icon">🔬</span>
 <span class="jurnal-cat-text">Teknis<br/>Laboratorium</span>
 </button>
-<button aria-pressed="false" class="jurnal-cat-option" data-cat="Rapat/Workshop" type="button">
+<button aria-pressed="false" class="jurnal-cat-option" data-cat="Rapat" type="button">
 <span class="jurnal-cat-icon">🤝</span>
-<span class="jurnal-cat-text">Rapat /<br/>Workshop</span>
+<span class="jurnal-cat-text">Rapat</span>
+</button>
+<button aria-pressed="false" class="jurnal-cat-option" data-cat="Pengembangan Kompetensi" type="button">
+<span class="jurnal-cat-icon">📚</span>
+<span class="jurnal-cat-text">Pengembangan<br/>Kompetensi</span>
 </button>
 <button aria-pressed="false" class="jurnal-cat-option" data-cat="Administrasi" type="button">
 <span class="jurnal-cat-icon">📄</span>
@@ -5541,11 +5806,11 @@
 </section>
 <section class="view-section animate-fade hidden" id="view-rekap">
 <div class="bg-white p-6 rounded-3xl shadow-xl mb-6">
-<h3 class="font-extrabold text-slate-900 mb-4 uppercase tracking-wider text-xs">Pencarian &amp; Filter Bulan</h3>
+<h3 class="font-extrabold text-slate-900 mb-3 uppercase tracking-wider text-xs">ARSIP KERJA JURNAL</h3>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 <div>
 <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Cari Kata Kunci</label>
-<input class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500" id="search-keyword" oninput="window.runFilter({ deferHeavy: true })" placeholder="Ketik deskripsi kegiatan..." type="text"/>
+<input class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500" id="search-keyword" oninput="window.runFilterDebounced ? window.runFilterDebounced() : window.runFilter({ deferHeavy: true })" placeholder="Cari aktivitas, catatan, atau kata kunci..." type="text"/>
 </div>
 <div>
 <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Filter Bulan / Tanggal Manual</label>
@@ -5568,7 +5833,8 @@
 <div class="flex flex-wrap gap-2" id="rekap-cat-chipbar">
 <button class="rekap-filter-chip active" data-rekap-cat="Semua" onclick="window.setRekapCategory('Semua')" type="button">Semua</button>
 <button class="rekap-filter-chip" data-rekap-cat="Teknis Laboratorium" onclick="window.setRekapCategory('Teknis Laboratorium')" type="button">🔬 Teknis</button>
-<button class="rekap-filter-chip" data-rekap-cat="Rapat/Workshop" onclick="window.setRekapCategory('Rapat/Workshop')" type="button">🤝 Rapat</button>
+<button class="rekap-filter-chip" data-rekap-cat="Rapat" onclick="window.setRekapCategory('Rapat')" type="button">🤝 Rapat</button>
+<button class="rekap-filter-chip" data-rekap-cat="Pengembangan Kompetensi" onclick="window.setRekapCategory('Pengembangan Kompetensi')" type="button">📚 Kompetensi</button>
 <button class="rekap-filter-chip" data-rekap-cat="Administrasi" onclick="window.setRekapCategory('Administrasi')" type="button">📄 Administrasi</button>
 <button class="rekap-filter-chip" data-rekap-cat="Lainnya" onclick="window.setRekapCategory('Lainnya')" type="button">📌 Lainnya</button>
 </div>
@@ -5584,48 +5850,50 @@
 </div>
 </div>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-<div class="bg-white p-6 rounded-3xl shadow-xl flex flex-col justify-between">
+<div class="bg-white rounded-3xl shadow-xl mb-5 overflow-hidden arika-archive-summary-card" id="rekap-month-summary-card">
+<div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/60 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 <div>
-<h3 class="font-black uppercase text-[10px] text-slate-400 tracking-[0.2em] mb-4">Ringkasan Riwayat</h3>
-<div class="chart-container"><canvas id="chart-status"></canvas></div>
+<h3 class="font-extrabold text-slate-900 uppercase tracking-wider text-xs">Ringkasan Arsip Bulan Ini</h3>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1" id="rekap-summary-period">Mengikuti filter aktif</p>
+</div>
+<button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors inline-flex items-center justify-center gap-2" onclick="window.downloadPersonalJurnalExcel()" type="button"><span>📥</span> Export sesuai filter</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 md:p-5" id="rekap-month-summary">
+<div class="arika-archive-kpi"><span>Total</span><strong>0</strong></div>
+<div class="arika-archive-kpi done"><span>Selesai</span><strong>0</strong></div>
+<div class="arika-archive-kpi pending"><span>Belum Selesai</span><strong>0</strong></div>
+<div class="arika-archive-kpi overtime"><span>Lembur</span><strong>0</strong></div>
 </div>
 </div>
-<div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-xl">
-<h3 class="font-black uppercase text-[10px] text-slate-400 tracking-[0.2em] mb-4">Grafik Tren Aktivitas Mingguan</h3>
-<div class="chart-container" style="height: 220px;"><canvas id="chart-trend"></canvas></div>
-</div>
-</div>
-<div class="bg-white p-6 rounded-3xl shadow-xl mb-6">
-<div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
+<div class="bg-white p-4 md:p-5 rounded-3xl shadow-xl mb-5 arika-archive-calendar-card">
+<div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
 <div>
 <h3 class="font-extrabold text-slate-900 uppercase tracking-wider text-xs">📅 Kalender Kerja &amp; Riwayat Aktivitas</h3>
-<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1" id="calendar-month-title">Hari kerja otomatis, tanggal merah 2027+ membaca sheet KalenderLibur</p>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1" id="calendar-month-title">Mengikuti filter bulan/tanggal aktif</p>
 </div>
-<div class="flex flex-wrap gap-2 text-[9px] font-black uppercase tracking-widest text-slate-500">
-<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-slate-200"><i class="calendar-legend-dot bg-white border border-slate-300"></i> Hari Kerja</span>
-<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-rose-50 text-rose-700"><i class="calendar-legend-dot bg-rose-200"></i> Tanggal Merah</span>
+<div class="flex flex-wrap gap-1.5 text-[8px] font-black uppercase tracking-widest text-slate-500">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-slate-200"><i class="calendar-legend-dot bg-white border border-slate-300"></i> Kerja</span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-rose-50 text-rose-700"><i class="calendar-legend-dot bg-rose-200"></i> Libur Nasional</span>
 <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-700"><i class="calendar-legend-dot bg-amber-300"></i> Cuti Bersama</span>
-<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700"><i class="calendar-legend-dot bg-emerald-500"></i> Ada Aktivitas</span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700"><i class="calendar-legend-dot bg-emerald-500"></i> Aktivitas</span>
 </div>
 </div>
-<div class="grid grid-cols-7 gap-1 text-center font-bold text-xs bg-slate-100 p-2 rounded-t-2xl text-slate-600">
+<div class="grid grid-cols-7 gap-1 text-center font-bold text-[10px] bg-slate-100 p-2 rounded-t-2xl text-slate-600">
 <div class="text-rose-600">Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div class="text-rose-600">Sab</div>
 </div>
-<div class="grid grid-cols-7 gap-1 p-2 bg-white border border-slate-100 rounded-b-2xl" id="calendar-grid">
+<div class="grid grid-cols-7 gap-1 p-2 bg-white border border-slate-100 rounded-b-2xl" id="calendar-grid"></div>
 </div>
-</div>
-<div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-<div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-wrap gap-3">
-<h3 class="font-extrabold text-slate-900 uppercase tracking-wider text-xs">Daftar Riwayat Jurnal</h3>
-<button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-2" onclick="window.downloadPersonalJurnalExcel()">
-<span>📥</span> Export Excel Jurnal
+<div class="bg-white rounded-3xl shadow-xl overflow-hidden arika-archive-table-card">
+<div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center flex-wrap gap-3">
+<h3 class="font-extrabold text-slate-900 uppercase tracking-wider text-xs">Daftar Arsip Jurnal</h3>
+<button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2" onclick="window.downloadPersonalJurnalExcel()">
+<span>📥</span> Export sesuai filter
                     </button>
 </div>
 <div class="overflow-x-auto">
-<table class="w-full text-left text-[11px] text-center">
+<table class="w-full text-left text-[10px] arika-archive-table">
 <thead class="bg-slate-100 border-b">
-<tr><th class="p-4 uppercase font-black text-slate-400 tracking-widest text-center">Tgl</th><th class="p-4 uppercase font-black text-slate-400 tracking-widest text-center sm:text-left">Aktivitas</th><th class="p-4 uppercase font-black text-slate-400 tracking-widest text-center">Status</th></tr>
+<tr><th class="p-3 uppercase font-black text-slate-400 tracking-widest text-center">Tanggal</th><th class="p-3 uppercase font-black text-slate-400 tracking-widest text-center">Kategori</th><th class="p-3 uppercase font-black text-slate-400 tracking-widest text-left">Aktivitas</th><th class="p-3 uppercase font-black text-slate-400 tracking-widest text-center">Label</th><th class="p-3 uppercase font-black text-slate-400 tracking-widest text-center">Aksi</th></tr>
 </thead>
 <tbody class="divide-y text-slate-600 font-medium text-center" id="tbl-body"></tbody>
 </table>
@@ -5645,8 +5913,8 @@
 </div>
 <div class="flex flex-wrap gap-2">
 <input autocomplete="off" class="px-4 py-3 rounded-2xl bg-white/95 text-slate-800 text-xs font-black outline-none shadow-lg arika-manual-date-input" data-arika-manual-date="month" id="pegawai-dashboard-month" inputmode="numeric" onchange="window.renderDashboardPegawai()" placeholder="mm/yyyy" title="" type="text"/>
-<button class="px-4 py-3 rounded-2xl bg-white text-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all" onclick="const el=document.getElementById('pegawai-dashboard-month'); if(el) el.value=(new Date()).toISOString().slice(0,7); window.renderDashboardPegawai();" type="button">Bulan Ini</button>
-<button class="px-4 py-3 rounded-2xl bg-emerald-950/30 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-950/40 transition-all" onclick="const el=document.getElementById('pegawai-dashboard-month'); if(el) el.value=''; window.renderDashboardPegawai();" type="button">Semua Periode</button>
+<button class="arika-dashboard-period-btn is-active px-4 py-3 rounded-2xl bg-white text-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-all" id="pegawai-dashboard-month-current" onclick="const el=document.getElementById('pegawai-dashboard-month'); const d=new Date(); if(el){ el.dataset.periodMode='month'; el.value=String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); } window.ARIKA_updatePegawaiDashboardFilterState && window.ARIKA_updatePegawaiDashboardFilterState(); window.renderDashboardPegawai && window.renderDashboardPegawai();" type="button">Bulan Ini</button>
+<button class="arika-dashboard-period-btn px-4 py-3 rounded-2xl bg-emerald-950/30 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-950/40 transition-all" id="pegawai-dashboard-month-all" onclick="const el=document.getElementById('pegawai-dashboard-month'); if(el){ el.dataset.periodMode='all'; el.dataset.arikaIsoValue=''; el.value=''; } window.ARIKA_updatePegawaiDashboardFilterState && window.ARIKA_updatePegawaiDashboardFilterState(); window.renderDashboardPegawai && window.renderDashboardPegawai();" type="button">Semua Periode</button>
 <button class="px-4 py-3 rounded-2xl bg-cyan-950/30 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-cyan-950/40 transition-all" onclick="window.fetchLiveJurnalFromSheet &amp;&amp; window.fetchLiveJurnalFromSheet({ silent:false, timeoutMs:12000 }).then(()=&gt;window.renderDashboardPegawai())" type="button">↻ Sinkron</button>
 </div>
 </div>
@@ -7026,7 +7294,7 @@
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
 <div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v244 panduan ringkas</div>
 </footer>
-<script src="app-v245.js?v=245"></script>
+<script src="app-v259.js?v=259"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -7959,5 +8227,104 @@
   setTimeout(install, 1400);
 })();
 </script>
+
+<style id="arika-v256-field-rapi">
+/* v256 - Rapikan teks pada kolom form Isi Jurnal agar nama panjang tidak terpotong */
+#view-jurnal #form-arika .arika-identity-name-wrap {
+  min-width: 0;
+}
+#view-jurnal #user-display-name,
+#view-jurnal #user-display-nip,
+#view-jurnal #user-display-status {
+  min-width: 0;
+  width: 100%;
+  letter-spacing: .01em;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+#view-jurnal #user-display-name {
+  font-size: clamp(11px, .86vw, 14px) !important;
+  padding-left: .85rem !important;
+  padding-right: .85rem !important;
+}
+#view-jurnal #user-display-nip,
+#view-jurnal #user-display-status {
+  font-size: clamp(11px, .78vw, 13px) !important;
+  padding-left: .75rem !important;
+  padding-right: .75rem !important;
+}
+@media (min-width: 768px) {
+  #view-jurnal #form-arika .arika-identity-name-wrap {
+    grid-column: span 2 / span 2;
+  }
+}
+@media (max-width: 767px) {
+  #view-jurnal #form-arika {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  #view-jurnal #user-display-name,
+  #view-jurnal #user-display-nip,
+  #view-jurnal #user-display-status {
+    text-align: left !important;
+  }
+}
+</style>
+<script id="arika-v256-field-fit">
+(function(){
+  if (window.__ARIKA_V256_FIELD_FIT__) return;
+  window.__ARIKA_V256_FIELD_FIT__ = true;
+
+  function fitOne(el){
+    if (!el) return;
+    var val = (el.value || el.getAttribute('value') || '').toString();
+    if (val) el.title = val;
+    el.style.fontSize = '';
+    var max = el.id === 'user-display-name' ? 14 : 13;
+    var min = 10.5;
+    var size = max;
+    if (!el.clientWidth) return;
+    el.style.fontSize = size + 'px';
+    var guard = 0;
+    while (el.scrollWidth > el.clientWidth - 6 && size > min && guard < 20) {
+      size -= 0.5;
+      el.style.fontSize = size + 'px';
+      guard++;
+    }
+  }
+
+  function run(){
+    ['user-display-name','user-display-nip','user-display-status'].forEach(function(id){
+      fitOne(document.getElementById(id));
+    });
+  }
+
+  function install(){
+    run();
+    setTimeout(run, 250);
+    setTimeout(run, 900);
+    setTimeout(run, 1800);
+    var targets = ['user-display-name','user-display-nip','user-display-status']
+      .map(function(id){ return document.getElementById(id); })
+      .filter(Boolean);
+    targets.forEach(function(el){
+      try {
+        new MutationObserver(run).observe(el, { attributes:true, attributeFilter:['value','class','style'] });
+      } catch(e) {}
+    });
+    document.addEventListener('click', function(ev){
+      if (ev.target && (ev.target.closest('.tab-btn') || ev.target.closest('[data-tab]'))) setTimeout(run, 160);
+    }, true);
+    window.addEventListener('resize', function(){ clearTimeout(window.__arikaFitFieldTimer); window.__arikaFitFieldTimer = setTimeout(run, 150); });
+    window.addEventListener('orientationchange', function(){ setTimeout(run, 300); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+})();
+</script>
+
 </body>
 </html>
