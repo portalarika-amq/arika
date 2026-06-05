@@ -1999,7 +1999,88 @@
 @media (max-width: 768px) {
   .home-section-title-clean { font-size: 0.88rem; letter-spacing: 0.12em; }
 }
+
+/* v269: Poles beranda PC - keterbacaan sapaan, jarak panel lebih elegan, dan fokus prioritas berkedip */
+@media (min-width: 1024px) {
+  #view-beranda .home-dashboard-grid {
+    grid-template-columns: minmax(0, 1.94fr) minmax(320px, .84fr) !important;
+    column-gap: 1.15rem !important;
+    row-gap: 1.15rem !important;
+    align-items: start !important;
+  }
+  #view-beranda .home-dashboard-grid > .lg\:col-span-2,
+  #view-beranda .home-dashboard-grid > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  #view-beranda .home-section-card,
+  #view-beranda #reminder-sound-panel {
+    border-radius: 1.35rem !important;
+  }
+  #view-beranda .arika-home-hero-line,
+  #view-beranda #reminder-sound-panel,
+  #view-beranda .home-motivation-card,
+  #view-beranda #personal-reminder-card,
+  #view-beranda #home-focus-section,
+  #view-beranda #home-pengumuman-section,
+  #view-beranda #home-agenda-section {
+    margin: 0 !important;
+  }
+  #view-beranda .arika-home-hero-line {
+    min-height: 108px !important;
+    padding: .95rem 1.1rem !important;
+  }
+  #view-beranda .arika-home-line-kicker {
+    color: rgba(255,255,255,.9) !important;
+  }
+  #view-beranda .arika-home-line-title {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(15,23,42,.22), 0 8px 24px rgba(15,23,42,.18) !important;
+  }
+  #view-beranda .arika-home-line-subtitle {
+    font-size: .69rem !important;
+    line-height: 1.46 !important;
+    color: rgba(255,255,255,.98) !important;
+    text-shadow: 0 1px 2px rgba(15,23,42,.28), 0 6px 18px rgba(15,23,42,.16) !important;
+    max-width: 30rem !important;
+  }
+}
+
+@keyframes arikaPriorityBlink {
+  0%, 100% {
+    border-color: rgba(244,63,94,.32);
+    box-shadow: 0 0 0 0 rgba(244,63,94,.18), 0 10px 22px rgba(244,63,94,.08);
+    transform: translateY(0);
+  }
+  50% {
+    border-color: rgba(244,63,94,.72);
+    box-shadow: 0 0 0 4px rgba(244,63,94,.12), 0 16px 30px rgba(244,63,94,.14);
+    transform: translateY(-1px);
+  }
+}
+#view-beranda .arika-focus-item.is-priority-blink {
+  animation: arikaPriorityBlink 1.45s ease-in-out infinite;
+  position: relative;
+}
+#view-beranda .arika-focus-item.is-priority-blink::after {
+  content: none !important;
+  display: none !important;
+}
+#view-beranda .arika-focus-item.is-priority-blink .arika-focus-action {
+  animation: arikaPriorityBlink 1.45s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  #view-beranda .arika-focus-item.is-priority-blink,
+  #view-beranda .arika-focus-item.is-priority-blink .arika-focus-action {
+    animation: none !important;
+  }
+}
+
 </style>
+
+<link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
+<link rel="preload" href="./app-v291.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -2013,7 +2094,22 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <script src="https://cdn.tailwindcss.com"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.__ARIKA_CHART_SRC='https://cdn.jsdelivr.net/npm/chart.js';
+window.loadArikaChartJs=function(){
+  if(window.Chart) return Promise.resolve(window.Chart);
+  if(window.__ARIKA_CHART_LOADING) return window.__ARIKA_CHART_LOADING;
+  window.__ARIKA_CHART_LOADING=new Promise(function(resolve,reject){
+    var s=document.createElement('script');
+    s.src=window.__ARIKA_CHART_SRC;
+    s.defer=true;
+    s.onload=function(){ resolve(window.Chart); };
+    s.onerror=function(){ reject(new Error('Chart.js gagal dimuat')); };
+    document.head.appendChild(s);
+  });
+  return window.__ARIKA_CHART_LOADING;
+};
+</script>
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Rubik:wght@400;500;600;700&display=swap&display=swap');
         
@@ -3180,6 +3276,77 @@
         }
 
     </style>
+
+<style id="arika-v281-panduan-wfh-focus-style">
+/* v281: Panduan fokus dibuat benar-benar hide info lain, ditambah panduan WFH/WFA. Patch hanya untuk tab Panduan. */
+#view-panduan.panduan-focusing .panduan-topic-grid{
+  display:none !important;
+}
+#view-panduan.panduan-focusing .panduan-focus-toolbar{
+  display:flex !important;
+}
+#view-panduan.panduan-focusing .panduan-focus-section{
+  display:none !important;
+  opacity:1 !important;
+  filter:none !important;
+  transform:none !important;
+}
+#view-panduan.panduan-focusing .panduan-focus-section.panduan-focused{
+  display:block !important;
+  opacity:1 !important;
+  filter:none !important;
+  transform:none !important;
+  background:#ffffff !important;
+  border-color:rgba(20,184,166,.36) !important;
+  box-shadow:0 22px 55px rgba(15,23,42,.13) !important;
+}
+#view-panduan .panduan-wfh-note{
+  border:1px solid rgba(20,184,166,.20);
+  background:linear-gradient(135deg,#f0fdfa,#ecfeff);
+  border-radius:1.25rem;
+  padding:1rem;
+}
+#view-panduan .panduan-wfh-step{
+  border:1px solid rgba(226,232,240,.9);
+  background:#f8fafc;
+  border-radius:1.1rem;
+  padding:1rem;
+}
+#view-panduan .panduan-wfh-step h3{
+  font-size:.68rem;
+  font-weight:950;
+  color:#0f766e;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  margin-bottom:.45rem;
+}
+#view-panduan .panduan-wfh-step p,
+#view-panduan .panduan-wfh-note p{
+  font-size:.86rem;
+  line-height:1.62;
+  color:#475569;
+  font-weight:650;
+}
+#view-panduan .panduan-wfh-badge{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:.34rem .62rem;
+  background:#ccfbf1;
+  color:#0f766e;
+  border:1px solid rgba(20,184,166,.22);
+  font-size:.6rem;
+  font-weight:950;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+@media (max-width:640px){
+  #view-panduan .panduan-wfh-step{padding:.85rem;border-radius:1rem;}
+  #view-panduan .panduan-wfh-step p,
+  #view-panduan .panduan-wfh-note p{font-size:.8rem;}
+}
+</style>
+
 <style id="arika-v135-beranda-modern-style">
         #view-beranda {
             position: relative;
@@ -3635,17 +3802,20 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+            color:#ffffff;
+            text-shadow:0 1px 2px rgba(15,23,42,.22);
         }
 
         .arika-home-line-subtitle {
             margin: .18rem 0 0;
-            color: rgba(255,255,255,.86);
+            color: rgba(255,255,255,.98);
             font-size: .68rem;
-            line-height: 1.35;
+            line-height: 1.42;
             font-weight: 800;
             letter-spacing: .01em;
             max-width: 46rem;
             overflow-wrap: anywhere;
+            text-shadow:0 1px 2px rgba(15,23,42,.28);
         }
 
         .arika-home-line-stats {
@@ -5177,6 +5347,248 @@
   }
 </style>
 
+
+<style id="arika-v265-simplify-home-actions">
+/* v265: Beranda lebih ringkas - Pusat Reminder terpusat di Fokus Hari Ini/FAB dan tombol cepat sapaan dihapus */
+#view-beranda #reminder-sound-panel .reminder-sound-grid{grid-template-columns:1fr !important;}
+#view-beranda .arika-home-jump-actions{display:none !important;}
+#view-beranda .arika-home-hero-line{justify-content:flex-start !important;}
+#view-beranda .arika-home-hero-line .arika-home-line-left{width:100% !important;flex:1 1 100% !important;}
+</style>
+
+<style id="arika-v267-pc-sapaan-alarm-fokus-horizontal">
+/* v267: PC Beranda - sapaan dan aktifkan alarm sejajar kanan-kiri, Fokus Hari Ini horizontal ringkas + fix buka lokal. */
+@media (min-width: 1024px) {
+  #view-beranda .home-dashboard-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(300px, .86fr) !important;
+    gap: 1rem !important;
+    align-items: start !important;
+  }
+  #view-beranda .lg\:col-span-2 {
+    grid-column: span 1 / span 1 !important;
+  }
+  #view-beranda .arika-home-hero-line,
+  #view-beranda #reminder-sound-panel {
+    min-height: 94px;
+    margin-bottom: 0 !important;
+  }
+  #view-beranda .arika-home-hero-line {
+    padding: .84rem 1rem !important;
+    border-radius: 1.15rem !important;
+  }
+  #view-beranda .arika-home-line-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  #view-beranda .arika-home-line-title {
+    font-size: clamp(1.02rem, 1.25vw, 1.22rem) !important;
+  }
+  #view-beranda .arika-home-line-subtitle {
+    font-size: .64rem !important;
+  }
+  #view-beranda #reminder-sound-panel {
+    padding: .7rem !important;
+    border-radius: 1.15rem !important;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .07) !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-card {
+    padding: .72rem !important;
+    border-radius: .95rem !important;
+    box-shadow: none !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-card-title {
+    margin-bottom: .48rem !important;
+    gap: .45rem !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-card-title strong {
+    font-size: .58rem !important;
+    letter-spacing: .1em !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-status-pill {
+    padding: .22rem .45rem !important;
+    font-size: .42rem !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: .35rem !important;
+  }
+  #view-beranda #reminder-sound-panel .reminder-sound-actions .reminder-sound-btn {
+    width: 100% !important;
+    min-height: 32px !important;
+    flex: 0 1 auto !important;
+    padding: .42rem .35rem !important;
+    border-radius: .72rem !important;
+    font-size: .42rem !important;
+    letter-spacing: .045em !important;
+    white-space: nowrap !important;
+  }
+
+  #view-beranda .arika-focus-card {
+    padding: .82rem !important;
+    border-radius: 1.15rem !important;
+  }
+  #view-beranda .arika-focus-header {
+    padding-bottom: .52rem !important;
+    margin-bottom: .48rem !important;
+  }
+  #view-beranda .arika-focus-header .home-section-icon {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    border-radius: .82rem !important;
+  }
+  #view-beranda .arika-focus-header .home-section-title {
+    font-size: .76rem !important;
+    letter-spacing: .1em !important;
+  }
+  #view-beranda .arika-focus-refresh {
+    min-height: 30px !important;
+    padding: .34rem .55rem !important;
+    border-radius: .7rem !important;
+    font-size: .46rem !important;
+  }
+  #view-beranda .arika-focus-summary {
+    margin: 0 0 .55rem 0 !important;
+    font-size: .56rem !important;
+    line-height: 1.32 !important;
+  }
+  #view-beranda .arika-focus-list {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: .48rem !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: .05rem .05rem .28rem !important;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  #view-beranda .arika-focus-list::-webkit-scrollbar { height: 6px; }
+  #view-beranda .arika-focus-list::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .35);
+    border-radius: 999px;
+  }
+  #view-beranda .arika-focus-item {
+    flex: 0 0 172px !important;
+    min-height: 96px !important;
+    padding: .55rem .58rem !important;
+    gap: .42rem !important;
+    border-radius: .9rem !important;
+    scroll-snap-align: start;
+  }
+  #view-beranda .arika-focus-icon {
+    width: 1.45rem !important;
+    height: 1.45rem !important;
+    border-radius: .58rem !important;
+    font-size: .82rem !important;
+  }
+  #view-beranda .arika-focus-title {
+    font-size: .47rem !important;
+    letter-spacing: .065em !important;
+    line-height: 1.2 !important;
+  }
+  #view-beranda .arika-focus-desc {
+    font-size: .53rem !important;
+    line-height: 1.28 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  #view-beranda .arika-focus-action {
+    margin-top: .32rem !important;
+    padding: .28rem .46rem !important;
+    border-radius: .55rem !important;
+    font-size: .42rem !important;
+    letter-spacing: .06em !important;
+  }
+  #view-beranda .arika-focus-empty {
+    flex: 1 1 100% !important;
+    padding: .7rem !important;
+    font-size: .55rem !important;
+  }
+}
+@media (min-width: 1280px) {
+  #view-beranda .arika-focus-item { flex-basis: 184px !important; }
+}
+@media (max-width: 1023px) {
+  #view-beranda .arika-sound-side-card { margin-bottom: 1rem !important; }
+}
+</style>
+
+<style id="arika-v282-ui-refine">
+/* v282: penyempurnaan visual ringan dari basis stabil v280/v281 tanpa mengubah sistem data/fungsi. */
+#view-login-user .login-logo-wrap{
+  margin-bottom: .85rem !important;
+}
+#view-login-user form{
+  margin-top: .85rem !important;
+}
+@media (min-width: 901px){
+  #main-nav .nav-row{
+    grid-template-columns: clamp(168px, 16vw, 230px) minmax(0, 1fr) !important;
+  }
+  #main-nav .nav-row > .group{
+    max-width: 230px !important;
+  }
+  #main-nav .arika-logo-nav{
+    width: clamp(166px, 15vw, 220px) !important;
+    max-width: 220px !important;
+    max-height: 58px !important;
+  }
+}
+@media (min-width: 901px) and (max-width: 1280px){
+  #main-nav .nav-row{
+    grid-template-columns: 1fr !important;
+  }
+  #main-nav .arika-logo-nav{
+    width: 188px !important;
+    max-width: 188px !important;
+    max-height: 52px !important;
+    object-position: center center !important;
+  }
+}
+@media (min-width: 1281px) and (max-width: 1440px){
+  #main-nav .nav-row{
+    grid-template-columns: clamp(154px, 14vw, 198px) minmax(0, 1fr) !important;
+  }
+  #main-nav .arika-logo-nav{
+    width: clamp(150px, 13vw, 190px) !important;
+    max-width: 190px !important;
+    max-height: 52px !important;
+  }
+}
+#view-beranda .arika-home-line-kicker{
+  display: inline-flex !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  padding: .24rem .5rem !important;
+  border-radius: 999px !important;
+  color: #ffffff !important;
+  background: rgba(15, 23, 42, .22) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  text-shadow: 0 1px 2px rgba(15,23,42,.45) !important;
+  backdrop-filter: blur(5px);
+}
+#view-beranda .arika-home-line-title,
+#view-beranda .arika-home-line-subtitle{
+  text-shadow: 0 1px 2px rgba(15,23,42,.34), 0 7px 20px rgba(15,23,42,.18) !important;
+}
+@media (max-width: 720px){
+  #main-nav .arika-logo-nav{
+    width: 148px !important;
+    max-height: 44px !important;
+  }
+  #view-beranda .arika-home-line-kicker{
+    white-space: normal !important;
+    line-height: 1.35 !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -5269,7 +5681,7 @@
 <div class="max-w-7xl mx-auto px-4 md:px-6">
 <div class="nav-row flex justify-between items-center h-16 md:h-20">
 <div class="flex items-center group cursor-pointer" onclick="window.nav('beranda')" title="ARIKA">
-<img alt="Logo ARIKA" class="arika-logo-nav" decoding="async" src="assets/arika-logo.png"/>
+<img alt="Logo ARIKA" class="arika-logo-nav" decoding="async" src="assets/arika-logo.webp"/>
 </div>
 <div class="desktop-nav-menu" id="nav-menu">
 <button class="nav-pill" id="btn-beranda" onclick="window.nav('beranda')"><span class="nav-icon">🏠</span><span>Beranda</span></button>
@@ -5277,6 +5689,7 @@
 <button class="nav-pill" id="btn-rekap" onclick="window.nav('rekap')"><span class="nav-icon">📊</span><span>Riwayat Jurnal</span></button>
 <button class="nav-pill" id="btn-lembur" onclick="window.nav('lembur')"><span class="nav-icon">⏰</span><span>Laporan Lembur</span></button>
 <button class="nav-pill" id="btn-dashboard-pegawai" onclick="window.nav('dashboard-pegawai')"><span class="nav-icon">📈</span><span>Dashboard Saya</span></button>
+<button class="nav-pill" id="btn-wfh" onclick="window.nav('wfh')"><span class="nav-icon">🏡</span><span>WFH/WFA</span></button>
 <button class="nav-pill" id="btn-panduan" onclick="window.nav('panduan')"><span class="nav-icon">📘</span><span>Panduan</span></button>
 <button class="nav-pill hidden" id="btn-admin-config" onclick="window.nav('admin')"><span class="nav-icon">⚙️</span><span>Admin</span></button>
 <button class="nav-logout" onclick="window.logout()">Keluar</button>
@@ -5288,6 +5701,7 @@
 <option value="rekap">📊 Riwayat Jurnal</option>
 <option value="lembur">⏰ Laporan Lembur</option>
 <option value="dashboard-pegawai">📈 Dashboard Saya</option>
+<option value="wfh">🏡 WFH/WFA</option>
 <option value="panduan">📘 Panduan</option>
 <option class="hidden" id="opt-admin" value="admin">⚙️ Admin</option>
 <option value="logout">🚪 Keluar</option>
@@ -5305,22 +5719,22 @@
         </button>
 </div>
 <main class="flex-grow max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 w-full no-print" id="arika-app-main">
-<section class="view-section animate-fade hidden max-w-sm mx-auto mt-6 md:mt-10 text-center" id="view-login-user">
+<section class="view-section animate-fade max-w-sm mx-auto mt-6 md:mt-10 text-center" id="view-login-user">
 <div class="bg-white p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-2xl border border-slate-100">
 <div class="login-logo-wrap">
-<img alt="Logo ARIKA - Aplikasi Riwayat Interaktif Kegiatan Harian" class="arika-logo-login" decoding="async" fetchpriority="high" src="assets/arika-logo.png"/>
+<img alt="Logo ARIKA - Aplikasi Riwayat Interaktif Kegiatan Harian" class="arika-logo-login" decoding="async" fetchpriority="high" src="assets/arika-logo.webp"/>
 </div>
-<h2 class="text-lg sm:text-xl md:text-2xl font-black text-slate-900 mb-1 leading-tight text-center whitespace-nowrap">Selamat datang kembali!</h2>
+<!-- v282: judul Selamat datang kembali dihapus agar login lebih ringkas -->
 <p class="text-slate-600 text-sm md:text-base mb-2 text-center font-bold italic leading-relaxed">“Catat Hari Ini, Rancang Esok Hari”</p>
 <p class="text-slate-500 text-xs md:text-sm mb-8 text-center font-bold opacity-75 leading-relaxed">Yuk masuk ke ARIKA untuk memulai.</p>
 <form class="space-y-4 md:space-y-6 text-left" onsubmit="window.handleUserLogin(event)">
 <div>
 <div class="flex justify-between items-center mb-2 ml-2">
-<label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Pilih Nama Pegawai</label>
+<label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Username</label>
 <button class="text-[9px] font-black text-emerald-600 uppercase hover:underline" onclick="window.reloadLoginAndCoreData()" type="button">Muat Ulang ↻</button>
 </div>
 <div class="relative">
-<input autocomplete="off" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-bold text-slate-700 text-xs md:text-sm outline-none input-focus text-center" id="login-user-search" onfocus="window.filterLoginNameOptions()" oninput="window.filterLoginNameOptions()" placeholder="Ketik awal nama pegawai..." required="" type="text"/>
+<input autocomplete="off" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-bold text-slate-700 text-xs md:text-sm outline-none input-focus text-center" id="login-user-search" onfocus="window.filterLoginNameOptions()" oninput="window.filterLoginNameOptions()" placeholder="Ketik username..." required="" type="text"/>
 <input id="login-user-select" type="hidden" value=""/>
 <div class="hidden absolute z-50 mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-xl max-h-64 overflow-y-auto text-left" id="login-user-suggestions"></div>
 </div>
@@ -5345,31 +5759,6 @@
 </div>
 </section>
 <section class="view-section animate-fade hidden" id="view-beranda">
-<div class="reminder-sound-panel hidden mb-6 p-4 rounded-2xl no-print" id="reminder-sound-panel">
-<div class="reminder-sound-grid">
-<div class="reminder-sound-card">
-<div class="reminder-sound-card-title">
-<strong>🔊 Suara Alarm</strong>
-<span class="reminder-sound-status-pill" id="reminder-sound-status">Belum aktif</span>
-</div>
-<div class="reminder-sound-actions">
-<button class="reminder-sound-btn reminder-sound-active" id="arika-sound-enable-btn" onclick="window.enableArikaReminderSound(true)" type="button">🔔 Aktifkan Suara</button>
-<button class="reminder-sound-btn reminder-sound-muted" onclick="window.testArikaReminderSound()" type="button">Tes Suara</button>
-<button class="reminder-sound-btn reminder-sound-muted" id="arika-sound-disable-btn" onclick="window.disableArikaReminderSound()" type="button">Matikan Suara</button>
-</div>
-</div>
-<div class="reminder-sound-card">
-<div class="reminder-sound-card-title">
-<strong>🔔 Pusat Reminder</strong>
-<span class="reminder-sound-status-pill active" id="reminder-center-mini-status">Siap dipakai</span>
-</div>
-<div class="reminder-sound-actions">
-<button class="reminder-sound-btn reminder-sound-active" id="arika-open-reminder-center-btn" onclick="(window.openArikaReminderCenterFromCard || window.openArikaReminderCenter || window.toggleArikaReminderCenter || function(){var p=document.getElementById('arika-reminder-center-panel'); if(p){p.classList.add('arika-open-from-card'); p.classList.remove('hidden');}})()" type="button">🔔 Buka Pusat Reminder</button>
-<button class="reminder-sound-btn reminder-sound-muted" onclick="window.markArikaReminderCenterRead &amp;&amp; window.markArikaReminderCenterRead()" type="button">✓ Tandai Dibaca</button>
-</div>
-</div>
-</div>
-</div>
 <div class="hidden mb-6 p-4 bg-rose-50 border-2 border-rose-100 text-rose-800 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3" id="reminder-banner">
 <div class="flex items-center gap-3 text-center sm:text-left">
 <span class="text-2xl">🔔</span>
@@ -5414,14 +5803,25 @@
 <div class="min-w-0">
 <span class="arika-home-line-kicker">Beranda ARIKA • Portal Jurnal Harian</span>
 <h2 class="arika-home-line-title" id="welcome-name">Selamat datang!</h2>
-<p class="arika-home-line-subtitle" id="welcome-subtitle">Senang melihatmu kembali di ARIKA.</p>
+<p class="arika-home-line-subtitle" id="welcome-subtitle">Kerja kerasmu berharga. ARIKA siap abadikan setiap progresmu hari ini. Semangat!</p>
 </div>
 </div>
-<div aria-label="Navigasi cepat Beranda" class="arika-home-jump-actions">
-<button class="arika-home-jump-btn" data-arika-jump-target="home-pengumuman-section" onclick="return window.arikaHomeJump('home-pengumuman-section', event)" type="button">📌 Pengumuman</button>
-<button class="arika-home-jump-btn" data-arika-jump-target="home-agenda-section" onclick="return window.arikaHomeJump('home-agenda-section', event)" type="button">🗓️ Agenda</button>
-<button class="arika-home-jump-btn" data-arika-jump-target="personal-reminder-card" onclick="return window.arikaHomeJump('personal-reminder-card', event)" type="button">✅ Rencana</button>
-<button class="arika-home-jump-btn" data-arika-jump-target="survey-arika-card" onclick="return window.arikaHomeJump('survey-arika-card', event)" type="button">📝 Survei</button>
+</div>
+<div class="home-section-card arika-focus-card arika-home-jump-target" id="home-focus-section">
+<div class="home-section-header arika-focus-header">
+<div class="home-section-title-wrap">
+<span class="home-section-icon">🎯</span>
+<div>
+<h2 class="home-section-title home-section-title-clean">FOKUS HARI INI</h2>
+</div>
+</div>
+<div class="home-section-action">
+<button class="home-refresh-btn arika-focus-refresh" onclick="window.renderFokusHariIni && window.renderFokusHariIni()" type="button">↻ Refresh</button>
+</div>
+</div>
+<div class="arika-focus-summary" id="focus-hari-summary">Memuat prioritas hari ini...</div>
+<div class="arika-focus-list" id="focus-hari-list">
+<div class="arika-focus-empty">Fokus hari ini akan tampil setelah data ARIKA terbaca.</div>
 </div>
 </div>
 <div class="home-section-card p-6 md:p-8 arika-home-jump-target" id="home-pengumuman-section">
@@ -5460,6 +5860,21 @@
 
 </div>
 <div class="space-y-6 md:space-y-8">
+<div class="reminder-sound-panel arika-sound-side-card hidden mb-6 p-4 rounded-2xl no-print" id="reminder-sound-panel">
+<div class="reminder-sound-grid">
+<div class="reminder-sound-card">
+<div class="reminder-sound-card-title">
+<strong>🔊 Suara Alarm</strong>
+<span class="reminder-sound-status-pill" id="reminder-sound-status">Belum aktif</span>
+</div>
+<div class="reminder-sound-actions">
+<button class="reminder-sound-btn reminder-sound-active" id="arika-sound-enable-btn" onclick="window.enableArikaReminderSound(true)" type="button">🔔 Aktifkan Suara</button>
+<button class="reminder-sound-btn reminder-sound-muted" onclick="window.testArikaReminderSound()" type="button">Tes Suara</button>
+<button class="reminder-sound-btn reminder-sound-muted" id="arika-sound-disable-btn" onclick="window.disableArikaReminderSound()" type="button">Matikan Suara</button>
+</div>
+</div>
+</div>
+</div>
 <div class="home-section-card home-motivation-card p-6 md:p-8 text-left relative">
 <div class="home-section-header">
 <div class="home-section-title-wrap text-left">
@@ -5804,6 +6219,51 @@
                 </button>
 </div>
 </section>
+
+<section class="view-section animate-fade hidden text-left" id="view-wfh">
+<div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 text-white p-5 md:p-8 mb-6 shadow-xl">
+  <div class="absolute -right-14 -top-16 w-48 h-48 rounded-full bg-white/12"></div>
+  <div class="relative flex flex-col lg:flex-row justify-between gap-5 lg:items-end">
+    <div>
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-[10px] font-black uppercase tracking-[0.22em] mb-4">🏡 Work From Home / Anywhere</span>
+      <h1 class="text-2xl md:text-3xl font-black tracking-tight">Monitoring WFH/WFA Harian</h1>
+      <p class="text-emerald-50 text-sm mt-3 max-w-2xl leading-relaxed">Semua pegawai dapat melihat rencana dan realisasi kegiatan WFH/WFA pada tanggal yang dipilih. Data dibaca dari Rencana Saya dan Jurnal yang memuat kata WFH, WFA, Work From Home, atau Work From Anywhere.</p>
+    </div>
+    <div class="bg-white/15 border border-white/25 rounded-3xl p-4 backdrop-blur w-full lg:w-auto min-w-[250px]">
+      <label class="block text-[9px] font-black uppercase tracking-widest text-emerald-50 mb-2">Tanggal Monitoring</label>
+      <input autocomplete="off" class="w-full p-3 rounded-2xl bg-white text-slate-700 text-xs font-black outline-none text-center arika-manual-date-input" id="wfh-date" inputmode="numeric" onchange="window.renderWfhWfaDay && window.renderWfhWfaDay()" placeholder="dd/mm/yyyy" type="text"/>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button class="px-3 py-2 rounded-xl bg-white/18 hover:bg-white/25 text-white text-[9px] font-black uppercase tracking-widest" onclick="window.setWfhDateToday && window.setWfhDateToday()" type="button">Hari Ini</button>
+        <button class="px-3 py-2 rounded-xl bg-white text-emerald-700 text-[9px] font-black uppercase tracking-widest" onclick="window.refreshWfhWfaData && window.refreshWfhWfaData()" type="button">↻ Refresh</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5" id="wfh-summary-grid">
+  <div class="wfh-kpi-card"><div class="wfh-kpi-value" id="wfh-kpi-pegawai">0</div><div class="wfh-kpi-label">Pegawai Terdata</div></div>
+  <div class="wfh-kpi-card"><div class="wfh-kpi-value" id="wfh-kpi-rencana">0</div><div class="wfh-kpi-label">Rencana</div></div>
+  <div class="wfh-kpi-card"><div class="wfh-kpi-value" id="wfh-kpi-realisasi">0</div><div class="wfh-kpi-label">Realisasi</div></div>
+  <div class="wfh-kpi-card"><div class="wfh-kpi-value" id="wfh-kpi-belum">0</div><div class="wfh-kpi-label">Belum Realisasi</div></div>
+</div>
+
+<div class="bg-white rounded-[1.6rem] border border-slate-100 shadow-xl p-4 md:p-6 mb-5">
+  <div class="flex flex-col md:flex-row justify-between gap-3 md:items-center mb-4">
+    <div>
+      <h2 class="text-sm md:text-base font-black text-slate-900 uppercase tracking-widest">Daftar Perencanaan & Realisasi</h2>
+      <p class="text-xs text-slate-500 mt-1 font-semibold" id="wfh-period-label">Tanggal dipilih: -</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button class="rekap-filter-chip wfh-plan-main-btn" onclick="window.openWfhRencana ? window.openWfhRencana() : window.nav('beranda')" type="button">Buka Rencana WFH/WFA</button>
+      <button class="rekap-filter-chip active" onclick="window.prefillWfhJournal && window.prefillWfhJournal()" type="button">Isi Jurnal WFH/WFA</button>
+    </div>
+  </div>
+  <div class="space-y-3" id="wfh-list">
+    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 text-center text-slate-400 text-[10px] uppercase tracking-widest font-black">Memuat data WFH/WFA...</div>
+  </div>
+</div>
+</section>
+
 <section class="view-section animate-fade hidden" id="view-rekap">
 <div class="bg-white p-6 rounded-3xl shadow-xl mb-6">
 <h3 class="font-extrabold text-slate-900 mb-3 uppercase tracking-wider text-xs">ARSIP KERJA JURNAL</h3>
@@ -6055,14 +6515,14 @@
 <div class="panduan-focus-toolbar" id="panduan-focus-toolbar">
 <div>
 <div class="panduan-focus-title" id="panduan-focus-title">Mode Fokus Panduan</div>
-<div class="panduan-focus-subtitle" id="panduan-focus-subtitle">Bagian lain dibuat abu-abu agar Anda fokus pada topik yang dipilih.</div>
+<div class="panduan-focus-subtitle" id="panduan-focus-subtitle">Info lainnya disembunyikan agar Anda fokus pada topik yang dipilih.</div>
 </div>
 <div class="panduan-focus-actions flex flex-wrap items-center gap-2">
 <button class="panduan-focus-btn primary" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas</button>
 <button class="panduan-focus-btn secondary" onclick="window.arikaPanduanClearFocus()" type="button">👁 Tampilkan Semua</button>
 </div>
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
+<div class="panduan-topic-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 <button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-pegawai', 'Panduan Pegawai')">
 <div class="text-3xl mb-3">👤</div>
 <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">Pegawai</h3>
@@ -6077,6 +6537,11 @@
 <div class="text-3xl mb-3">🔔</div>
 <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">Pusat Reminder</h3>
 <p class="text-xs text-slate-500 leading-relaxed">Ringkasan reminder aktif, tombol suara, dan akses cepat tanpa izin browser desktop.</p>
+</button>
+<button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-wfh-wfa', 'Panduan WFH/WFA')">
+<div class="text-3xl mb-3">🏡</div>
+<h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">WFH/WFA</h3>
+<p class="text-xs text-slate-500 leading-relaxed">Cara input rencana dan jurnal WFH/WFA tanpa dobel input.</p>
 </button>
 <button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-verifikator', 'Panduan Ketua Tim / Verifikator')">
 <div class="text-3xl mb-3">✅</div>
@@ -6154,6 +6619,50 @@
                     </div>
 <button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
 </div>
+
+<div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-wfh-wfa">
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+<div>
+<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">🏡 Panduan WFH/WFA</h2>
+<p class="text-sm text-slate-500 mt-2 leading-relaxed">Panduan ini menjelaskan cara memakai menu WFH/WFA agar rencana dan realisasi tetap selaras dengan data utama ARIKA.</p>
+</div>
+<span class="panduan-wfh-badge">Label [WFH/WFA]</span>
+</div>
+<div class="panduan-wfh-note mb-5">
+<p><strong class="text-emerald-800">Prinsip utama:</strong> menu WFH/WFA bukan tempat input terpisah. Data tetap memakai sumber yang sama dengan <strong>Rencana Saya</strong> dan <strong>Jurnal Harian</strong>, sehingga pegawai tidak perlu mengisi dua kali.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="panduan-wfh-step">
+<h3>1. Rencana WFH/WFA</h3>
+<p>Gunakan tombol <strong>Buka Rencana WFH/WFA</strong> pada tab WFH/WFA. Sistem akan mengarahkan ke Rencana Saya dan menyiapkan label <strong>[WFH/WFA]</strong> pada rencana.</p>
+</div>
+<div class="panduan-wfh-step">
+<h3>2. Isi Jurnal WFH/WFA</h3>
+<p>Gunakan tombol <strong>Isi Jurnal WFH/WFA</strong> pada tab WFH/WFA. Uraian jurnal akan disiapkan dengan label <strong>[WFH/WFA]</strong> agar otomatis terbaca sebagai realisasi WFH/WFA.</p>
+</div>
+<div class="panduan-wfh-step">
+<h3>3. Tetap Masuk Riwayat Umum</h3>
+<p>Jurnal yang diinput dari tab WFH/WFA tetap tersimpan sebagai jurnal harian biasa dan tetap muncul di <strong>Riwayat Jurnal</strong>. Bedanya, jurnal tersebut memiliki penanda WFH/WFA.</p>
+</div>
+<div class="panduan-wfh-step">
+<h3>4. Monitoring Harian</h3>
+<p>Tab WFH/WFA menampilkan pegawai yang punya rencana, realisasi jurnal, serta status belum realisasi pada tanggal yang dipilih. Data dibaca otomatis dari rencana dan jurnal yang memuat label/kata WFH/WFA.</p>
+</div>
+<div class="panduan-wfh-step">
+<h3>5. Input dari Menu Umum</h3>
+<p>Jika pegawai mengisi dari menu umum, data tetap bisa terbaca sebagai WFH/WFA asalkan uraian atau judul memuat kata <strong>WFH</strong>, <strong>WFA</strong>, <strong>Work From Home</strong>, <strong>Work From Anywhere</strong>, atau label <strong>[WFH/WFA]</strong>.</p>
+</div>
+<div class="panduan-wfh-step">
+<h3>6. Tidak Perlu Dobel Input</h3>
+<p>Cukup input sekali. Data akan tampil di riwayat umum dan juga muncul di monitoring WFH/WFA selama memiliki penanda WFH/WFA.</p>
+</div>
+</div>
+<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-slate-600 leading-relaxed">
+<strong class="text-amber-800">Catatan:</strong> agar monitoring lebih rapi, gunakan format uraian yang jelas, misalnya <strong>[WFH/WFA] Realisasi kegiatan: ...</strong> atau <strong>[WFH] Rencana kegiatan: ...</strong>.
+</div>
+<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
+</div>
+
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-reminder">
 <h2 class="text-xl font-black text-slate-900 mb-3 flex items-center gap-2">🔔 Panduan Alarm dan Reminder</h2>
 <p class="text-sm text-slate-500 leading-relaxed mb-5">ARIKA dapat memberi pengingat visual, suara, dan Pusat Reminder untuk membantu pegawai tidak melewatkan jurnal, catatan atasan, rencana pribadi, pengumuman, dan agenda.</p>
@@ -7292,9 +7801,26 @@
 </button>
 <footer class="bg-white border-t py-6 no-print text-center">
 <div class="max-w-7xl mx-auto px-6 text-[9px] text-slate-400 uppercase tracking-[0.3em] font-black text-center">© 2026 ARIKA BPOM Ambon.</div>
-<div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v244 panduan ringkas</div>
+<div class="text-[8px] text-slate-300 tracking-[0.2em] mt-1">v290 dashboard filter wfh scaling</div>
 </footer>
-<script src="app-v262.js?v=262"></script>
+
+<script id="arika-v275-load-check">
+(function(){
+  window.__ARIKA_APP_LOADED__ = false;
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
+        var box = document.createElement('div');
+        box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v291.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        document.body.appendChild(box);
+      }
+    }, 900);
+  });
+})();
+</script>
+
+<script src="./app-v291.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -8271,7 +8797,206 @@
     text-align: left !important;
   }
 }
+
+/* v263: Mode Fokus Hari Ini pada Beranda */
+#view-beranda .arika-focus-card{
+  padding:1.05rem!important;
+  border:1px solid rgba(16,185,129,.18)!important;
+  background:linear-gradient(135deg, rgba(240,253,250,.98), rgba(255,255,255,.98) 58%, rgba(236,254,255,.9))!important;
+  box-shadow:0 12px 30px rgba(15,118,110,.08)!important;
+}
+#view-beranda .arika-focus-header{margin-bottom:.65rem!important;}
+#view-beranda .arika-focus-refresh{
+  padding:.45rem .65rem!important;
+  border-radius:.8rem!important;
+  font-size:8px!important;
+  color:#059669!important;
+  background:rgba(255,255,255,.8)!important;
+  border:1px solid rgba(16,185,129,.16)!important;
+}
+#view-beranda .arika-focus-summary{
+  display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;
+  margin:.15rem 0 .7rem 0;
+  color:#334155;
+  font-size:10px;
+  line-height:1.45;
+  font-weight:800;
+}
+#view-beranda .arika-focus-summary strong{color:#0f766e;font-weight:950;}
+#view-beranda .arika-focus-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;}
+#view-beranda .arika-focus-item{
+  display:flex;gap:.55rem;align-items:flex-start;
+  border:1px solid rgba(226,232,240,.95);
+  border-radius:1rem;
+  background:rgba(255,255,255,.86);
+  padding:.72rem .78rem;
+  min-width:0;
+}
+#view-beranda .arika-focus-item.is-urgent{border-color:rgba(244,63,94,.2);background:linear-gradient(135deg,#fff1f2,#fff);}
+#view-beranda .arika-focus-item.is-warn{border-color:rgba(245,158,11,.25);background:linear-gradient(135deg,#fffbeb,#fff);}
+#view-beranda .arika-focus-item.is-ok{border-color:rgba(16,185,129,.2);background:linear-gradient(135deg,#ecfdf5,#fff);}
+#view-beranda .arika-focus-icon{width:1.8rem;height:1.8rem;border-radius:.75rem;display:flex;align-items:center;justify-content:center;background:#f8fafc;flex:0 0 auto;font-size:1rem;}
+#view-beranda .arika-focus-body{min-width:0;flex:1;}
+#view-beranda .arika-focus-title{font-size:9px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:#0f172a;line-height:1.25;margin:0 0 .18rem 0;}
+#view-beranda .arika-focus-desc{font-size:10px;line-height:1.38;color:#64748b;font-weight:700;margin:0;overflow-wrap:anywhere;}
+#view-beranda .arika-focus-action{margin-top:.45rem;display:inline-flex;align-items:center;justify-content:center;padding:.35rem .55rem;border-radius:.65rem;background:#0d9488;color:#fff;font-size:8px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;}
+#view-beranda .arika-focus-action:hover{background:#0f766e;}
+#view-beranda .arika-focus-empty{grid-column:1/-1;border:1px dashed rgba(148,163,184,.45);border-radius:1rem;background:rgba(255,255,255,.72);padding:.85rem;text-align:center;color:#94a3b8;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;}
+@media (max-width: 720px){
+  #view-beranda .arika-focus-card{padding:.9rem!important;}
+  #view-beranda .arika-focus-list{grid-template-columns:1fr;gap:.45rem;}
+  #view-beranda .arika-focus-item{padding:.65rem .7rem;border-radius:.9rem;}
+}
+
 </style>
+
+
+
+<style id="arika-v273-wfh-wfa-style">
+/* v273: Menu WFH/WFA - pantau perencanaan dan realisasi harian pegawai. */
+#wfh-summary-grid .wfh-kpi-card{
+  border:1px solid rgba(226,232,240,.9);
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(248,250,252,.94));
+  border-radius:1.25rem;
+  padding:1rem;
+  box-shadow:0 12px 28px rgba(15,23,42,.06);
+}
+#wfh-summary-grid .wfh-kpi-value{font-size:1.45rem;font-weight:950;color:#0f172a;line-height:1;}
+#wfh-summary-grid .wfh-kpi-label{font-size:.58rem;font-weight:950;color:#64748b;text-transform:uppercase;letter-spacing:.13em;margin-top:.38rem;}
+.wfh-status-badge{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.34rem .55rem;font-size:.5rem;font-weight:950;text-transform:uppercase;letter-spacing:.1em;border:1px solid transparent;}
+.wfh-status-done{background:#ecfdf5;color:#047857;border-color:#a7f3d0;}
+.wfh-status-plan{background:#fff7ed;color:#c2410c;border-color:#fed7aa;}
+.wfh-status-realisasi{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.wfh-entry-card{border:1px solid rgba(226,232,240,.95);background:rgba(255,255,255,.96);border-radius:1.35rem;padding:1rem;box-shadow:0 12px 26px rgba(15,23,42,.055);}
+.wfh-entry-card:hover{border-color:rgba(20,184,166,.25);box-shadow:0 16px 34px rgba(15,23,42,.075);}
+.wfh-mini-box{border:1px solid rgba(226,232,240,.85);background:#f8fafc;border-radius:1rem;padding:.8rem;}
+.wfh-mini-title{font-size:.55rem;font-weight:950;color:#64748b;text-transform:uppercase;letter-spacing:.13em;margin-bottom:.35rem;}
+.wfh-mini-content{font-size:.72rem;line-height:1.55;font-weight:700;color:#334155;white-space:pre-wrap;overflow-wrap:anywhere;}
+#wfh-period-label::after{content:" • Semua pegawai berlabel WFH/WFA";color:#0f766e;font-weight:900;}
+#wfh-list .wfh-entry-card{scroll-margin-top:7rem;}
+#wfh-list .wfh-all-note{border:1px dashed rgba(20,184,166,.28);background:linear-gradient(135deg,#f0fdfa,#ffffff);border-radius:1rem;padding:.72rem .85rem;color:#0f766e;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:.75rem;}
+.wfh-plan-main-btn{background:linear-gradient(135deg,#0f766e,#0891b2)!important;color:#ffffff!important;border-color:transparent!important;box-shadow:0 12px 24px rgba(15,118,110,.16)!important;}
+.wfh-plan-main-btn:hover{background:linear-gradient(135deg,#115e59,#0e7490)!important;box-shadow:0 16px 30px rgba(15,118,110,.22)!important;transform:translateY(-1px);}
+.wfh-plan-main-btn:focus{outline:3px solid rgba(20,184,166,.20)!important;outline-offset:2px;}
+@media (max-width:720px){
+  #view-wfh .wfh-entry-card{padding:.82rem;border-radius:1rem;}
+  #view-wfh .wfh-mini-box{padding:.72rem;border-radius:.9rem;}
+  #wfh-summary-grid .wfh-kpi-card{padding:.82rem;border-radius:1rem;box-shadow:0 8px 18px rgba(15,23,42,.05);}
+  #wfh-summary-grid .wfh-kpi-value{font-size:1.2rem;}
+}
+</style>
+
+<style id="arika-v270-mobile-beranda-lite">
+/* v270: Penataan dan optimasi khusus HP/mobile agar beranda tetap rapi dan ringan. */
+@media (max-width: 720px){
+  #view-beranda::before{
+    height: 220px !important;
+    border-radius: 0 0 2rem 2rem !important;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(16,185,129,.10), transparent 28%),
+      radial-gradient(circle at 88% 6%, rgba(6,182,212,.10), transparent 30%),
+      linear-gradient(135deg, rgba(236,253,245,.76), rgba(236,254,255,.42)) !important;
+  }
+  #view-beranda .home-dashboard-grid{
+    grid-template-columns: 1fr !important;
+    gap: .85rem !important;
+    align-items: start !important;
+  }
+  #view-beranda .lg\:col-span-2,
+  #view-beranda .home-dashboard-grid > div:last-child{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:.85rem !important;
+  }
+  #view-beranda .home-section-card,
+  #view-beranda #reminder-sound-panel{
+    border-radius: 1.1rem !important;
+    box-shadow: 0 8px 18px rgba(15,23,42,.055) !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  #view-beranda .home-section-card:hover{
+    transform:none !important;
+    box-shadow: 0 8px 18px rgba(15,23,42,.055) !important;
+    border-color: rgba(203,213,225,.82) !important;
+  }
+  #view-beranda .arika-home-hero-line{
+    min-height: auto !important;
+    padding: .9rem .92rem !important;
+    border-radius: 1.15rem !important;
+  }
+  #view-beranda .arika-home-line-left{
+    align-items: flex-start !important;
+    gap: .72rem !important;
+  }
+  #view-beranda .arika-home-line-title{
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 1rem !important;
+    line-height: 1.22 !important;
+  }
+  #view-beranda .arika-home-line-subtitle{
+    font-size: .64rem !important;
+    line-height: 1.42 !important;
+    max-width: 100% !important;
+  }
+  #view-beranda #reminder-sound-panel{
+    padding: .72rem !important;
+  }
+  #view-beranda .arika-focus-card{
+    padding: .9rem !important;
+  }
+  #view-beranda .arika-focus-summary{
+    font-size: 9.5px !important;
+    margin-bottom: .55rem !important;
+  }
+  #view-beranda .arika-focus-list{
+    grid-template-columns: 1fr !important;
+    gap: .48rem !important;
+  }
+  #view-beranda .arika-focus-item{
+    padding: .66rem .72rem !important;
+    border-radius: .95rem !important;
+  }
+  #view-beranda .arika-focus-title{font-size: 8.5px !important;}
+  #view-beranda .arika-focus-desc{font-size: 9.5px !important;}
+  #view-beranda .arika-focus-action{
+    font-size: 8px !important;
+    padding: .36rem .56rem !important;
+  }
+  #view-beranda .arika-focus-item.is-priority-blink,
+  #view-beranda .arika-focus-item.is-priority-blink .arika-focus-action{
+    animation: none !important;
+  }
+  #view-beranda .arika-focus-item.is-priority-blink{
+    border-color: rgba(244,63,94,.4) !important;
+    box-shadow: inset 0 0 0 1px rgba(244,63,94,.10) !important;
+  }
+  #view-beranda .home-motivation-card,
+  #view-beranda #personal-reminder-card,
+  #view-beranda #home-pengumuman-section,
+  #view-beranda #home-agenda-section{
+    content-visibility: auto;
+    contain-intrinsic-size: 320px;
+  }
+  #view-beranda #home-pengumuman-section,
+  #view-beranda #personal-reminder-card,
+  #view-beranda #home-agenda-section{
+    contain-intrinsic-size: 420px;
+  }
+  #view-beranda .home-motivation-quote{font-size: .92rem !important; line-height: 1.45 !important;}
+  #view-beranda .home-motivation-source{font-size: .66rem !important;}
+  #arika-reminder-center-fab,
+  #arika-help-fab,
+  .arika-help-fab,
+  .arika-reminder-fab{
+    transform: scale(.94);
+    transform-origin: right bottom;
+  }
+}
+</style>
+
 <script id="arika-v256-field-fit">
 (function(){
   if (window.__ARIKA_V256_FIELD_FIT__) return;
@@ -8323,6 +9048,234 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
+})();
+</script>
+
+
+<script id="arika-v271-github-pages-fast-loader">
+(function(){
+  if(window.__ARIKA_V271_FAST_LOADER__) return;
+  window.__ARIKA_V271_FAST_LOADER__ = true;
+  function idle(fn){
+    if('requestIdleCallback' in window) return requestIdleCallback(fn,{timeout:1200});
+    return setTimeout(fn,260);
+  }
+  function wrapChartFunction(name){
+    var original = window[name];
+    if(typeof original !== 'function' || original.__arikaChartLazyWrapped) return;
+    var wrapped = function(){
+      var args = arguments;
+      var ctx = this;
+      if(window.Chart || typeof window.loadArikaChartJs !== 'function') return original.apply(ctx,args);
+      return window.loadArikaChartJs().then(function(){
+        return original.apply(ctx,args);
+      }).catch(function(err){
+        console.warn('ARIKA: grafik ditunda karena Chart.js belum siap', err && err.message ? err.message : err);
+        return null;
+      });
+    };
+    wrapped.__arikaChartLazyWrapped = true;
+    try { wrapped.__old = original; } catch(e) {}
+    window[name] = wrapped;
+  }
+  function install(){
+    ['renderCharts','renderTrendChart','renderChart'].forEach(wrapChartFunction);
+  }
+  install();
+  document.addEventListener('DOMContentLoaded', install);
+  window.addEventListener('load', function(){
+    idle(function(){
+      // Prefetch grafik hanya di layar besar supaya dashboard/riwayat berikutnya lebih cepat,
+      // tetapi HP tetap hemat kuota dan ringan.
+      try {
+        if(window.matchMedia && window.matchMedia('(min-width: 900px)').matches && typeof window.loadArikaChartJs === 'function') {
+          window.loadArikaChartJs().catch(function(){});
+        }
+      } catch(e) {}
+    });
+  });
+})();
+</script>
+
+
+<style id="arika-v276-nav-verifikator-fix">
+/* v276: Navbar adaptif agar menu pegawai/verifikator/ketua tim tidak terpotong saat tab bertambah. */
+@media (min-width: 901px) {
+  #main-nav {
+    overflow: visible !important;
+  }
+  #main-nav .max-w-7xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: clamp(.75rem, 1.8vw, 1.6rem) !important;
+    padding-right: clamp(.75rem, 1.8vw, 1.6rem) !important;
+  }
+  #main-nav .nav-row {
+    display: grid !important;
+    grid-template-columns: clamp(128px, 13vw, 175px) minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: .65rem !important;
+    height: auto !important;
+    min-height: 68px !important;
+    padding-top: .42rem !important;
+    padding-bottom: .42rem !important;
+    overflow: visible !important;
+  }
+  #main-nav .nav-row > .group {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 175px !important;
+    overflow: visible !important;
+  }
+  #main-nav .arika-logo-nav {
+    width: clamp(118px, 12vw, 168px) !important;
+    max-width: 168px !important;
+    min-width: 0 !important;
+    max-height: 46px !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+  }
+  #main-nav #nav-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: .34rem !important;
+    row-gap: .34rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    padding: .32rem !important;
+    border-radius: 1.05rem !important;
+  }
+  #main-nav #nav-menu .hidden {
+    display: none !important;
+  }
+  #main-nav .nav-pill,
+  #main-nav .nav-logout {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 .58rem !important;
+    border-radius: .82rem !important;
+    font-size: .66rem !important;
+    line-height: 1 !important;
+    letter-spacing: .01em !important;
+  }
+  #main-nav .nav-pill {
+    gap: .28rem !important;
+  }
+  #main-nav .nav-pill .nav-icon {
+    font-size: .86rem !important;
+    line-height: 1 !important;
+  }
+  #main-nav .nav-logout {
+    padding-left: .76rem !important;
+    padding-right: .76rem !important;
+    font-size: .56rem !important;
+    letter-spacing: .12em !important;
+  }
+  #main-nav.arika-nav-overflowing #nav-menu {
+    justify-content: flex-start !important;
+  }
+}
+@media (min-width: 901px) and (max-width: 1280px) {
+  #main-nav .nav-row {
+    grid-template-columns: 1fr !important;
+    gap: .35rem !important;
+    min-height: 0 !important;
+  }
+  #main-nav .nav-row > .group {
+    justify-content: center !important;
+    max-width: none !important;
+  }
+  #main-nav .arika-logo-nav {
+    width: 150px !important;
+    max-height: 42px !important;
+    object-position: center center !important;
+  }
+  #main-nav #nav-menu {
+    grid-column: 1 !important;
+    justify-content: center !important;
+    row-gap: .32rem !important;
+  }
+}
+@media (min-width: 1281px) and (max-width: 1440px) {
+  #main-nav .nav-row {
+    grid-template-columns: clamp(120px, 11vw, 155px) minmax(0, 1fr) !important;
+    gap: .5rem !important;
+  }
+  #main-nav .arika-logo-nav {
+    width: clamp(112px, 10vw, 150px) !important;
+    max-height: 42px !important;
+  }
+  #main-nav .nav-pill,
+  #main-nav .nav-logout {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding-left: .48rem !important;
+    padding-right: .48rem !important;
+    font-size: .61rem !important;
+  }
+  #main-nav .nav-logout {
+    font-size: .52rem !important;
+  }
+}
+@media (max-width: 900px) {
+  #main-nav #nav-menu {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  #main-nav .mobile-nav-wrap {
+    display: flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    flex: 1 1 auto !important;
+    justify-content: flex-end !important;
+  }
+  #mobile-nav-select {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+</style>
+<script id="arika-v276-nav-verifikator-fix-script">
+(function(){
+  if(window.__ARIKA_V276_NAV_VERIFIKATOR_FIX__) return;
+  window.__ARIKA_V276_NAV_VERIFIKATOR_FIX__ = true;
+  function syncNavOverflow(){
+    try {
+      var nav = document.getElementById('main-nav');
+      var menu = document.getElementById('nav-menu');
+      if(!nav || !menu) return;
+      var isDesktop = !(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+      if(!isDesktop) { nav.classList.remove('arika-nav-overflowing'); return; }
+      nav.classList.toggle('arika-nav-overflowing', menu.scrollHeight > menu.clientHeight + 4 || menu.scrollWidth > menu.clientWidth + 4);
+    } catch(e) {}
+  }
+  function install(){
+    syncNavOverflow();
+    setTimeout(syncNavOverflow, 120);
+    setTimeout(syncNavOverflow, 500);
+    setTimeout(syncNavOverflow, 1500);
+    var menu = document.getElementById('nav-menu');
+    if(menu && !menu.__arikaV276Observed){
+      menu.__arikaV276Observed = true;
+      try { new MutationObserver(syncNavOverflow).observe(menu, { attributes:true, childList:true, subtree:true, attributeFilter:['class','style'] }); } catch(e) {}
+    }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  window.addEventListener('resize', function(){ clearTimeout(window.__arikaNavV276Timer); window.__arikaNavV276Timer = setTimeout(syncNavOverflow, 90); });
+  window.addEventListener('load', install);
+  document.addEventListener('click', function(ev){
+    if(ev.target && (ev.target.closest('.nav-pill') || ev.target.closest('.nav-logout') || ev.target.closest('#mobile-nav-select'))) setTimeout(syncNavOverflow, 80);
+  }, true);
 })();
 </script>
 
