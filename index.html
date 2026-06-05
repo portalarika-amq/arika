@@ -1,75 +1,34 @@
 <!DOCTYPE html>
 
-<html lang="id" class="arika-v313-boot">
+<html lang="id">
 <head>
-<style id="arika-v313-reload-full-cover-critical">
-/* v313: full-cover boot guard untuk menutup potongan halaman kiri/beranda saat reload. */
-html.arika-v313-boot, html.arika-v313-boot body{background:#f8fafc!important;min-height:100%!important;overflow-x:hidden!important;}
-html.arika-v313-boot body::before{
-  content:"";position:fixed;inset:0;z-index:2147483646!important;
-  background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%)!important;
-  opacity:1!important;visibility:visible!important;pointer-events:auto!important;
-}
-html.arika-v313-boot body::after{
-  content:"ARIKA";position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);
-  z-index:2147483647!important;min-width:140px;text-align:center;
-  padding:18px 24px;border-radius:24px;background:rgba(255,255,255,.92);
-  border:1px solid rgba(20,184,166,.18);box-shadow:0 18px 46px rgba(15,23,42,.10);
-  color:#0f766e;font:900 20px/1.1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.18em;
-}
-html.arika-v313-boot #main-nav,
-html.arika-v313-boot #arika-app-main,
-html.arika-v313-boot .view-section,
-html.arika-v313-boot #arika-reminder-center-fab,
-html.arika-v313-boot #arika-reminder-center-panel,
-html.arika-v313-boot #btn-arika-help-wa,
-html.arika-v313-boot .arika-help-wa-btn,
-html.arika-v313-boot .arika-reminder-center-fab,
-html.arika-v313-boot .arika-reminder-center-panel{visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
-html.arika-v313-boot #global-loader{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:transparent!important;}
-html.arika-v313-ready #main-nav,html.arika-v313-ready #arika-app-main{visibility:visible!important;opacity:1!important;}
-@media(max-width:720px){html.arika-v313-boot body::after{font-size:16px;min-width:112px;padding:15px 20px;border-radius:20px;}}
-</style>
-<script id="arika-v313-reload-full-cover-head">
-(function(){try{document.documentElement.classList.add('arika-v313-boot');window.__ARIKA_V311_BOOT_TS__=Date.now();window.__ARIKA_V313_BOOT_TS__=window.__ARIKA_V311_BOOT_TS__;}catch(e){}})();
-</script>
-
-<style id="arika-v313-login-unstuck-style">
-html.arika-v313-released #view-login-user,
-html.arika-v313-released #view-login-admin{pointer-events:auto!important;}
-html.arika-v313-released #global-loader{display:none!important;opacity:0!important;pointer-events:none!important;}
-</style>
-<script id="arika-v313-login-unstuck-head">
-(function(){
-  function visibleViews(){try{return Array.from(document.querySelectorAll('.view-section')).filter(function(v){return v && !v.classList.contains('hidden');});}catch(e){return [];}}
-  function releaseCover(forceLogin){
-    try{
-      var html=document.documentElement;
-      html.classList.remove('arika-v311-boot','arika-v312-boot','arika-v313-boot');
-      html.classList.add('arika-v311-ready','arika-v312-ready','arika-v313-ready','arika-v313-released');
-      var loader=document.getElementById('global-loader');
-      if(loader){loader.style.display='none';loader.style.opacity='0';loader.style.visibility='hidden';loader.style.pointerEvents='none';}
-      if(forceLogin && !window.currentUser){
-        var views=visibleViews();
-        var login=document.getElementById('view-login-user');
-        if(login && (!views.length || views.every(function(v){return v.id!=='view-login-user' && v.id!=='view-login-admin';}))){
-          document.querySelectorAll('.view-section').forEach(function(v){v.classList.add('hidden');});
-          login.classList.remove('hidden');
-        }
-      }
-    }catch(e){}
-  }
-  window.__ARIKA_V313_FORCE_RELEASE_COVER__=releaseCover;
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){releaseCover(false);},1200);setTimeout(function(){releaseCover(true);},2600);});
-  window.addEventListener('load',function(){setTimeout(function(){releaseCover(false);},700);setTimeout(function(){releaseCover(true);},2200);});
-  setTimeout(function(){releaseCover(false);},1800);
-  setTimeout(function(){releaseCover(true);},3400);
-})();
-</script>
-
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>ARIKA - Portal Jurnal Harian &amp; Lembur BPOM Ambon</title>
+
+<script id="arika-v315-desktop-reload-veil-head">
+(function(){
+  try{
+    var isMobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+    if(!isMobile){
+      document.documentElement.classList.add('arika-v315-boot');
+      window.__ARIKA_V315_BOOT_TS__ = Date.now();
+    }
+  }catch(e){}
+})();
+</script>
+<style id="arika-v315-desktop-reload-veil-style">
+/* v315: desktop-only reload veil. Mobile tidak disentuh agar login HP tetap ringan. */
+@media (min-width:721px){
+  html.arika-v315-boot, html.arika-v315-boot body{background:#f8fafc!important;}
+  html.arika-v315-boot body > *:not(#global-loader):not(#arika-v315-reload-veil):not(script):not(style){visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  html.arika-v315-boot #arika-v315-reload-veil{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
+}
+#arika-v315-reload-veil{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%);transition:opacity .18s ease;}
+#arika-v315-reload-veil .arika-v315-card{min-width:148px;border:1px solid rgba(20,184,166,.12);background:rgba(255,255,255,.84);box-shadow:0 22px 60px rgba(15,23,42,.08);border-radius:1.35rem;padding:1rem 1.3rem;text-align:center;font-weight:950;letter-spacing:.45em;color:#0f766e;font-size:1.1rem;}
+@media (max-width:720px){#arika-v315-reload-veil{display:none!important;opacity:0!important;pointer-events:none!important;}html.arika-v315-boot body > *{visibility:visible!important;opacity:1!important;}}
+</style>
+
 <style id="arika-critical-boot-style">
         html, body { min-height: 100%; background: #f8fafc; }
         body { margin: 0; }
@@ -2145,7 +2104,7 @@ html.arika-v313-released #global-loader{display:none!important;opacity:0!importa
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v313.js" as="script"/>
+<link rel="preload" href="./app-v315.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -5837,19 +5796,72 @@ window.loadArikaChartJs=function(){
 </style>
 
 
-<style id="arika-v313-mobile-login-light-style">
-@media(max-width:720px){
-  #view-login-user, #view-login-admin{animation:none!important;transition:none!important;}
-  #view-login-user > .bg-white, #view-login-admin > .bg-white{box-shadow:0 10px 24px rgba(15,23,42,.08)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
-  #view-login-user input, #view-login-admin input{font-size:16px!important;min-height:46px!important;transform:translateZ(0)!important;}
-  #login-user-suggestions{max-height:44vh!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;}
-  .login-suggestion-item{min-height:44px!important;padding:.75rem .85rem!important;}
+<style id="arika-v315-mobile-safe-css">
+/* v315: mode mobile aman. Tidak memakai full boot cover yang mengunci login. */
+@media (max-width: 720px){
+  html,body{min-height:100%!important;background:#f8fafc!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%!important;}
+  body{touch-action:manipulation!important;}
+  #global-loader{transition:none!important;}
+  #global-loader.arika-v315-hide,#global-loader[style*="display: none"]{display:none!important;opacity:0!important;pointer-events:none!important;}
+  #view-login-user,#view-login-admin{
+    width:min(94vw,420px)!important;
+    max-width:420px!important;
+    margin:1rem auto 1.4rem!important;
+    padding:0!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+  }
+  #view-login-user > .bg-white,#view-login-admin > .bg-white{
+    height:auto!important;min-height:0!important;max-height:none!important;
+    padding:1.25rem 1rem!important;
+    border-radius:1.4rem!important;
+    box-shadow:0 10px 24px rgba(15,23,42,.08)!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    overflow:visible!important;
+  }
+  #view-login-user .login-logo-wrap,#view-login-admin .login-logo-wrap{margin:0 0 .75rem!important;min-height:0!important;height:auto!important;}
+  #view-login-user .arika-logo-login,#view-login-admin .arika-logo-login{
+    width:min(78vw,235px)!important;max-width:235px!important;max-height:82px!important;height:auto!important;margin:0 auto .45rem!important;display:block!important;
+  }
+  #view-login-user form,#view-login-admin form{display:block!important;margin-top:.9rem!important;visibility:visible!important;opacity:1!important;}
+  #view-login-user p,#view-login-admin p{font-size:.72rem!important;line-height:1.35!important;margin-bottom:.55rem!important;}
+  #view-login-user label,#view-login-admin label{font-size:.55rem!important;letter-spacing:.13em!important;}
+  #view-login-user input,#view-login-admin input{
+    font-size:16px!important;min-height:46px!important;height:46px!important;padding:.65rem .75rem!important;border-radius:.9rem!important;transform:none!important;
+  }
+  #view-login-user button,#view-login-admin button{min-height:42px!important;}
+  #login-user-suggestions{max-height:38vh!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;}
+  .login-suggestion-item{min-height:42px!important;padding:.65rem .75rem!important;}
+  #arika-app-main{padding:.75rem .75rem 1.25rem!important;}
+  #main-nav .nav-shell{position:sticky!important;top:0!important;}
+  .animate-fade{animation:none!important;}
+  .glass-card,.glass-nav,.shadow-xl,.shadow-2xl{box-shadow:0 8px 18px rgba(15,23,42,.06)!important;}
 }
-html.arika-v313-login-ready #global-loader{display:none!important;opacity:0!important;pointer-events:none!important;}
+html.arika-v315-mobile-login-ready #global-loader{display:none!important;opacity:0!important;pointer-events:none!important;}
 </style>
+<script id="arika-v315-mobile-safe-head">
+(function(){
+  try{
+    var isMobile=window.matchMedia&&window.matchMedia('(max-width:720px)').matches;
+    if(isMobile){
+      document.documentElement.classList.add('arika-v315-mobile');
+      setTimeout(function(){
+        try{
+          document.documentElement.classList.remove('arika-v311-boot','arika-v312-boot','arika-v313-boot');
+          document.documentElement.classList.add('arika-v315-mobile-login-ready');
+          var loader=document.getElementById('global-loader');
+          if(loader){loader.classList.add('arika-v315-hide');loader.style.display='none';loader.style.opacity='0';loader.style.pointerEvents='none';}
+        }catch(e){}
+      },900);
+    }
+  }catch(e){}
+})();
+</script>
 
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
+<div id="arika-v315-reload-veil" aria-hidden="true"><div class="arika-v315-card">ARIKA</div></div>
 <div aria-live="polite" id="global-loader">
 <div class="arika-boot-card">
 <div class="arika-boot-mark">A</div>
@@ -5993,7 +6005,7 @@ html.arika-v313-login-ready #global-loader{display:none!important;opacity:0!impo
 <button class="text-[9px] font-black text-emerald-600 uppercase hover:underline" onclick="window.reloadLoginAndCoreData()" type="button">Muat Ulang ↻</button>
 </div>
 <div class="relative">
-<input autocomplete="off" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-bold text-slate-700 text-xs md:text-sm outline-none input-focus text-center" id="login-user-search" onfocus="window.prepareLoginNameInput && window.prepareLoginNameInput()" oninput="window.filterLoginNameOptions && window.filterLoginNameOptions()" placeholder="Ketik username..." required="" type="text"/>
+<input autocomplete="off" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-bold text-slate-700 text-xs md:text-sm outline-none input-focus text-center" id="login-user-search" onfocus="window.filterLoginNameOptions()" oninput="window.filterLoginNameOptions()" placeholder="Ketik username..." required="" type="text"/>
 <input id="login-user-select" type="hidden" value=""/>
 <div class="hidden absolute z-50 mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-xl max-h-64 overflow-y-auto text-left" id="login-user-suggestions"></div>
 </div>
@@ -6002,7 +6014,7 @@ html.arika-v313-login-ready #global-loader{display:none!important;opacity:0!impo
 <div>
 <label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-[0.2em]">Kata Sandi</label>
 <div class="relative">
-<input class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 pr-12 font-bold text-slate-700 text-xs md:text-sm text-center outline-none input-focus text-center" id="login-user-nip" onfocus="window.hideLoginSuggestions && window.hideLoginSuggestions()" placeholder="Masukkan kata sandi" required="" type="password"/>
+<input class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 pr-12 font-bold text-slate-700 text-xs md:text-sm text-center outline-none input-focus text-center" id="login-user-nip" placeholder="Masukkan kata sandi" required="" type="password"/>
 <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-emerald-600" onclick="window.togglePasswordVisibility('login-user-nip', 'eye-user')" type="button">
 <svg class="h-5 w-5" fill="none" id="eye-user" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
@@ -7736,7 +7748,7 @@ html.arika-v313-login-ready #global-loader{display:none!important;opacity:0!impo
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v313.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v315.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -7744,7 +7756,49 @@ html.arika-v313-login-ready #global-loader{display:none!important;opacity:0!impo
 })();
 </script>
 
-<script src="./app-v313.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+
+<script id="arika-v315-desktop-reload-veil-release">
+(function(){
+  if(window.__ARIKA_V315_RELEASE_SCRIPT__) return;
+  window.__ARIKA_V315_RELEASE_SCRIPT__ = true;
+  var started = window.__ARIKA_V315_BOOT_TS__ || Date.now();
+  function isMobile(){ return window.matchMedia && window.matchMedia('(max-width:720px)').matches; }
+  function release(reason){
+    try{
+      if(isMobile()){ document.documentElement.classList.remove('arika-v315-boot'); return; }
+      var minDelay = 850;
+      var elapsed = Date.now() - started;
+      if(elapsed < minDelay){ setTimeout(function(){ release(reason); }, minDelay - elapsed); return; }
+      document.documentElement.classList.remove('arika-v315-boot');
+      document.documentElement.classList.add('arika-v315-ready');
+      var veil = document.getElementById('arika-v315-reload-veil');
+      if(veil){
+        veil.style.opacity = '0';
+        veil.style.pointerEvents = 'none';
+        setTimeout(function(){ try{ veil.style.display='none'; }catch(e){} }, 220);
+      }
+      window.__ARIKA_V315_READY_REASON__ = reason || 'ready';
+    }catch(e){}
+  }
+  function stable(){
+    try{
+      if(isMobile()) return true;
+      var views = Array.prototype.slice.call(document.querySelectorAll('.view-section'));
+      var shown = views.filter(function(v){ return !v.classList.contains('hidden'); });
+      if(shown.length === 1) return true;
+      if(document.getElementById('view-login-user') && !document.getElementById('view-login-user').classList.contains('hidden')) return true;
+    }catch(e){}
+    return false;
+  }
+  function check(){ if(stable()) release('stable'); }
+  if(isMobile()) { release('mobile-bypass'); return; }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(check, 180); setTimeout(check, 650); setTimeout(function(){release('dom-fallback');}, 1800); });
+  window.addEventListener('load', function(){ setTimeout(check, 120); setTimeout(function(){release('load-fallback');}, 1400); });
+  setTimeout(function(){ release('hard-failsafe'); }, 2600);
+})();
+</script>
+
+<script src="./app-v315.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
