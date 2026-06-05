@@ -1,7 +1,39 @@
 <!DOCTYPE html>
 
-<html lang="id">
+<html lang="id" class="arika-v311-boot">
 <head>
+<style id="arika-v311-reload-full-cover-critical">
+/* v311: full-cover boot guard untuk menutup potongan halaman kiri/beranda saat reload. */
+html.arika-v311-boot, html.arika-v311-boot body{background:#f8fafc!important;min-height:100%!important;overflow-x:hidden!important;}
+html.arika-v311-boot body::before{
+  content:"";position:fixed;inset:0;z-index:2147483646!important;
+  background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%)!important;
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+}
+html.arika-v311-boot body::after{
+  content:"ARIKA";position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);
+  z-index:2147483647!important;min-width:140px;text-align:center;
+  padding:18px 24px;border-radius:24px;background:rgba(255,255,255,.92);
+  border:1px solid rgba(20,184,166,.18);box-shadow:0 18px 46px rgba(15,23,42,.10);
+  color:#0f766e;font:900 20px/1.1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.18em;
+}
+html.arika-v311-boot #main-nav,
+html.arika-v311-boot #arika-app-main,
+html.arika-v311-boot .view-section,
+html.arika-v311-boot #arika-reminder-center-fab,
+html.arika-v311-boot #arika-reminder-center-panel,
+html.arika-v311-boot #btn-arika-help-wa,
+html.arika-v311-boot .arika-help-wa-btn,
+html.arika-v311-boot .arika-reminder-center-fab,
+html.arika-v311-boot .arika-reminder-center-panel{visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+html.arika-v311-boot #global-loader{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:transparent!important;}
+html.arika-v311-ready #main-nav,html.arika-v311-ready #arika-app-main{visibility:visible!important;opacity:1!important;}
+@media(max-width:720px){html.arika-v311-boot body::after{font-size:16px;min-width:112px;padding:15px 20px;border-radius:20px;}}
+</style>
+<script id="arika-v311-reload-full-cover-head">
+(function(){try{document.documentElement.classList.add('arika-v311-boot');window.__ARIKA_V311_BOOT_TS__=Date.now();}catch(e){}})();
+</script>
+
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>ARIKA - Portal Jurnal Harian &amp; Lembur BPOM Ambon</title>
@@ -2080,7 +2112,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v305.js" as="script"/>
+<link rel="preload" href="./app-v311.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -5679,6 +5711,98 @@ window.loadArikaChartJs=function(){
 @media(max-width:720px){#view-wfh .wfh-realisasi-guidance{font-size:.7rem;padding:.68rem .78rem;}}
 </style>
 
+
+<style id="arika-v309-panduan-ringkas-style">
+#view-panduan .panduan-focus-section{scroll-margin-top:7.5rem;}
+#view-panduan .panduan-focus-section p{max-width:70rem;}
+@media(max-width:720px){#view-panduan .panduan-topic-grid{gap:.75rem!important;}#view-panduan .panduan-focus-section{padding:1rem!important;border-radius:1.25rem!important;}#view-panduan .panduan-focus-section h2{font-size:1rem!important;}}
+</style>
+
+
+<style id="arika-v309-panduan-font-seragam-style">
+/* v309: Seragamkan ukuran font tab Panduan tanpa mengubah isi informasi. */
+#view-panduan{
+  --panduan-title-size:1.08rem;
+  --panduan-card-title-size:.72rem;
+  --panduan-body-size:.84rem;
+  --panduan-small-size:.72rem;
+  --panduan-line:1.55;
+}
+#view-panduan .panduan-focus-section h2{
+  font-size:var(--panduan-title-size)!important;
+  line-height:1.35!important;
+  letter-spacing:.01em!important;
+}
+#view-panduan .panduan-focus-section h3,
+#view-panduan .panduan-wfh-step h3,
+#view-panduan .panduan-inline-focus h3,
+#view-panduan details summary{
+  font-size:var(--panduan-card-title-size)!important;
+  line-height:1.35!important;
+  letter-spacing:.11em!important;
+}
+#view-panduan .panduan-focus-section p,
+#view-panduan .panduan-focus-section li,
+#view-panduan .panduan-wfh-step p,
+#view-panduan .panduan-wfh-note p,
+#view-panduan .panduan-inline-focus p,
+#view-panduan details p,
+#view-panduan .panduan-focus-section div[class*="bg-"] > p,
+#view-panduan .panduan-focus-section .leading-relaxed{
+  font-size:var(--panduan-body-size)!important;
+  line-height:var(--panduan-line)!important;
+}
+#view-panduan .panduan-topic-grid h3,
+#view-panduan .panduan-topic-grid button h3{
+  font-size:var(--panduan-card-title-size)!important;
+  line-height:1.3!important;
+  letter-spacing:.11em!important;
+}
+#view-panduan .panduan-topic-grid p,
+#view-panduan .panduan-topic-grid button p{
+  font-size:var(--panduan-small-size)!important;
+  line-height:1.5!important;
+}
+#view-panduan .panduan-focus-title{
+  font-size:.78rem!important;
+  line-height:1.35!important;
+}
+#view-panduan .panduan-focus-subtitle{
+  font-size:.72rem!important;
+  line-height:1.45!important;
+}
+#view-panduan .panduan-focus-btn,
+#view-panduan .panduan-back-inline,
+#view-panduan .panduan-wfh-badge,
+#view-panduan span[class*="rounded-full"]{
+  font-size:.68rem!important;
+  line-height:1.25!important;
+}
+#view-panduan > div:first-child span,
+#view-panduan > div:first-child p.font-black{
+  font-size:.68rem!important;
+}
+#view-panduan > div:first-child .grid p:not(.font-black){
+  font-size:var(--panduan-small-size)!important;
+  line-height:1.45!important;
+}
+#view-panduan details summary{
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+#view-panduan .panduan-focus-section strong{
+  font-size:inherit!important;
+}
+@media(max-width:720px){
+  #view-panduan{
+    --panduan-title-size:1rem;
+    --panduan-card-title-size:.7rem;
+    --panduan-body-size:.8rem;
+    --panduan-small-size:.7rem;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -6581,9 +6705,9 @@ window.loadArikaChartJs=function(){
 <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-50 rounded-full blur-3xl -ml-24 -mb-24"></div>
 <div class="relative">
 <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
-                            📘 Panduan Lengkap ARIKA
+                            📘 Panduan Ringkas ARIKA
                         </span>
-<h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">Panduan Penggunaan ARIKA</h1>
+<h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">Panduan Ringkas Penggunaan ARIKA</h1>
 <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
 <div class="rounded-2xl bg-slate-50 border border-slate-100 p-4">
 <p class="font-black text-slate-900 uppercase tracking-widest text-[10px] mb-1">Pegawai</p>
@@ -6607,7 +6731,7 @@ window.loadArikaChartJs=function(){
 <div class="panduan-focus-toolbar" id="panduan-focus-toolbar">
 <div>
 <div class="panduan-focus-title" id="panduan-focus-title">Mode Fokus Panduan</div>
-<div class="panduan-focus-subtitle" id="panduan-focus-subtitle">Info lainnya disembunyikan agar Anda fokus pada topik yang dipilih.</div>
+<div class="panduan-focus-subtitle" id="panduan-focus-subtitle">Pilih topik untuk melihat panduan ringkas sesuai kebutuhan.</div>
 </div>
 <div class="panduan-focus-actions flex flex-wrap items-center gap-2">
 <button class="panduan-focus-btn primary" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas</button>
@@ -6633,7 +6757,7 @@ window.loadArikaChartJs=function(){
 <button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-wfh-wfa', 'Panduan WFH/WFA')">
 <div class="text-3xl mb-3">🏡</div>
 <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">WFH/WFA</h3>
-<p class="text-xs text-slate-500 leading-relaxed">Cara input rencana dan jurnal WFH/WFA tanpa dobel input.</p>
+<p class="text-xs text-slate-500 leading-relaxed">Alur rencana dan realisasi WFH/WFA agar tidak tertukar.</p>
 </button>
 <button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-verifikator', 'Panduan Ketua Tim / Verifikator')">
 <div class="text-3xl mb-3">✅</div>
@@ -6657,434 +6781,94 @@ window.loadArikaChartJs=function(){
 </button>
 </div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-pegawai">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
 <div>
-<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">👤 Panduan untuk Personil Pegawai</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Bagian ini digunakan oleh pegawai non-admin untuk mencatat kegiatan, memantau riwayat, mengelola lembur, dan menindaklanjuti catatan atasan.</p>
+<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">👤 Panduan Pegawai</h2>
+<p class="text-sm text-slate-500 mt-2 leading-relaxed">Alur utama pegawai dalam ARIKA: login, isi jurnal, pantau riwayat, kelola rencana, dan tindak lanjuti catatan.</p>
 </div>
 <span class="inline-flex px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest">Akses Pegawai</span>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">1. Login Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pilih nama pada daftar pegawai, masukkan kata sandi, lalu klik <strong>Masuk Portal</strong>.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">1. Masuk Portal</h3><p class="text-sm text-slate-600 leading-relaxed">Pilih username/nama pegawai, masukkan sandi, lalu klik <strong>Masuk Portal</strong>.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">2. Isi Jurnal</h3><p class="text-sm text-slate-600 leading-relaxed">Buka <strong>Isi Jurnal</strong>, isi tanggal, kategori, uraian, status, dan data dukung jika ada.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">3. Cek Riwayat</h3><p class="text-sm text-slate-600 leading-relaxed">Gunakan <strong>Riwayat Jurnal</strong> untuk mencari, mengecek, menyunting, atau menghapus jurnal pribadi.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">4. Rencana Saya</h3><p class="text-sm text-slate-600 leading-relaxed">Buat rencana/reminder dari Beranda. Jika rencana sudah dikerjakan, gunakan tombol <strong>Isi Realisasi</strong>.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">5. Lembur</h3><p class="text-sm text-slate-600 leading-relaxed">Centang <strong>Kegiatan Lembur</strong> saat mengisi jurnal lembur, lalu lengkapi jam, surat tugas, dan data dukung.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">6. Dashboard Saya</h3><p class="text-sm text-slate-600 leading-relaxed">Pantau jumlah jurnal, status pekerjaan, lembur, catatan atasan, dan tren aktivitas pribadi.</p></div>
 </div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">2. Beranda Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Beranda menampilkan informasi ringkas, agenda, pengumuman, rencana pribadi, reminder pengisian jurnal, alert catatan atasan, dan tombol bantuan WhatsApp.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">3. Isi Jurnal Harian</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Buka tab <strong>Isi Jurnal</strong>, isi tanggal, kategori, uraian kegiatan, status kegiatan, dan link data dukung bila ada. Setelah disimpan, data masuk ke Sheet Jurnal dan dapat dilihat di riwayat.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">4. Jurnal Lembur</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Untuk kegiatan lembur, centang <strong>Kegiatan Lembur</strong>. Isi jam mulai, jam selesai, nomor surat tugas, dan data dukung. Dashboard lembur hanya membaca jurnal yang memiliki tanda lembur eksplisit.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">5. Riwayat Jurnal</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Tab <strong>Riwayat Jurnal</strong> berada di sebelah kanan tab Isi Jurnal. Pegawai dapat memeriksa, mencari, menyunting, atau menghapus jurnal miliknya sesuai kebutuhan koreksi.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">6. Laporan Lembur</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Tab ini menampilkan data lembur milik pegawai login. Gunakan untuk memantau riwayat lembur pribadi dan memastikan kelengkapan surat tugas atau data dukung.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">7. Dashboard Saya</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Dashboard Saya menampilkan ringkasan jurnal pribadi, lembur pribadi, total jam lembur, tren aktivitas, catatan atasan, dan monev unit ringkas tanpa membuka data sensitif admin.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">8. Catatan Atasan</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Jika ketua tim/admin memberi catatan pada jurnal, pegawai akan melihat alert di Beranda hanya selama catatan tersebut belum ditindaklanjuti. Setelah pegawai menekan tombol Tandai Sudah Ditindaklanjuti, alert catatan tidak akan muncul lagi untuk jurnal tersebut.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">9. Rencana Saya</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Gunakan Rencana Saya untuk mencatat rencana kegiatan beserta jam reminder. Rencana akan memicu alert, alarm suara, dan notifikasi saat tanggal dan jam reminder sudah tiba, selama fitur suara/notifikasi sudah diaktifkan.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">10. Survei ARIKA</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Isi survei bulanan untuk memberi masukan terkait kemudahan, kemanfaatan, efisiensi, kepuasan, kendala, dan saran pengembangan aplikasi.</p>
-</div>
-</div>
-<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-slate-600 leading-relaxed">
-<strong class="text-amber-800">Catatan jam lembur:</strong> Jam lembur pada Dashboard Saya dihitung dari durasi jam lembur pada absensi dan mengikuti pembulatan yang berlaku pada sistem ARIKA.
-                    </div>
-<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
-</div>
+<div class="mt-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm text-slate-600 leading-relaxed"><strong class="text-emerald-800">Intinya:</strong> jurnal biasa diisi dari menu Isi Jurnal, sedangkan realisasi rencana diisi dari tombol Isi Realisasi pada rencana yang dituju.</div>
 
+</div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-wfh-wfa">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
 <div>
 <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">🏡 Panduan WFH/WFA</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Panduan ini menjelaskan alur rencana dan realisasi WFH/WFA agar tidak tertukar ketika pegawai memiliki lebih dari satu rencana dalam satu hari.</p>
+<p class="text-sm text-slate-500 mt-2 leading-relaxed">Panduan ringkas agar rencana dan realisasi WFH/WFA tidak tertukar, terutama jika ada lebih dari satu rencana dalam sehari.</p>
 </div>
 <span class="panduan-wfh-badge">Rencana → Realisasi</span>
 </div>
-<div class="panduan-wfh-note mb-5">
-<p><strong class="text-emerald-800">Prinsip utama:</strong> tab WFH/WFA adalah tempat <strong>monitoring</strong> rencana dan realisasi. Untuk mengisi realisasi, pegawai memilih rencana yang dituju melalui <strong>Rencana Saya di Beranda</strong>, lalu klik <strong>Isi Realisasi</strong>. Dengan cara ini, realisasi membawa <strong>rencanaId</strong> dan tidak nyasar ke rencana lain.</p>
-</div>
+<div class="panduan-wfh-note mb-5"><p><strong class="text-emerald-800">Prinsip utama:</strong> tab WFH/WFA digunakan untuk monitoring. Realisasi rencana dilakukan dari <strong>Beranda → Rencana Saya → Isi Realisasi</strong> pada rencana yang dipilih.</p></div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="panduan-wfh-step">
-<h3>1. Membuat Rencana WFH/WFA</h3>
-<p>Masuk ke tab <strong>WFH/WFA</strong>, lalu klik <strong>Rencana Saya</strong>. Sistem akan membuka <strong>Rencana Saya</strong> dan menyiapkan label <strong>[WFH/WFA]</strong> pada rencana agar terbaca di monitoring WFH/WFA.</p>
+<div class="panduan-wfh-step"><h3>1. Buat Rencana WFH/WFA</h3><p>Dari tab WFH/WFA klik <strong>Rencana Saya</strong>. Buat rencana dengan label/keterangan WFH/WFA agar terbaca di monitoring.</p></div>
+<div class="panduan-wfh-step"><h3>2. Isi Realisasi dari Rencana</h3><p>Buka Beranda, pilih <strong>Rencana Saya</strong>, lalu klik <strong>Isi Realisasi</strong> pada rencana yang benar.</p></div>
+<div class="panduan-wfh-step"><h3>3. Jika Rencana Lebih dari Satu</h3><p>Isi realisasi satu per satu sesuai rencana. Jangan menggabungkan beberapa rencana dalam satu realisasi jika perlu dipantau terpisah.</p></div>
+<div class="panduan-wfh-step"><h3>4. Jurnal Umum</h3><p>Jika kegiatan tidak terkait rencana tertentu, isi dari menu <strong>Isi Jurnal</strong> biasa sebagai jurnal umum.</p></div>
 </div>
-<div class="panduan-wfh-step">
-<h3>2. Realisasi Harus Lewat Rencana</h3>
-<p>Untuk merealisasikan kegiatan WFH/WFA, buka <strong>Rencana Saya di Beranda</strong>, pilih rencana yang benar, lalu klik <strong>Isi Realisasi</strong>. Jangan mengisi realisasi rencana dari form jurnal kosong biasa.</p>
-</div>
-<div class="panduan-wfh-step">
-<h3>3. Jika Ada Beberapa Rencana</h3>
-<p>Jika dalam satu hari ada 2 atau lebih rencana, isi realisasi <strong>satu per satu</strong> dari rencana masing-masing. Contoh: Rencana 1 → Isi Realisasi; Rencana 2 → Isi Realisasi. Sistem akan menyimpan relasi berdasarkan <strong>rencanaId</strong>.</p>
-</div>
-<div class="panduan-wfh-step">
-<h3>4. Jurnal Umum Bukan Realisasi Rencana</h3>
-<p>Menu <strong>Isi Jurnal</strong> biasa digunakan untuk kegiatan umum. Jika kegiatan tersebut adalah realisasi dari rencana tertentu, gunakan tombol <strong>Isi Realisasi</strong> pada rencana agar data masuk ke pasangan rencana yang benar.</p>
-</div>
-<div class="panduan-wfh-step">
-<h3>5. Monitoring di Tab WFH/WFA</h3>
-<p>Tab WFH/WFA menampilkan pegawai yang memiliki rencana atau realisasi berlabel WFH/WFA pada tanggal dipilih. Status akan lebih akurat karena realisasi dipasangkan dengan rencana yang membawa <strong>rencanaId</strong>.</p>
-</div>
-<div class="panduan-wfh-step">
-<h3>6. Riwayat Jurnal Tetap Terisi</h3>
-<p>Realisasi yang diisi dari rencana tetap tersimpan sebagai jurnal harian dan tetap muncul di <strong>Riwayat Jurnal</strong>. Bedanya, jurnal tersebut memiliki penanda <strong>Terkait Rencana</strong>.</p>
-</div>
-</div>
-<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-slate-600 leading-relaxed">
-<strong class="text-amber-800">Alur yang benar:</strong> buat rencana WFH/WFA → buka Beranda → pilih <strong>Rencana Saya</strong> → klik <strong>Isi Realisasi</strong> pada rencana yang dituju → simpan jurnal. Jika tidak terkait rencana, isi melalui menu <strong>Isi Jurnal</strong> biasa sebagai jurnal umum.
-</div>
-<div class="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm text-slate-600 leading-relaxed">
-<strong class="text-emerald-800">Catatan penting:</strong> tab WFH/WFA tidak menyediakan tombol <strong>Isi Jurnal WFH/WFA</strong> agar pegawai tidak salah memilih rencana. Realisasi WFH/WFA yang terkait rencana harus selalu dimulai dari rencana yang dipilih.
-</div>
-<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
-</div>
+<div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-slate-600 leading-relaxed"><strong class="text-amber-800">Alur benar:</strong> buat rencana WFH/WFA → buka Beranda → Rencana Saya → Isi Realisasi pada rencana yang dituju → simpan jurnal.</div>
 
+</div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-reminder">
-<h2 class="text-xl font-black text-slate-900 mb-3 flex items-center gap-2">🔔 Panduan Alarm dan Reminder</h2>
-<p class="text-sm text-slate-500 leading-relaxed mb-5">ARIKA dapat memberi pengingat visual, suara, dan Pusat Reminder untuk membantu pegawai tidak melewatkan jurnal, catatan atasan, rencana pribadi, pengumuman, dan agenda.</p>
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-<div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">Aktifkan Suara</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Setelah login, klik <strong>Aktifkan Suara</strong> satu kali. Browser tidak mengizinkan audio otomatis sebelum pengguna melakukan interaksi.</p>
+<h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">🔔 Panduan Reminder dan Alarm</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100"><h3 class="font-black text-emerald-800 uppercase text-[11px] tracking-widest mb-2">Aktifkan Suara</h3><p class="text-sm text-slate-600 leading-relaxed">Klik <strong>Aktifkan Suara</strong> setelah login, lalu gunakan <strong>Tes Suara</strong> untuk memastikan alarm berbunyi.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-slate-800 uppercase text-[11px] tracking-widest mb-2">Pusat Reminder</h3><p class="text-sm text-slate-600 leading-relaxed">Berisi rencana aktif, jurnal yang perlu diisi, catatan atasan, pengumuman, dan agenda yang mendekati waktu.</p></div>
+<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100"><h3 class="font-black text-cyan-800 uppercase text-[11px] tracking-widest mb-2">Syarat Alarm</h3><p class="text-sm text-slate-600 leading-relaxed">Tab ARIKA harus tetap terbuka, suara aktif, dan browser tidak memblokir audio.</p></div>
+<div class="p-4 rounded-2xl bg-amber-50 border border-amber-100"><h3 class="font-black text-amber-800 uppercase text-[11px] tracking-widest mb-2">Jika Tidak Berbunyi</h3><p class="text-sm text-slate-600 leading-relaxed">Cek volume, mute tab, izin audio, koneksi, dan buka Pusat Reminder untuk melihat daftar pengingat.</p></div>
 </div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">Tes Suara</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Tes</strong> untuk memastikan alarm MP3 custom aktif. Jika suara Bahasa Indonesia tidak tersedia, ARIKA tetap memakai alarm MP3 sebagai pengingat utama.</p>
-</div>
-<div class="panduan-inline-focus p-4 rounded-2xl bg-indigo-50 border border-indigo-100" id="panduan-pusat-reminder">
-<h3 class="font-black text-indigo-700 uppercase text-[11px] tracking-widest mb-2">Pusat Reminder</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Buka Pusat Reminder</strong> di Beranda atau tombol <strong>Pusat Reminder</strong> melayang untuk melihat semua reminder aktif tanpa perlu izin notifikasi browser.</p>
-</div>
-<div class="p-4 rounded-2xl bg-violet-50 border border-violet-100">
-<h3 class="font-black text-violet-700 uppercase text-[11px] tracking-widest mb-2">Tab ARIKA Tetap Terbuka</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Suara dan Pusat Reminder bekerja selama tab ARIKA masih terbuka, browser tidak menidurkan tab, dan audio tidak diblokir.</p>
-</div>
-</div>
-<div class="mt-5 p-5 rounded-3xl bg-amber-50 border border-amber-100">
-<h3 class="font-black text-amber-800 uppercase text-[11px] tracking-widest mb-3">Pengaturan Browser agar Reminder Stabil</h3>
-<ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-700 leading-relaxed font-bold">
-<li>✅ Buka <strong>Chrome/Edge Settings</strong>.</li>
-<li>✅ Masuk ke menu <strong>Performance</strong>.</li>
-<li>✅ Tambahkan situs ARIKA ke <strong>Always keep these sites active</strong>.</li>
-<li>✅ Pastikan tab ARIKA tidak di-mute.</li>
-<li>✅ Hindari <strong>Energy Saver</strong> atau <strong>Memory Saver</strong> yang terlalu agresif untuk situs ARIKA.</li>
-<li>✅ Klik <strong>Aktifkan Suara</strong> satu kali setelah login dan biarkan tab ARIKA tetap terbuka.</li>
-</ul>
-<p class="mt-3 text-xs text-amber-800 leading-relaxed font-bold">Catatan: alarm ARIKA bekerja dari halaman web yang masih terbuka. Jika tab ditutup, browser ditutup, komputer sleep, atau tab ditidurkan browser, alarm dapat terlambat dan baru berbunyi saat tab ARIKA dibuka kembali.</p>
-</div>
-<div class="mt-5 p-5 rounded-3xl bg-indigo-50 border border-indigo-100">
-<h3 class="font-black text-indigo-800 uppercase text-[11px] tracking-widest mb-3">Pusat Reminder sebagai Pengganti Notifikasi Browser</h3>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 text-sm text-slate-700 leading-relaxed">
-<div class="rounded-2xl bg-white/80 border border-indigo-100 p-4">
-<p class="font-black text-indigo-700 uppercase tracking-widest text-[10px] mb-2">Akses Cepat</p>
-<p>Tombol <strong>Buka Pusat Reminder</strong> pada Beranda dibuat membuka panel di bagian atas agar terlihat jelas saat ARIKA disematkan ke Google Sites.</p>
-</div>
-<div class="rounded-2xl bg-white/80 border border-indigo-100 p-4">
-<p class="font-black text-indigo-700 uppercase tracking-widest text-[10px] mb-2">Status Reminder</p>
-<p>Badge angka akan muncul jika ada reminder yang belum dibaca. Reminder dapat ditandai dibaca agar tampilan tetap rapi.</p>
-</div>
-<div class="rounded-2xl bg-white/80 border border-indigo-100 p-4">
-<p class="font-black text-indigo-700 uppercase tracking-widest text-[10px] mb-2">Suara Alarm</p>
-<p>Aktifkan suara satu kali setelah login. Jika belum aktif, tombol <strong>Aktifkan Suara</strong> akan berkedip agar mudah terlihat.</p>
-</div>
-</div>
-<div class="mt-4 rounded-2xl bg-white/80 border border-amber-100 p-4 text-sm text-slate-700 leading-relaxed">
-<p><strong class="text-amber-700">Catatan:</strong> fitur notifikasi pop-up browser dinonaktifkan agar ARIKA tidak bergantung pada izin browser. Fokus pengingat dipindahkan ke Pusat Reminder, banner visual Beranda, dan suara alarm.</p>
-</div>
-</div>
-<div class="mt-5 overflow-x-auto rounded-2xl border border-slate-100">
-<table class="w-full text-xs text-left">
-<thead class="bg-slate-50 text-slate-400 uppercase tracking-widest font-black">
-<tr><th class="p-3">Jenis Reminder</th><th class="p-3">Kapan Muncul</th><th class="p-3">Jeda Alarm</th></tr>
-</thead>
-<tbody class="divide-y divide-slate-100 text-slate-600 font-bold">
-<tr><td class="p-3">Belum isi jurnal</td><td class="p-3">Pegawai belum mencatat jurnal pada hari kerja berjalan.</td><td class="p-3">± 60 menit sekali</td></tr>
-<tr><td class="p-3">Jurnal terlewat</td><td class="p-3">Ada hari kerja sebelumnya yang belum memiliki jurnal.</td><td class="p-3">± 60 menit sekali</td></tr>
-<tr><td class="p-3">Catatan atasan</td><td class="p-3">Jurnal pegawai mendapat catatan/review dari admin atau ketua tim.</td><td class="p-3">± 60 menit sekali</td></tr>
-<tr><td class="p-3">Rencana pribadi</td><td class="p-3">Ada rencana pribadi yang sudah memasuki jam reminder hari ini atau sudah terlewat dan belum diklik selesai.</td><td class="p-3">± 15 menit sekali sampai selesai</td></tr>
-<tr><td class="p-3">Pengumuman</td><td class="p-3">Ada pengumuman aktif sesuai tanggal dan target fungsi.</td><td class="p-3">± 120 menit sekali</td></tr>
-<tr><td class="p-3">Agenda kegiatan</td><td class="p-3">Agenda mendekati waktu mulai atau berlangsung hari ini.</td><td class="p-3">± 15 menit sekali</td></tr>
-</tbody>
-</table>
-</div>
-<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
+<div class="panduan-inline-focus p-4 rounded-2xl bg-emerald-50 border border-emerald-100 mt-5" id="panduan-browser-reminder"><h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">Pengaturan Browser agar Stabil</h3><p class="text-sm text-slate-600 leading-relaxed">Di Chrome/Edge, buka <strong>Settings → Performance</strong>, lalu tambahkan situs ARIKA ke <strong>Always keep these sites active</strong>. Pastikan tab ARIKA tidak di-mute, hindari Energy Saver/Memory Saver yang terlalu agresif, klik <strong>Aktifkan Suara</strong> satu kali setelah login, dan biarkan tab ARIKA tetap terbuka.</p><p class="text-sm text-slate-500 leading-relaxed mt-3"><strong>Catatan:</strong> alarm ARIKA bekerja dari halaman web yang masih terbuka. Jika tab/browser ditutup, komputer sleep, atau tab ditidurkan browser, alarm bisa terlambat dan baru berbunyi saat ARIKA dibuka kembali.</p></div>
+<div class="panduan-inline-focus p-4 rounded-2xl bg-indigo-50 border border-indigo-100 mt-5" id="panduan-pusat-reminder"><h3 class="font-black text-indigo-700 uppercase text-[11px] tracking-widest mb-2">Ringkasan Pusat Reminder</h3><p class="text-sm text-slate-600 leading-relaxed">Gunakan Pusat Reminder untuk melihat hal yang perlu ditindaklanjuti tanpa bergantung pada notifikasi desktop.</p></div>
+
 </div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-verifikator">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-<div>
-<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">✅ Panduan Ketua Tim / Verifikator</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Ketua tim dapat melakukan review jurnal dan verifikasi lembur tanpa menggunakan akun admin utama.</p>
-</div>
-<span class="inline-flex px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-black uppercase tracking-widest">Role Ketua Tim</span>
-</div>
+<h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">✅ Panduan Ketua Tim / Verifikator</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">1. Aktivasi Role</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Admin mengisi kolom <strong>Peran</strong> pada Sheet Pegawai dengan nilai <strong>Ketua Tim</strong> untuk Rosana Anna Ashari dan Imam Taufik. Untuk pembatasan unit, isi kolom <strong>Cakupan Unit</strong> bila diperlukan. Jika kolom tersebut kosong, ARIKA memakai aturan khusus: Rosana Anna Ashari memantau Kimia Pangan &amp; Mikrobiologi, sedangkan Imam Taufik memantau unit selain dua fungsi tersebut.</p>
+<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100"><h3 class="font-black text-cyan-800 uppercase text-[11px] tracking-widest mb-2">Akses Data</h3><p class="text-sm text-slate-600 leading-relaxed">Ketua Tim/Verifikator melihat data sesuai cakupan unit yang diatur pada master pegawai.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-slate-800 uppercase text-[11px] tracking-widest mb-2">Review Jurnal</h3><p class="text-sm text-slate-600 leading-relaxed">Gunakan menu Verifikator untuk meninjau jurnal, memberi catatan, dan memantau tindak lanjut pegawai.</p></div>
+<div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100"><h3 class="font-black text-emerald-800 uppercase text-[11px] tracking-widest mb-2">Verifikasi Lembur</h3><p class="text-sm text-slate-600 leading-relaxed">Pastikan jurnal lembur memiliki tanda lembur, durasi, nomor surat tugas, dan data dukung.</p></div>
+<div class="p-4 rounded-2xl bg-amber-50 border border-amber-100"><h3 class="font-black text-amber-800 uppercase text-[11px] tracking-widest mb-2">Jika Menu Tidak Muncul</h3><p class="text-sm text-slate-600 leading-relaxed">Cek kolom <strong>Peran</strong> dan <strong>Cakupan Unit</strong> pada Sheet Pegawai, lalu logout dan login ulang.</p></div>
 </div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">2. Menu Ketua Tim</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Setelah login, menu <strong>Ketua Tim</strong> akan muncul otomatis untuk akun dengan Peran Ketua Tim. Menu ini berbeda dari Admin Utama dan hanya menampilkan fitur yang diperlukan untuk pemeriksaan serta pengelolaan pengumuman/agenda.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">3. Dashboard Jurnal</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Digunakan untuk melihat tren kegiatan, status jurnal, catatan kegiatan, dan ringkasan monitoring. Nama tab lama Dashboard Monev sudah diganti menjadi <strong>Dashboard Jurnal</strong>.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">4. Dashboard Lembur</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Digunakan untuk memeriksa jurnal bertanda lembur, melihat KPI lembur, rekap personil, kelengkapan data, dan daftar verifikasi laporan lembur.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">5. Rekap Jurnal Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Ketua tim dapat membuka tab <strong>Rekap Jurnal Pegawai</strong> untuk melihat rekap jurnal. Tombol unduh semua data tetap dibatasi untuk Admin Utama.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">6. Mengisi Catatan</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Klik tombol <strong>Review</strong> pada jurnal atau lembur, pilih status evaluasi, tulis catatan, lalu simpan. Pegawai akan mendapat alert catatan di Beranda dan Dashboard Saya.</p>
-</div>
-</div>
-<div class="mt-5 p-4 rounded-2xl bg-rose-50 border border-rose-100 text-sm text-slate-600 leading-relaxed">
-<strong class="text-rose-700">Batas akses Ketua Tim:</strong> Ketua Tim tidak dapat mengakses Manajemen Pegawai, Survei, pengaturan admin utama, dan tombol tertentu yang dikhususkan untuk Admin Utama. Ketua Tim tetap dapat membuat Papan Pengumuman dan Agenda Kegiatan sesuai kewenangan yang diberikan.
-                    </div>
-<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
+
 </div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-admin">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-<div>
-<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">🛠️ Panduan untuk Administrator Utama</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Admin Utama memiliki akses penuh terhadap dashboard, master data, pengumuman, agenda, survei, rekap, SPK, dan pengelolaan role.</p>
+<h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">🛠️ Panduan Administrator</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-slate-800 uppercase text-[11px] tracking-widest mb-2">Master Pegawai</h3><p class="text-sm text-slate-600 leading-relaxed">Kelola nama, status, fungsi, peran, dan cakupan unit pegawai.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-slate-800 uppercase text-[11px] tracking-widest mb-2">Monitoring</h3><p class="text-sm text-slate-600 leading-relaxed">Pantau jurnal, lembur, WFH/WFA, catatan atasan, dan monev aktivitas.</p></div>
+<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100"><h3 class="font-black text-slate-800 uppercase text-[11px] tracking-widest mb-2">Informasi</h3><p class="text-sm text-slate-600 leading-relaxed">Kelola pengumuman, agenda, survei, dan dokumen pendukung ARIKA.</p></div>
 </div>
-<span class="inline-flex px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest">Akses Penuh</span>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-100">
-<h3 class="font-black text-indigo-700 uppercase text-[11px] tracking-widest mb-2">Dashboard Jurnal</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pantau total jurnal, ketuntasan, tren aktivitas, distribusi status, catatan kegiatan, laporan bulanan, top kontributor, dan rekap monev jurnal.</p>
-</div>
-<div class="p-4 rounded-2xl bg-amber-50 border border-amber-100">
-<h3 class="font-black text-amber-700 uppercase text-[11px] tracking-widest mb-2">Dashboard Lembur</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pantau entri lembur, total jam, personil lembur, kelengkapan berkas, grafik lembur, rekap personil, dan daftar verifikasi dengan paginasi 10 laporan per halaman.</p>
-</div>
-<div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">SPK Lembur</h3>
-<p class="text-sm text-slate-600 leading-relaxed">SPK Harian dan SPK Rentang/Kolektif berada pada Dashboard Lembur. Format SPK tidak memakai header/footer gambar dan tidak memakai kop teks lama. Nomor SPK memakai kode <strong>KU.01.03.58B</strong>.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">Rekap Jurnal Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Gunakan tab ini untuk melihat seluruh jurnal pegawai, mencari data, memeriksa riwayat, dan mengunduh data sesuai kebutuhan monitoring admin.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-slate-700 uppercase text-[11px] tracking-widest mb-2">Manajemen Pegawai</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Tambah atau perbarui data pegawai. Pastikan kolom Nama, NIP, Status, Fungsi Kerja, Pangkat, dan Peran diisi benar. Peran dapat diisi Pegawai, Ketua Tim, atau Verifikator sesuai kewenangan.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-slate-700 uppercase text-[11px] tracking-widest mb-2">Papan Pengumuman</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Buat pengumuman dengan judul, jenis, tanggal mulai, tanggal selesai, waktu mulai, target fungsi, dan isi. Pengumuman aktif akan muncul pada Beranda Pegawai.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-slate-700 uppercase text-[11px] tracking-widest mb-2">Agenda Kegiatan</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Input agenda kegiatan, lokasi/media, waktu mulai, keterangan, dan peserta. Agenda dapat ditampilkan pada Beranda dan kalender kegiatan pegawai.</p>
-</div>
-<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-<h3 class="font-black text-slate-700 uppercase text-[11px] tracking-widest mb-2">Survei dan Tindak Lanjut</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pantau hasil survei kepuasan, kemanfaatan, efisiensi, kendala, dan saran. Data dapat digunakan sebagai bahan monitoring dan evaluasi pengembangan ARIKA.</p>
-</div>
-</div>
-<div class="mt-5 overflow-x-auto rounded-2xl border border-slate-100">
-<table class="w-full text-xs text-left">
-<thead class="bg-slate-50 text-slate-400 uppercase tracking-widest font-black">
-<tr><th class="p-3">Role</th><th class="p-3">Menu Utama</th><th class="p-3">Kewenangan</th></tr>
-</thead>
-<tbody class="divide-y divide-slate-100 text-slate-600 font-bold">
-<tr><td class="p-3">Pegawai</td><td class="p-3">Beranda, Isi Jurnal, Riwayat Jurnal, Laporan Lembur, Dashboard Saya, Panduan</td><td class="p-3">Mengelola data sendiri dan menindaklanjuti catatan.</td></tr>
-<tr><td class="p-3">Ketua Tim</td><td class="p-3">Menu pegawai + Ketua Tim</td><td class="p-3">Memantau jurnal unit binaan, verifikasi lembur, memberi catatan, membuat pengumuman, dan agenda.</td></tr>
-<tr><td class="p-3">Ketua Tim</td><td class="p-3">Menu pegawai + Verifikator</td><td class="p-3">Role opsional untuk pemeriksa selain Ketua Tim, dengan cakupan sesuai pengaturan.</td></tr>
-<tr><td class="p-3">Admin Utama</td><td class="p-3">Panel Admin Lengkap</td><td class="p-3">Akses penuh semua fitur, data, dokumen, dan pengaturan.</td></tr>
-</tbody>
-</table>
-</div>
+<div class="mt-5 p-4 rounded-2xl bg-rose-50 border border-rose-100 text-sm text-slate-600 leading-relaxed"><strong class="text-rose-800">Catatan:</strong> akses admin perlu dibatasi pada petugas berwenang karena dapat melihat dan mengelola data lintas pegawai.</div>
+
 </div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-faq">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-<div>
-<h2 class="text-xl font-black text-slate-900 flex items-center gap-2">❓ FAQ ARIKA</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Kumpulan pertanyaan yang paling sering muncul setelah pengembangan ARIKA, mulai dari login, jurnal, lembur, dashboard, role verifikator, alarm, hingga dokumen SPK.</p>
+<h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">❓ FAQ Ringkas ARIKA</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Data belum muncul?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Klik Sinkron/Refresh Data, pastikan koneksi stabil, lalu coba logout dan login kembali jika masih belum berubah.</p></details>
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Lembur tidak terbaca?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Pastikan jurnal dicentang sebagai lembur dan memiliki jam mulai, jam selesai, surat tugas, serta data dukung.</p></details>
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Realisasi rencana tidak terhubung?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Isi realisasi dari tombol <strong>Isi Realisasi</strong> pada rencana yang dituju, bukan dari form jurnal kosong biasa.</p></details>
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Alarm tidak berbunyi?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Klik Aktifkan Suara, cek volume, pastikan tab tidak mute, dan jangan menutup tab ARIKA.</p></details>
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Menu verifikator tidak tampil?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Cek kolom Peran/Cakupan Unit pada Sheet Pegawai, lalu login ulang.</p></details>
+<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md"><summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kapan Apps Script perlu deploy ulang?<span class="text-slate-400">⌄</span></summary><p class="mt-3 text-sm text-slate-600 leading-relaxed">Deploy ulang diperlukan jika ada perubahan backend, kolom baru, atau API. Jika hanya tampilan, cukup upload/publish file ARIKA terbaru.</p></details>
 </div>
-<span class="inline-flex px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-black uppercase tracking-widest">Pertanyaan Umum</span>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-<div class="space-y-3">
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">A. Login, Akun, dan Role</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Saya login sebagai pegawai, kenapa menu admin tidak muncul?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Menu admin hanya muncul untuk Admin Utama. Pegawai biasa hanya melihat menu pegawai seperti Beranda, Isi Jurnal, Riwayat Jurnal, Laporan Lembur, Dashboard Saya, dan Panduan.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Ketua tim sudah diberi peran, tetapi menu Verifikator belum muncul. Apa yang harus dilakukan?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Pastikan kolom <strong>Peran</strong> pada Sheet Pegawai berisi <strong>Ketua Tim</strong> untuk Rosana/Imam atau <strong>Ketua Tim</strong> untuk pemeriksa lain, nama dan NIP sama dengan akun yang digunakan login, lalu logout dan login ulang agar data role terbaca kembali.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa perbedaan Pegawai, Ketua Tim, dan Admin Utama?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Pegawai mengelola jurnal dan dashboard pribadinya. Ketua Tim memiliki tambahan menu Ketua Tim untuk memantau jurnal unit binaan, review jurnal, verifikasi lembur, serta membuat pengumuman dan agenda. Verifikator tetap tersedia sebagai role opsional untuk pemeriksa lain. Admin Utama memiliki akses penuh ke seluruh dashboard, master pegawai, pengumuman, agenda, survei, rekap, dan dokumen.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah Ketua Tim perlu menggunakan akun admin utama?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Tidak. Ketua Tim cukup login sebagai pegawai biasa menggunakan nama dan kata sandi masing-masing. Jika kolom Peran sudah diisi Ketua Tim, menu Ketua Tim akan muncul otomatis.</p>
-</details>
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">B. Jurnal Harian dan Riwayat</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Bagaimana cara mengisi jurnal harian?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Buka tab <strong>Isi Jurnal</strong>, pilih tanggal, kategori, status pekerjaan, uraian kegiatan, lalu simpan. Jika kegiatan merupakan lembur, aktifkan tanda/checkbox lembur dan lengkapi jam serta nomor surat tugas jika diperlukan.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa jurnal saya tidak muncul di Riwayat Jurnal?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Klik tombol refresh/sinkron data, pastikan koneksi stabil, lalu cek filter bulan/tanggal. Jika masih kosong, pastikan jurnal sudah tersimpan di Google Sheet dengan nama/NIP yang sama dengan akun login.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah jurnal yang sudah tersimpan bisa disunting?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Bisa, selama tombol edit tersedia pada riwayat. Penyuntingan memakai ID Jurnal agar data lama diperbarui, bukan membuat duplikasi baru.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa yang harus dilakukan jika ada catatan atasan pada jurnal?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Buka alert pada Beranda atau tab Dashboard Saya, baca catatan atasan, lakukan perbaikan/tindak lanjut sesuai arahan, lalu klik Tandai Sudah Ditindaklanjuti. Setelah status tindak lanjut tersimpan, reminder catatan tidak akan muncul lagi untuk jurnal tersebut.</p>
-</details>
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">C. Lembur dan SPK</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Data seperti apa yang masuk Dashboard Lembur?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Hanya jurnal yang memiliki tanda lembur eksplisit, misalnya kolom <strong>Lembur?</strong> bernilai TRUE, Ya, Iya, 1, atau Lembur. Sistem tidak lagi menebak dari uraian, jam, atau surat tugas saja.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa data lembur saya tidak masuk dashboard?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Periksa apakah saat mengisi jurnal tanda lembur benar-benar aktif. Jika data lama hanya memiliki jam lembur atau surat tugas tetapi kolom Lembur? kosong, data tersebut tidak akan dihitung sebagai lembur.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Bagaimana jam lembur dihitung?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Jam lembur pada Dashboard Saya mengikuti durasi jam lembur pada absensi. Pada verifikasi SPK, durasi yang tampil mengikuti data jam mulai dan jam selesai yang tersimpan pada jurnal lembur.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Di mana tombol SPK Harian dan SPK Kolektif?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Tombol SPK tersedia pada Dashboard Lembur.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa SPK tidak memakai header/footer gambar?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Sesuai revisi terbaru, SPK Harian dan SPK Kolektif dibuat tanpa header/footer gambar dan tanpa kop teks lama. Isi dokumen dimulai dari judul Surat Perintah Kerja Lembur.</p>
-</details>
-</div>
-<div class="space-y-3">
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">D. Dashboard Pegawai, Jurnal, dan Lembur</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa fungsi Dashboard Saya?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Dashboard Saya menampilkan ringkasan pribadi pegawai: jumlah jurnal, status pekerjaan, lembur pribadi, catatan atasan, tren aktivitas, dan monev unit ringkas tanpa membuka data sensitif admin.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa bedanya Dashboard Jurnal dan Rekap Jurnal Pegawai?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Dashboard Jurnal berisi ringkasan dan grafik monitoring. Rekap Jurnal Pegawai berisi daftar data jurnal yang lebih rinci untuk ditelusuri, difilter, dan ditinjau.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa grafik terlihat kosong?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Biasanya karena filter bulan/tanggal tidak sesuai dengan data yang tersedia. Coba pilih Semua Bulan, klik Sinkron/Refresh Data, dan pastikan data jurnal sudah tersimpan di Sheet.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah Ketua Tim bisa melihat semua data pegawai?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Ketua Tim dapat melihat Dashboard Jurnal, Dashboard Lembur, dan Rekap Jurnal Pegawai sesuai unit binaannya. Rosana Anna Ashari dibatasi pada Kimia Pangan &amp; Mikrobiologi, sedangkan Imam Taufik dibatasi pada unit selain Kimia Pangan &amp; Mikrobiologi. Ketua Tim juga dapat membuat Papan Pengumuman dan Agenda Kegiatan. Fitur manajemen dan ekspor tertentu tetap dibatasi untuk Admin Utama.</p>
-</details>
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">E. Alarm, Reminder, Pengumuman, dan Agenda</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa alarm tidak berbunyi setelah membuat reminder hari ini?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Klik Aktifkan Suara setelah login, pastikan volume laptop/PC aktif, tab ARIKA masih terbuka, tab ARIKA tidak di-mute, dan browser tidak memblokir audio. Setelah reminder dibuat, sistem akan melakukan pengecekan ulang; gunakan tombol Tes Suara dan Pusat Reminder untuk memastikan pengingat aktif. Jika Chrome/Edge memakai Memory Saver dan alarm sering tidak berbunyi, berikan pengecualian untuk halaman ARIKA agar tab tidak ditidurkan otomatis.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah alarm tetap berbunyi saat saya membuka tab lain?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Bisa, selama tab ARIKA masih terbuka dalam browser yang sama dan suara sudah diaktifkan. Untuk menghindari kendala izin browser, pengingat utama diperkuat melalui Pusat Reminder, banner visual Beranda, dan suara alarm. Jika tab ARIKA ditutup atau komputer masuk mode sleep, alarm dan reminder tidak akan berjalan.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Bagaimana cara membuka Pusat Reminder?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Klik tombol <strong>Buka Pusat Reminder</strong> pada Beranda atau tombol <strong>Pusat Reminder</strong> yang melayang di kiri bawah. Di dalamnya tersedia ringkasan reminder aktif, tombol Aktifkan Suara, Tes Suara, Tandai Dibaca, dan tombol menuju Beranda. Badge angka akan muncul jika ada reminder yang belum dibaca.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Seberapa sering alarm berbunyi?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Sistem mengecek reminder secara berkala. Reminder pribadi akan mengikuti tanggal dan jam reminder yang dipilih. Reminder pribadi, jurnal, dan catatan tidak dibunyikan terus-menerus; ada jeda agar tidak mengganggu. Agenda yang mendekati waktu mulai dapat diingatkan lebih sering.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa suara manusia tidak tersedia atau alarm MP3 tidak berbunyi?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA hanya memakai suara Bahasa Indonesia jika tersedia di browser/perangkat. Alarm utama memakai file MP3 custom alarm_reminder.mp3; bel sintetis cadangan sudah dihapus agar tidak terdengar dobel.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa saja yang bisa memicu reminder di Beranda?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Reminder dapat muncul untuk jurnal hari ini yang belum diisi, jurnal terlewat hari kerja, catatan atasan, rencana pribadi, pengumuman aktif, dan agenda kegiatan yang mendekati waktu mulai.</p>
-</details>
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">F. Admin, Data, dan Teknis</h3>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apa yang harus dilakukan setelah kode HTML diganti di Google Sites?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Tempel kode HTML terbaru pada embed Google Sites, klik simpan, lalu publish. Setelah itu buka ulang halaman ARIKA dan lakukan refresh browser agar cache lama tidak terbaca.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kapan Apps Script perlu diganti atau deploy ulang?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Apps Script perlu diperbarui jika ada perubahan backend, misalnya penambahan kolom Peran, perubahan API, atau penyimpanan data baru. Jika hanya tampilan HTML yang berubah, biasanya cukup mengganti kode embed.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Apakah data ARIKA aman jika ada banyak pengguna?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">ARIKA membatasi tampilan berdasarkan role di frontend. Untuk kedisiplinan operasional, admin perlu menjaga akses Google Sheet dan Apps Script agar hanya petugas yang berwenang yang bisa mengubah data sumber.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Kenapa data yang baru diinput belum langsung muncul?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Data mungkin masih menggunakan cache sementara. Klik Sinkron/Refresh Data, buka ulang tab, atau logout dan login kembali jika data masih belum berubah.</p>
-</details>
-<details class="group rounded-2xl border border-slate-100 bg-slate-50 p-4 open:bg-white open:shadow-md">
-<summary class="cursor-pointer font-black text-slate-800 text-sm flex justify-between gap-3">Bagaimana cara melaporkan kendala ke admin ARIKA?<span class="text-slate-400">⌄</span></summary>
-<p class="mt-3 text-sm text-slate-600 leading-relaxed">Gunakan tombol Bantuan ARIKA di kanan bawah layar. Pesan bantuan akan membawa konteks halaman yang sedang dibuka, sehingga admin lebih mudah menelusuri masalah.</p>
-</details>
-</div>
-</div>
-<button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
+
 </div>
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-bantuan">
-<h2 class="text-xl font-black text-slate-900 mb-3 flex items-center gap-2">💬 Bantuan dan Kendala Umum</h2>
+<h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">💬 Bantuan Teknis</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-<div class="p-4 rounded-2xl bg-rose-50 border border-rose-100">
-<h3 class="font-black text-rose-700 uppercase text-[11px] tracking-widest mb-2">Data tidak muncul</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Klik tombol sinkron/refresh data, pastikan koneksi internet stabil, dan pastikan data pada Google Sheet sudah tersimpan dengan header kolom yang benar.</p>
+<div class="p-4 rounded-2xl bg-rose-50 border border-rose-100"><h3 class="font-black text-rose-700 uppercase text-[11px] tracking-widest mb-2">Data / Tampilan Bermasalah</h3><p class="text-sm text-slate-600 leading-relaxed">Refresh halaman, klik Sinkron Data, atau coba logout-login. Pastikan file GitHub Pages sudah terupload lengkap.</p></div>
+<div class="p-4 rounded-2xl bg-amber-50 border border-amber-100"><h3 class="font-black text-amber-700 uppercase text-[11px] tracking-widest mb-2">Butuh Bantuan Admin</h3><p class="text-sm text-slate-600 leading-relaxed">Gunakan tombol <strong>Bantuan ARIKA</strong> di kanan bawah agar admin menerima konteks halaman yang sedang dibuka.</p></div>
 </div>
-<div class="p-4 rounded-2xl bg-amber-50 border border-amber-100">
-<h3 class="font-black text-amber-700 uppercase text-[11px] tracking-widest mb-2">Alarm tidak berbunyi</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Klik Aktifkan Suara dan Tes Suara. Pastikan tab ARIKA masih terbuka, tab tidak di-mute, volume laptop/PC aktif, dan browser tidak memblokir audio. Jika sering tidak berbunyi, matikan atau beri pengecualian Memory Saver Chrome/Edge untuk halaman ARIKA.</p>
-</div>
-<div class="p-4 rounded-2xl bg-cyan-50 border border-cyan-100">
-<h3 class="font-black text-cyan-700 uppercase text-[11px] tracking-widest mb-2">Menu Verifikator tidak muncul</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pastikan kolom Peran pada Sheet Pegawai berisi Ketua Tim untuk Rosana/Imam, atau Verifikator untuk pemeriksa lain, lalu logout dan login kembali.</p>
-</div>
-<div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
-<h3 class="font-black text-emerald-700 uppercase text-[11px] tracking-widest mb-2">Lembur tidak masuk dashboard</h3>
-<p class="text-sm text-slate-600 leading-relaxed">Pastikan jurnal tersebut memiliki tanda lembur, misalnya kolom Lembur? bernilai TRUE/Ya/Lembur. Dashboard tidak menebak dari uraian, jam, atau surat tugas saja.</p>
-</div>
-</div>
-<div class="bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-[2rem] p-6 md:p-8 text-white">
-<h3 class="text-xl font-black mb-2">Masih butuh bantuan?</h3>
-<p class="text-sm md:text-base text-emerald-50 leading-relaxed mb-5">
-                            Gunakan tombol <strong>Bantuan ARIKA</strong> di kanan bawah layar. Pesan WhatsApp akan otomatis berisi identitas pengguna dan halaman terakhir yang sedang dibuka.
-                        </p>
-<button class="bg-white text-emerald-700 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all" onclick="window.openBantuanWA &amp;&amp; window.openBantuanWA()">Hubungi Admin ARIKA</button>
-</div>
-</div>
+<div class="bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-[2rem] p-6 md:p-8 text-white"><h3 class="text-xl font-black mb-2">Masih butuh bantuan?</h3><p class="text-sm md:text-base text-emerald-50 leading-relaxed mb-5">Klik tombol di bawah atau gunakan tombol Bantuan ARIKA pada layar.</p><button class="bg-white text-emerald-700 px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all" onclick="window.openBantuanWA && window.openBantuanWA()">Hubungi Admin ARIKA</button></div>
+
 </div>
 </section>
 <section class="view-section animate-fade hidden max-w-sm mx-auto mt-6 md:mt-10 text-center" id="view-login-admin">
@@ -7907,7 +7691,7 @@ window.loadArikaChartJs=function(){
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v305.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v311.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -7915,7 +7699,7 @@ window.loadArikaChartJs=function(){
 })();
 </script>
 
-<script src="./app-v305.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v311.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
