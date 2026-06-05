@@ -6080,6 +6080,32 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 }
 </style>
 
+
+<style id="arika-v350-panduan-title-mobile-lite-fix">
+/* v350: ARIKA pada judul Panduan dibuat sama besar dengan teks utama dan tidak terkena aturan span kecil. */
+html body #view-panduan #panduan-top h1 span.arika-panduan-title-word,
+html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
+  display:inline!important;
+  font-size:1em!important;
+  line-height:inherit!important;
+  font-weight:inherit!important;
+  letter-spacing:inherit!important;
+  color:inherit!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  margin:0!important;
+  box-shadow:none!important;
+  vertical-align:baseline!important;
+  text-transform:inherit!important;
+}
+#view-panduan #panduan-top .arika-panduan-summary-grid{grid-template-columns:repeat(1,minmax(0,1fr));}
+@media(min-width:768px){#view-panduan #panduan-top .arika-panduan-summary-grid{grid-template-columns:repeat(5,minmax(0,1fr));}}
+#view-panduan #panduan-top .arika-mobile-lite-summary-card{background:#eff6ff;border-color:#bfdbfe;}
+#view-panduan #panduan-top .arika-mobile-lite-summary-card p:first-child{color:#1d4ed8;}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div id="arika-v317-reload-veil" aria-hidden="true"><div class="arika-v317-card">ARIKA</div></div>
@@ -6991,7 +7017,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
                             📘 Panduan ARIKA
                         </span>
 <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">Panduan Penggunaan <span class="arika-panduan-title-word">ARIKA</span></h1>
-<div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+<div class="mt-5 grid arika-panduan-summary-grid gap-3 text-xs">
 <div class="rounded-2xl bg-slate-50 border border-slate-100 p-4">
 <p class="font-black text-slate-900 uppercase tracking-widest text-[10px] mb-1">Pegawai</p>
 <p class="text-slate-500 leading-relaxed">Isi jurnal, pantau catatan, lembur pribadi, reminder, dan dashboard saya.</p>
@@ -7007,6 +7033,10 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
 <p class="font-black text-amber-800 uppercase tracking-widest text-[10px] mb-1">Reminder</p>
 <p class="text-slate-500 leading-relaxed">Alarm suara perlu diaktifkan satu kali setelah login.</p>
+</div>
+<div class="rounded-2xl border p-4 arika-mobile-lite-summary-card">
+<p class="font-black uppercase tracking-widest text-[10px] mb-1">Mobile Lite</p>
+<p class="text-slate-500 leading-relaxed">Versi ringan untuk HP, data tetap sinkron dengan versi PC.</p>
 </div>
 </div>
 </div>
@@ -7056,6 +7086,11 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <div class="text-3xl mb-3">🛠️</div>
 <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">Admin</h3>
 <p class="text-xs text-slate-500 leading-relaxed">Dashboard, rekap, SPK, pegawai, agenda, survei, dan pengumuman.</p>
+</button>
+<button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-mobile-lite', 'Panduan Mobile Lite')">
+<div class="text-3xl mb-3">📱</div>
+<h3 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-2">Mobile Lite</h3>
+<p class="text-xs text-slate-500 leading-relaxed">Versi ringan untuk HP, akses satu link utama, dan data tetap sinkron.</p>
 </button>
 <button class="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 text-left hover:-translate-y-1 hover:shadow-xl transition-all" onclick="window.arikaPanduanFocus('panduan-faq', 'FAQ ARIKA')">
 <div class="text-3xl mb-3">❓</div>
