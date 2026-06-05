@@ -2104,7 +2104,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v334.js" as="script"/>
+<link rel="preload" href="./app-v336.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -5948,6 +5948,23 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
   }catch(e){}
 })();
 </script>
+
+<style id="arika-v336-mobile-lite-near-logout-style">
+/* v336: tombol Mobile Lite dipindah dekat Keluar dan dibuat lebih halus di PC. */
+#nav-menu .arika-mobile-lite-pill{
+  background:#f8fafc!important;
+  border-color:#e2e8f0!important;
+  color:#64748b!important;
+  box-shadow:none!important;
+}
+#nav-menu .arika-mobile-lite-pill:hover{
+  background:#ecfdf5!important;
+  color:#0f766e!important;
+  border-color:#a7f3d0!important;
+}
+#nav-menu .arika-mobile-lite-pill .nav-icon{opacity:.82;}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div id="arika-v317-reload-veil" aria-hidden="true"><div class="arika-v317-card">ARIKA</div></div>
@@ -6044,8 +6061,6 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <img alt="Logo ARIKA" class="arika-logo-nav" decoding="async" src="assets/arika-logo.webp" data-logo-src="assets/arika-logo.webp"/>
 </div>
 <div class="desktop-nav-menu" id="nav-menu">
-<button class="nav-pill" onclick="try{localStorage.setItem('arika_force_mobile_once','1')}catch(e){}; location.href='mobile.html?mobile=1'" title="Buka versi mobile ringan"><span class="nav-icon">📱</span><span>Mobile</span></button>
-
 <button class="nav-pill" id="btn-beranda" onclick="window.nav('beranda')"><span class="nav-icon">🏠</span><span>Beranda</span></button>
 <button class="nav-pill" id="btn-jurnal" onclick="window.nav('jurnal')"><span class="nav-icon">📝</span><span>Isi Jurnal</span></button>
 <button class="nav-pill" id="btn-rekap" onclick="window.nav('rekap')"><span class="nav-icon">📊</span><span>Riwayat Jurnal</span></button>
@@ -6054,6 +6069,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <button class="nav-pill" id="btn-wfh" onclick="window.nav('wfh')"><span class="nav-icon">🏡</span><span>WFH/WFA</span></button>
 <button class="nav-pill" id="btn-panduan" onclick="window.nav('panduan')"><span class="nav-icon">📘</span><span>Panduan</span></button>
 <button class="nav-pill hidden" id="btn-admin-config" onclick="window.nav('admin')"><span class="nav-icon">⚙️</span><span>Admin</span></button>
+<button class="nav-pill arika-mobile-lite-pill" onclick="try{localStorage.setItem('arika_force_mobile_once','1')}catch(e){}; location.href='mobile.html?mobile=1'" title="Buka versi mobile ringan"><span class="nav-icon">📱</span><span>Mobile Lite</span></button>
 <button class="nav-logout" onclick="window.logout()">Keluar</button>
 </div>
 <div class="mobile-nav-wrap">
@@ -7912,7 +7928,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 })();
 </script>
 
-<script src="./app-v334.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v336.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
