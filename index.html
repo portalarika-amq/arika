@@ -2080,7 +2080,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v297.js" as="script"/>
+<link rel="preload" href="./app-v305.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -5661,6 +5661,24 @@ window.loadArikaChartJs=function(){
 })();
 </script>
 
+
+<style id="arika-v305-wfh-panduan-fix-style">
+#wfh-list + * {}
+#view-wfh .wfh-realisasi-guidance{
+  margin:-.35rem 0 .9rem 0;
+  padding:.75rem .95rem;
+  border-radius:1rem;
+  border:1px dashed rgba(20,184,166,.38);
+  background:linear-gradient(135deg,#f0fdfa,#ffffff);
+  color:#334155;
+  font-size:.75rem;
+  line-height:1.55;
+  font-weight:700;
+}
+#view-wfh .wfh-realisasi-guidance strong{color:#0f766e;font-weight:950;}
+@media(max-width:720px){#view-wfh .wfh-realisasi-guidance{font-size:.7rem;padding:.68rem .78rem;}}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div aria-live="polite" id="global-loader">
@@ -6326,9 +6344,11 @@ window.loadArikaChartJs=function(){
       <p class="text-xs text-slate-500 mt-1 font-semibold" id="wfh-period-label">Tanggal dipilih: -</p>
     </div>
     <div class="flex flex-wrap gap-2">
-      <button class="rekap-filter-chip wfh-plan-main-btn" onclick="window.openWfhRencana ? window.openWfhRencana() : window.nav('beranda')" type="button">Buka Rencana WFH/WFA</button>
-      <button class="rekap-filter-chip active" onclick="window.prefillWfhJournal && window.prefillWfhJournal()" type="button">Isi Jurnal WFH/WFA</button>
+      <button class="rekap-filter-chip wfh-plan-main-btn" onclick="window.openWfhRencana ? window.openWfhRencana() : window.nav('beranda')" type="button">Rencana Saya</button>
     </div>
+  </div>
+  <div class="wfh-realisasi-guidance">
+    <strong>Alur realisasi WFH/WFA:</strong> isi realisasi melalui <strong>Rencana Saya di Beranda</strong>, lalu klik <strong>Isi Realisasi</strong> pada rencana yang dituju.
   </div>
   <div class="space-y-3" id="wfh-list">
     <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 text-center text-slate-400 text-[10px] uppercase tracking-widest font-black">Memuat data WFH/WFA...</div>
@@ -6696,41 +6716,44 @@ window.loadArikaChartJs=function(){
 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
 <div>
 <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">🏡 Panduan WFH/WFA</h2>
-<p class="text-sm text-slate-500 mt-2 leading-relaxed">Panduan ini menjelaskan cara memakai menu WFH/WFA agar rencana dan realisasi tetap selaras dengan data utama ARIKA.</p>
+<p class="text-sm text-slate-500 mt-2 leading-relaxed">Panduan ini menjelaskan alur rencana dan realisasi WFH/WFA agar tidak tertukar ketika pegawai memiliki lebih dari satu rencana dalam satu hari.</p>
 </div>
-<span class="panduan-wfh-badge">Label [WFH/WFA]</span>
+<span class="panduan-wfh-badge">Rencana → Realisasi</span>
 </div>
 <div class="panduan-wfh-note mb-5">
-<p><strong class="text-emerald-800">Prinsip utama:</strong> menu WFH/WFA bukan tempat input terpisah. Data tetap memakai sumber yang sama dengan <strong>Rencana Saya</strong> dan <strong>Jurnal Harian</strong>, sehingga pegawai tidak perlu mengisi dua kali.</p>
+<p><strong class="text-emerald-800">Prinsip utama:</strong> tab WFH/WFA adalah tempat <strong>monitoring</strong> rencana dan realisasi. Untuk mengisi realisasi, pegawai memilih rencana yang dituju melalui <strong>Rencana Saya di Beranda</strong>, lalu klik <strong>Isi Realisasi</strong>. Dengan cara ini, realisasi membawa <strong>rencanaId</strong> dan tidak nyasar ke rencana lain.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="panduan-wfh-step">
-<h3>1. Rencana WFH/WFA</h3>
-<p>Gunakan tombol <strong>Buka Rencana WFH/WFA</strong> pada tab WFH/WFA. Sistem akan mengarahkan ke Rencana Saya dan menyiapkan label <strong>[WFH/WFA]</strong> pada rencana.</p>
+<h3>1. Membuat Rencana WFH/WFA</h3>
+<p>Masuk ke tab <strong>WFH/WFA</strong>, lalu klik <strong>Rencana Saya</strong>. Sistem akan membuka <strong>Rencana Saya</strong> dan menyiapkan label <strong>[WFH/WFA]</strong> pada rencana agar terbaca di monitoring WFH/WFA.</p>
 </div>
 <div class="panduan-wfh-step">
-<h3>2. Isi Jurnal WFH/WFA</h3>
-<p>Gunakan tombol <strong>Isi Jurnal WFH/WFA</strong> pada tab WFH/WFA. Uraian jurnal akan disiapkan dengan label <strong>[WFH/WFA]</strong> agar otomatis terbaca sebagai realisasi WFH/WFA.</p>
+<h3>2. Realisasi Harus Lewat Rencana</h3>
+<p>Untuk merealisasikan kegiatan WFH/WFA, buka <strong>Rencana Saya di Beranda</strong>, pilih rencana yang benar, lalu klik <strong>Isi Realisasi</strong>. Jangan mengisi realisasi rencana dari form jurnal kosong biasa.</p>
 </div>
 <div class="panduan-wfh-step">
-<h3>3. Tetap Masuk Riwayat Umum</h3>
-<p>Jurnal yang diinput dari tab WFH/WFA tetap tersimpan sebagai jurnal harian biasa dan tetap muncul di <strong>Riwayat Jurnal</strong>. Bedanya, jurnal tersebut memiliki penanda WFH/WFA.</p>
+<h3>3. Jika Ada Beberapa Rencana</h3>
+<p>Jika dalam satu hari ada 2 atau lebih rencana, isi realisasi <strong>satu per satu</strong> dari rencana masing-masing. Contoh: Rencana 1 → Isi Realisasi; Rencana 2 → Isi Realisasi. Sistem akan menyimpan relasi berdasarkan <strong>rencanaId</strong>.</p>
 </div>
 <div class="panduan-wfh-step">
-<h3>4. Monitoring Harian</h3>
-<p>Tab WFH/WFA menampilkan pegawai yang punya rencana, realisasi jurnal, serta status belum realisasi pada tanggal yang dipilih. Data dibaca otomatis dari rencana dan jurnal yang memuat label/kata WFH/WFA.</p>
+<h3>4. Jurnal Umum Bukan Realisasi Rencana</h3>
+<p>Menu <strong>Isi Jurnal</strong> biasa digunakan untuk kegiatan umum. Jika kegiatan tersebut adalah realisasi dari rencana tertentu, gunakan tombol <strong>Isi Realisasi</strong> pada rencana agar data masuk ke pasangan rencana yang benar.</p>
 </div>
 <div class="panduan-wfh-step">
-<h3>5. Input dari Menu Umum</h3>
-<p>Jika pegawai mengisi dari menu umum, data tetap bisa terbaca sebagai WFH/WFA asalkan uraian atau judul memuat kata <strong>WFH</strong>, <strong>WFA</strong>, <strong>Work From Home</strong>, <strong>Work From Anywhere</strong>, atau label <strong>[WFH/WFA]</strong>.</p>
+<h3>5. Monitoring di Tab WFH/WFA</h3>
+<p>Tab WFH/WFA menampilkan pegawai yang memiliki rencana atau realisasi berlabel WFH/WFA pada tanggal dipilih. Status akan lebih akurat karena realisasi dipasangkan dengan rencana yang membawa <strong>rencanaId</strong>.</p>
 </div>
 <div class="panduan-wfh-step">
-<h3>6. Tidak Perlu Dobel Input</h3>
-<p>Cukup input sekali. Data akan tampil di riwayat umum dan juga muncul di monitoring WFH/WFA selama memiliki penanda WFH/WFA.</p>
+<h3>6. Riwayat Jurnal Tetap Terisi</h3>
+<p>Realisasi yang diisi dari rencana tetap tersimpan sebagai jurnal harian dan tetap muncul di <strong>Riwayat Jurnal</strong>. Bedanya, jurnal tersebut memiliki penanda <strong>Terkait Rencana</strong>.</p>
 </div>
 </div>
 <div class="mt-5 p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-slate-600 leading-relaxed">
-<strong class="text-amber-800">Catatan:</strong> agar monitoring lebih rapi, gunakan format uraian yang jelas, misalnya <strong>[WFH/WFA] Realisasi kegiatan: ...</strong> atau <strong>[WFH] Rencana kegiatan: ...</strong>.
+<strong class="text-amber-800">Alur yang benar:</strong> buat rencana WFH/WFA → buka Beranda → pilih <strong>Rencana Saya</strong> → klik <strong>Isi Realisasi</strong> pada rencana yang dituju → simpan jurnal. Jika tidak terkait rencana, isi melalui menu <strong>Isi Jurnal</strong> biasa sebagai jurnal umum.
+</div>
+<div class="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm text-slate-600 leading-relaxed">
+<strong class="text-emerald-800">Catatan penting:</strong> tab WFH/WFA tidak menyediakan tombol <strong>Isi Jurnal WFH/WFA</strong> agar pegawai tidak salah memilih rencana. Realisasi WFH/WFA yang terkait rencana harus selalu dimulai dari rencana yang dipilih.
 </div>
 <button class="panduan-back-inline" onclick="window.arikaPanduanBackTop()" type="button">⬆ Kembali ke Atas Panduan</button>
 </div>
@@ -7884,7 +7907,7 @@ window.loadArikaChartJs=function(){
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v297.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v305.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -7892,7 +7915,7 @@ window.loadArikaChartJs=function(){
 })();
 </script>
 
-<script src="./app-v297.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v305.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
