@@ -2104,7 +2104,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v338.js" as="script"/>
+<link rel="preload" href="./app-v339.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -5949,8 +5949,8 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 })();
 </script>
 
-<style id="arika-v338-mobile-lite-near-logout-style">
-/* v338: tombol Mobile Lite dipindah dekat Keluar dan dibuat lebih halus di PC. */
+<style id="arika-v339-mobile-lite-near-logout-style">
+/* v339: tombol Mobile Lite dipindah dekat Keluar dan dibuat lebih halus di PC. */
 #nav-menu .arika-mobile-lite-pill{
   background:#f8fafc!important;
   border-color:#e2e8f0!important;
@@ -5963,6 +5963,95 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
   border-color:#a7f3d0!important;
 }
 #nav-menu .arika-mobile-lite-pill .nav-icon{opacity:.82;}
+</style>
+
+
+<style id="arika-v339-pc-panduan-mobile-lite-style">
+/* v339: Panduan dipindah dekat Beranda dan diberi penanda halus agar mudah terlihat. */
+#btn-panduan.arika-panduan-notice-pill{
+  position:relative!important;
+  border-color:rgba(20,184,166,.22)!important;
+  background:linear-gradient(135deg,rgba(240,253,250,.95),rgba(255,255,255,.96))!important;
+  color:#0f766e!important;
+  box-shadow:0 8px 18px rgba(20,184,166,.08)!important;
+}
+#btn-panduan.arika-panduan-notice-pill .nav-icon{filter:saturate(1.15)!important;}
+#btn-panduan .arika-panduan-new-dot{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-width:30px!important;height:17px!important;padding:0 .38rem!important;margin-left:.15rem!important;
+  border-radius:999px!important;background:#ccfbf1!important;color:#0f766e!important;
+  border:1px solid rgba(20,184,166,.25)!important;font-size:8px!important;font-weight:950!important;letter-spacing:.08em!important;text-transform:uppercase!important;
+}
+#panduan-mobile-lite .mobile-lite-guide-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem;}
+#panduan-mobile-lite .mobile-lite-guide-card h3{font-size:.72rem;font-weight:950;letter-spacing:.12em;text-transform:uppercase;color:#0f766e;margin-bottom:.35rem;}
+#panduan-mobile-lite .mobile-lite-guide-card p{font-size:.88rem;line-height:1.55;color:#475569;font-weight:650;}
+@media(max-width:980px){#btn-panduan .arika-panduan-new-dot{display:none!important;}}
+</style>
+
+
+<style id="arika-v341-pc-beranda-font-balance">
+/* v341: Selaraskan ukuran font Beranda PC: kotak sapaan dibuat lebih terbaca, Penyemangat Hari Ini dibuat lebih proporsional. */
+@media (min-width: 1024px){
+  #view-beranda .arika-home-hero-line{
+    padding: 1.05rem 1.2rem !important;
+  }
+  #view-beranda .arika-home-line-kicker{
+    font-size: .62rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: .14em !important;
+  }
+  #view-beranda .arika-home-kicker-brand{
+    font-size: .62rem !important;
+    line-height: 1.15 !important;
+  }
+  #view-beranda .arika-home-line-title{
+    font-size: clamp(1.18rem, 1.38vw, 1.38rem) !important;
+    line-height: 1.18 !important;
+    letter-spacing: -.015em !important;
+  }
+  #view-beranda .arika-home-line-subtitle{
+    font-size: .78rem !important;
+    line-height: 1.45 !important;
+    letter-spacing: .01em !important;
+    max-width: 680px !important;
+  }
+  #view-beranda .arika-home-brand-word{
+    font-size: .78rem !important;
+    line-height: 1.05 !important;
+    padding: .05rem .32rem .06rem !important;
+  }
+  #view-beranda .home-motivation-card{
+    padding: 1.15rem 1.25rem !important;
+  }
+  #view-beranda .home-motivation-card .home-section-header{
+    margin-bottom: .58rem !important;
+    padding-bottom: .58rem !important;
+  }
+  #view-beranda .home-motivation-card .home-section-title{
+    font-size: .86rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: .14em !important;
+  }
+  #view-beranda .home-motivation-card #motivation-text,
+  #view-beranda .home-motivation-card .home-motivation-quote{
+    font-size: .88rem !important;
+    line-height: 1.48 !important;
+    letter-spacing: -.005em !important;
+    font-weight: 800 !important;
+  }
+  #view-beranda .home-motivation-card #motivation-source,
+  #view-beranda .home-motivation-card .home-motivation-source{
+    font-size: .58rem !important;
+    line-height: 1.35 !important;
+    letter-spacing: .16em !important;
+    margin-top: .5rem !important;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1280px){
+  #view-beranda .arika-home-line-title{font-size:1.16rem!important;}
+  #view-beranda .arika-home-line-subtitle{font-size:.74rem!important;}
+  #view-beranda .home-motivation-card #motivation-text{font-size:.84rem!important;}
+}
 </style>
 
 </head>
@@ -6061,13 +6150,13 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <img alt="Logo ARIKA" class="arika-logo-nav" decoding="async" src="assets/arika-logo.webp" data-logo-src="assets/arika-logo.webp"/>
 </div>
 <div class="desktop-nav-menu" id="nav-menu">
+<button class="nav-pill arika-panduan-notice-pill" id="btn-panduan" onclick="window.nav('panduan')" title="Panduan singkat penggunaan ARIKA"><span class="arika-panduan-new-dot">Info</span><span class="nav-icon">📘</span><span>Panduan</span></button>
 <button class="nav-pill" id="btn-beranda" onclick="window.nav('beranda')"><span class="nav-icon">🏠</span><span>Beranda</span></button>
 <button class="nav-pill" id="btn-jurnal" onclick="window.nav('jurnal')"><span class="nav-icon">📝</span><span>Isi Jurnal</span></button>
 <button class="nav-pill" id="btn-rekap" onclick="window.nav('rekap')"><span class="nav-icon">📊</span><span>Riwayat Jurnal</span></button>
 <button class="nav-pill" id="btn-lembur" onclick="window.nav('lembur')"><span class="nav-icon">⏰</span><span>Laporan Lembur</span></button>
 <button class="nav-pill" id="btn-dashboard-pegawai" onclick="window.nav('dashboard-pegawai')"><span class="nav-icon">📈</span><span>Dashboard Saya</span></button>
 <button class="nav-pill" id="btn-wfh" onclick="window.nav('wfh')"><span class="nav-icon">🏡</span><span>WFH/WFA</span></button>
-<button class="nav-pill" id="btn-panduan" onclick="window.nav('panduan')"><span class="nav-icon">📘</span><span>Panduan</span></button>
 <button class="nav-pill hidden" id="btn-admin-config" onclick="window.nav('admin')"><span class="nav-icon">⚙️</span><span>Admin</span></button>
 <button class="nav-pill arika-mobile-lite-pill" onclick="try{localStorage.setItem('arika_force_mobile_once','1')}catch(e){}; location.href='mobile.html?mobile=1'" title="Buka versi mobile ringan"><span class="nav-icon">📱</span><span>Mobile Lite</span></button>
 <button class="nav-logout" onclick="window.logout()">Keluar</button>
@@ -6075,6 +6164,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <div class="mobile-nav-wrap">
 <select class="mobile-nav-select-arika" id="mobile-nav-select" onchange="this.value === 'logout' ? window.logout() : window.nav(this.value)">
 <option value="beranda">🏠 Beranda</option>
+<option value="panduan">📘 Panduan</option>
 <option value="jurnal">📝 Isi Jurnal</option>
 <option value="rekap">📊 Riwayat Jurnal</option>
 <option value="lembur">⏰ Laporan Lembur</option>
@@ -7036,6 +7126,20 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 <div class="mt-5 p-4 rounded-2xl bg-rose-50 border border-rose-100 text-sm text-slate-600 leading-relaxed"><strong class="text-rose-800">Catatan:</strong> akses admin perlu dibatasi pada petugas berwenang karena dapat melihat dan mengelola data lintas pegawai.</div>
 
 </div>
+<div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-mobile-lite">
+<h2 class="text-xl font-black text-slate-900 mb-3 flex items-center gap-2">📱 Panduan Mobile Lite</h2>
+<p class="text-sm text-slate-500 leading-relaxed mb-5">Mobile Lite adalah versi ARIKA yang lebih ringan untuk HP. Data tetap memakai database yang sama dengan versi PC, sehingga input dari HP tetap muncul di PC dan sebaliknya.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="mobile-lite-guide-card"><h3>Akses</h3><p>Buka link utama ARIKA. Jika perangkat terdeteksi HP, sistem otomatis membuka <strong>Mobile Lite</strong>. Dari versi PC, tombol <strong>Mobile Lite</strong> tersedia dekat tombol Keluar.</p></div>
+<div class="mobile-lite-guide-card"><h3>Fitur Utama</h3><p>Mobile Lite difokuskan untuk login, Rencana Saya, isi realisasi, isi jurnal biasa, riwayat bulan berjalan, edit jurnal pribadi, WFH/WFA ringkas, dan sinkron database.</p></div>
+<div class="mobile-lite-guide-card"><h3>Rencana & Realisasi</h3><p>Untuk realisasi rencana, buka <strong>Rencana Saya</strong>, pilih rencana yang dituju, lalu klik <strong>Isi Realisasi</strong>. Hindari mengisi realisasi dari jurnal kosong biasa.</p></div>
+<div class="mobile-lite-guide-card"><h3>Riwayat Mobile</h3><p>Riwayat mobile dibuat ringan: menampilkan jurnal bulan berjalan dengan halaman ringkas. Gunakan pencarian atau tombol halaman untuk melihat data lain pada bulan tersebut.</p></div>
+<div class="mobile-lite-guide-card"><h3>Sinkron Data</h3><p>Jika data baru belum terlihat, gunakan tombol <strong>Sinkron</strong> atau buka ulang halaman. Data dari Mobile Lite dan PC tetap saling terhubung melalui database yang sama.</p></div>
+<div class="mobile-lite-guide-card"><h3>Buka Versi PC</h3><p>Gunakan tombol <strong>Buka Versi PC</strong> jika membutuhkan fitur lengkap seperti dashboard, verifikator lengkap, rekap besar, atau pengaturan admin.</p></div>
+</div>
+<div class="mt-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-sm text-slate-600 leading-relaxed"><strong class="text-emerald-800">Catatan:</strong> Mobile Lite sengaja dibuat sederhana agar lebih lancar di HP. Fitur berat tetap disediakan pada versi PC.</div>
+</div>
+
 <div class="panduan-focus-section bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8" id="panduan-faq">
 <h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">❓ FAQ Ringkas ARIKA</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -7878,7 +7982,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v338.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v339.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -7928,7 +8032,7 @@ html.arika-v317-mobile-login-ready #global-loader{display:none!important;opacity
 })();
 </script>
 
-<script src="./app-v338.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v339.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
