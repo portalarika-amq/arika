@@ -2141,7 +2141,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v353.js" as="script"/>
+<link rel="preload" href="./app-v359.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -6767,7 +6767,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <h1 class="text-lg md:text-xl font-black uppercase tracking-widest">Rekap Lembur Saya</h1>
 <div class="w-full lg:w-auto rounded-3xl border border-slate-100 bg-white/80 p-3 shadow-sm">
 <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Filter Bulan Lembur</label>
-<input autocomplete="off" class="w-full lg:w-[220px] p-2.5 border rounded-xl text-xs font-black outline-none text-center arika-manual-date-input focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400" id="filt-lembur-bulan" inputmode="numeric" onchange="window.applyLemburMonthInput &amp;&amp; window.applyLemburMonthInput(this); window.renderLemburTable()" oninput="window.applyLemburMonthInput &amp;&amp; window.applyLemburMonthInput(this)" placeholder="mm/yyyy" title="" type="text"/>
+<input autocomplete="off" class="w-full lg:w-[220px] p-2.5 border rounded-xl text-xs font-black outline-none text-center arika-manual-date-input focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400" id="filt-lembur-bulan" inputmode="numeric" onchange="window.applyLemburMonthInput &amp;&amp; window.applyLemburMonthInput(this); window.renderLemburTable()" oninput="window.applyLemburMonthInput &amp;&amp; window.applyLemburMonthInput(this)" placeholder="062026" title="Ketik 062026 untuk 06/2026. Jika mengetik 03062026, sistem memakai bulan 06/2026." type="text"/>
 <div class="flex flex-wrap items-center justify-center lg:justify-end gap-2 mt-2">
 <button class="rekap-filter-chip" onclick="window.shiftLemburMonth(-1)" title="Tampilkan bulan sebelumnya" type="button">‹ Bulan Sebelumnya</button>
 <button class="rekap-filter-chip active min-w-[130px]" id="lembur-month-label" onclick="window.setLemburMonthToCurrent()" type="button">Bulan Ini</button>
@@ -6850,7 +6850,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <label class="block text-[9px] font-black text-slate-400 uppercase mb-1">Filter Bulan / Tanggal Manual</label>
 <input id="filter-rekap-month" type="hidden" value=""/>
 <input id="filter-rekap-date" type="hidden" value=""/>
-<input autocomplete="off" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-bold" id="filter-rekap-manual" inputmode="numeric" oninput="window.applyRekapManualPeriod(this.value)" placeholder="Ketik 062026 atau 03062026" title="Ketik angka saja: 062026 menjadi 06/2026, atau 03062026 menjadi 03/06/2026" type="text"/>
+<input autocomplete="off" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-bold" id="filter-rekap-manual" inputmode="numeric" oninput="window.applyRekapManualPeriod(this.value)" placeholder="062026 atau 03062026" title="062026 menjadi 06/2026; 03062026 menjadi 03/06/2026" type="text"/>
 <div class="flex flex-wrap items-center gap-2 mt-2">
 <button class="rekap-filter-chip" onclick="window.shiftRekapMonth(-1)" title="Bulan sebelumnya" type="button">‹ Bulan Sebelumnya</button>
 <button class="rekap-filter-chip active min-w-[150px]" id="rekap-month-label" onclick="window.setRekapMonthToCurrent()" type="button">Bulan Ini</button>
@@ -8095,7 +8095,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v353.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v359.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -8145,7 +8145,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 })();
 </script>
 
-<script src="./app-v353.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v359.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -9638,76 +9638,55 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 </script>
 
 
-<script id="arika-v356-pc-reload-guard-release">
+<script id="arika-v358-pc-reload-fast-release">
 (function(){
-  if(window.__ARIKA_V356_RELEASE_INSTALLED__) return;
-  window.__ARIKA_V356_RELEASE_INSTALLED__ = true;
+  if(window.__ARIKA_V358_FAST_RELEASE__) return;
+  window.__ARIKA_V358_FAST_RELEASE__ = true;
   var started = window.__ARIKA_V356_BOOT_TS__ || Date.now();
   function isMobile(){ return window.matchMedia && window.matchMedia('(max-width:720px)').matches; }
   function qs(id){ return document.getElementById(id); }
-  function visible(el){ return !!(el && !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'); }
   function cleanTransient(){
     try{
       var panel = qs('arika-reminder-center-panel');
       if(panel){ panel.classList.add('hidden'); panel.classList.remove('arika-open-from-card','open','active'); panel.style.display='none'; }
-      var modalIds=['survey-modal','announcement-modal','agenda-detail-modal','arika-mobile-modal'];
-      modalIds.forEach(function(id){ var el=qs(id); if(el){ el.classList.add('hidden'); el.style.display='none'; }});
-      document.documentElement.classList.remove('arika-v317-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
-      var oldVeil=qs('arika-v317-reload-veil'); if(oldVeil){ oldVeil.style.display='none'; oldVeil.style.opacity='0'; oldVeil.style.pointerEvents='none'; }
-      if(window.scrollX){ try{ window.scrollTo(0, window.scrollY || 0); }catch(_){} }
+      ['survey-modal','announcement-modal','agenda-detail-modal','arika-mobile-modal'].forEach(function(id){
+        var el=qs(id); if(el){ el.classList.add('hidden'); el.style.display='none'; }
+      });
+      var oldVeil=qs('arika-v317-reload-veil');
+      if(oldVeil){ oldVeil.style.display='none'; oldVeil.style.opacity='0'; oldVeil.style.pointerEvents='none'; }
+      var loader=qs('global-loader');
+      if(loader){ loader.style.opacity='0'; loader.style.pointerEvents='none'; setTimeout(function(){ try{ loader.style.display='none'; }catch(e){} },120); }
+      document.body && document.body.classList.remove('arika-boot-open','arika-session-restoring');
     }catch(e){}
-  }
-  function appLooksStable(){
-    try{
-      if(isMobile()) return true;
-      var loaded = window.__ARIKA_APP_LOADED__ === true || typeof window.nav === 'function';
-      if(!loaded) return false;
-      var views = Array.prototype.slice.call(document.querySelectorAll('.view-section'));
-      var shown = views.filter(function(v){ return visible(v); });
-      if(shown.length === 1) return true;
-      var loginUser = qs('view-login-user');
-      var loginAdmin = qs('view-login-admin');
-      if(visible(loginUser) || visible(loginAdmin)) return true;
-      var nav = qs('main-nav');
-      if(nav && visible(nav) && window.currentUser) return true;
-    }catch(e){}
-    return false;
   }
   function release(reason){
-    if(isMobile()){ document.documentElement.classList.remove('arika-v356-boot'); return; }
     try{
       cleanTransient();
-      document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot');
-      document.documentElement.classList.add('arika-v356-ready');
-      document.body && document.body.classList.add('arika-v356-ready');
-      window.__ARIKA_V356_READY_REASON__ = reason || 'ready';
+      document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
+      document.documentElement.classList.add('arika-v358-ready');
+      document.body && document.body.classList.add('arika-v358-ready');
+      window.__ARIKA_V358_READY_REASON__ = reason || 'ready';
       setTimeout(cleanTransient,80);
+      setTimeout(cleanTransient,420);
     }catch(e){}
   }
-  function scheduleCheck(){
-    if(isMobile()) { release('mobile-bypass'); return; }
-    var minDelay = 1250;
+  function schedule(){
+    if(isMobile()){ release('mobile-bypass'); return; }
     var elapsed = Date.now() - started;
-    if(elapsed < minDelay){ setTimeout(scheduleCheck, minDelay-elapsed); return; }
-    if(appLooksStable()){
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ release('stable'); }); });
-      return;
-    }
-    if(elapsed < 6500){ setTimeout(scheduleCheck, 180); return; }
-    release('safe-fallback');
+    var baseDelay = window.__ARIKA_APP_LOADED__ === true || typeof window.nav === 'function' ? 650 : 1050;
+    var wait = Math.max(80, baseDelay - elapsed);
+    clearTimeout(window.__arikaV358FastReleaseTimer);
+    window.__arikaV358FastReleaseTimer = setTimeout(function(){ release('fast-release'); }, wait);
   }
   if(!isMobile()){
-    window.addEventListener('beforeunload', function(){
-      try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){}
-    });
-    window.addEventListener('pagehide', function(){
-      try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){}
-    });
-    window.addEventListener('pageshow', function(){ setTimeout(scheduleCheck, 60); });
+    // Tetap cegah flash saat meninggalkan halaman, tetapi jangan menahan reload terlalu lama.
+    window.addEventListener('beforeunload', function(){ try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){} });
+    window.addEventListener('pagehide', function(){ try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){} });
+    window.addEventListener('pageshow', function(){ setTimeout(schedule,40); });
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(scheduleCheck,120); });
-  else setTimeout(scheduleCheck,120);
-  window.addEventListener('load', function(){ setTimeout(scheduleCheck,120); });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', schedule); else schedule();
+  window.addEventListener('load', function(){ setTimeout(schedule,40); });
+  setTimeout(function(){ release('hard-failsafe-1500'); }, isMobile()?700:1500);
 })();
 </script>
 
@@ -9837,5 +9816,53 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
   #view-beranda .arika-home-line-title{font-size:1.34rem!important;}
   #view-beranda .arika-home-line-subtitle{font-size:.88rem!important;}
   #view-beranda .arika-home-line-kicker{font-size:.62rem!important;}
+}
+</style>
+
+<!-- v357: Perjelas kata ARIKA pada kotak sapaan PC dengan warna selaras logo -->
+<style id="arika-v357-pc-sapaan-brand-logo-readable">
+@media (min-width:1024px){
+  #view-beranda .arika-home-line-kicker .arika-home-kicker-brand{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:.11rem .42rem .12rem!important;
+    margin:0 .12rem!important;
+    border-radius:999px!important;
+    background:rgba(255,255,255,.96)!important;
+    border:1px solid rgba(125,211,252,.92)!important;
+    color:#0284c7!important;
+    font-size:1em!important;
+    line-height:1!important;
+    font-weight:1000!important;
+    letter-spacing:.13em!important;
+    text-shadow:none!important;
+    box-shadow:0 5px 14px rgba(8,145,178,.16), inset 0 1px 0 rgba(255,255,255,.9)!important;
+  }
+  #view-beranda .arika-home-line-subtitle .arika-home-brand-word{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:.08rem .42rem .1rem!important;
+    margin:0 .08rem!important;
+    border-radius:.62rem!important;
+    background:rgba(255,255,255,.96)!important;
+    border:1px solid rgba(45,212,191,.78)!important;
+    color:#047857!important;
+    font-size:.94em!important;
+    line-height:1.05!important;
+    font-weight:1000!important;
+    letter-spacing:.08em!important;
+    text-shadow:none!important;
+    box-shadow:0 5px 14px rgba(4,120,87,.16), inset 0 1px 0 rgba(255,255,255,.9)!important;
+  }
+  #view-beranda .arika-home-line-kicker,
+  #view-beranda .arika-home-line-subtitle{
+    text-rendering:geometricPrecision!important;
+  }
+}
+@media (min-width:1024px) and (max-width:1280px){
+  #view-beranda .arika-home-line-kicker .arika-home-kicker-brand{padding:.09rem .34rem .1rem!important;margin:0 .09rem!important;}
+  #view-beranda .arika-home-line-subtitle .arika-home-brand-word{padding:.06rem .34rem .08rem!important;margin:0 .06rem!important;}
 }
 </style>
