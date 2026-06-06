@@ -2,6 +2,22 @@
 
 <html lang="id">
 <head>
+<style id="arika-v379-critical-hidden-before-tailwind">
+/* v379: cegah elemen hidden/modal tampil mentah sebelum Tailwind CDN selesai dimuat. */
+.hidden{display:none!important;}
+#custom-alert-modal.hidden,#custom-confirm-modal.hidden,#jurnal-review-modal.hidden,#calendar-modal.hidden,#arika-reminder-center-panel.hidden,#arika-reminder-center-fab.hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+#custom-alert-modal:not(.flex),#custom-confirm-modal:not(.flex),#jurnal-review-modal:not(.flex),#calendar-modal:not(.flex){display:none;}
+html.arika-v379-boot,html.arika-v379-boot body{background:#f8fafc!important;overflow:hidden!important;}
+@media (min-width:721px){
+  html.arika-v379-boot body>*:not(script):not(style){visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  html.arika-v379-boot body::before{content:'ARIKA';position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%);color:#0f766e;font:950 1.1rem/1 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.46em;text-indent:.46em;}
+  html.arika-v379-boot body::after{content:'Proses loading, tunggu sebentar ya';position:fixed;left:50%;top:50%;transform:translate(-50%,2.25rem);z-index:2147483647;min-width:260px;text-align:center;color:#64748b;font:800 .78rem/1.4 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.06em;text-indent:0;background:rgba(255,255,255,.72);border:1px solid rgba(20,184,166,.12);border-radius:999px;padding:.55rem .85rem;box-shadow:0 14px 34px rgba(20,184,166,.12);}
+}
+</style>
+<script id="arika-v379-early-boot-class">
+(function(){try{var isMobile=window.matchMedia&&window.matchMedia('(max-width:720px)').matches;if(!isMobile){document.documentElement.classList.add('arika-v379-boot');window.__ARIKA_V379_BOOT_TS__=Date.now();}}catch(e){}})();
+</script>
+
 <script id="arika-v356-pc-reload-guard-head">
 (function(){
   try{
@@ -110,7 +126,7 @@
     function release(){
       try{
         cleanTransient();
-        document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot','arika-v375-boot');
+        document.documentElement.classList.remove('arika-v379-boot','arika-v379-boot','arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot','arika-v375-boot');
         document.documentElement.classList.add('arika-v375-ready');
         document.body && document.body.classList.remove('arika-boot-open','arika-session-restoring');
       }catch(e){}
@@ -6223,6 +6239,17 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 @media(max-width:760px){#view-dashboard .grid.lg\:grid-cols-6{grid-template-columns:repeat(2,minmax(0,1fr));}}
 </style>
 
+
+<script id="arika-v379-boot-release-fallback">
+(function(){
+  function releaseV379(){try{document.documentElement.classList.remove('arika-v379-boot');}catch(e){}}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){setTimeout(releaseV379,480);},{once:true});}
+  else setTimeout(releaseV379,480);
+  window.addEventListener('load',function(){setTimeout(releaseV379,120);},{once:true});
+  setTimeout(releaseV379,1800);
+})();
+</script>
+
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
 <div id="arika-v317-reload-veil" aria-hidden="true"><div class="arika-v317-card"><strong>ARIKA</strong><span>Proses loading, tunggu sebentar ya</span></div></div>
@@ -8221,7 +8248,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
   try{
     var isMobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
     if(isMobile) return;
-    document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
+    document.documentElement.classList.remove('arika-v379-boot','arika-v379-boot','arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
     document.documentElement.classList.add('arika-v368-ready');
     document.body && document.body.classList.remove('arika-boot-open','arika-session-restoring');
     var veil=document.getElementById('arika-v317-reload-veil'); if(veil){veil.style.display='none';veil.style.opacity='0';veil.style.pointerEvents='none';}
@@ -9747,7 +9774,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
   function release(reason){
     try{
       cleanTransient();
-      document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
+      document.documentElement.classList.remove('arika-v379-boot','arika-v379-boot','arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
       document.documentElement.classList.add('arika-v358-ready');
       document.body && document.body.classList.add('arika-v358-ready');
       window.__ARIKA_V358_READY_REASON__ = reason || 'ready';
