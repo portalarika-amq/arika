@@ -2,6 +2,43 @@
 
 <html lang="id">
 <head>
+<script id="arika-v356-pc-reload-guard-head">
+(function(){
+  try{
+    var isMobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+    if(!isMobile){
+      try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(_){}
+      document.documentElement.classList.add('arika-v356-boot');
+      window.__ARIKA_V356_BOOT_TS__ = Date.now();
+      /* Nonaktifkan release lama agar cover baru yang lebih stabil tidak dilepas terlalu cepat. */
+      window.__ARIKA_V315_RELEASE_SCRIPT__ = true;
+    }
+  }catch(e){}
+})();
+</script>
+<style id="arika-v356-pc-reload-guard-style">
+/* v356: PC-only reload guard lebih ketat. Mobile tidak disentuh. */
+@media (min-width:721px){
+  html.arika-v356-boot, html.arika-v356-boot body{background:#f8fafc!important;overflow:hidden!important;}
+  html.arika-v356-boot body > *:not(script):not(style){visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  html.arika-v356-boot body::before{
+    content:'ARIKA';
+    position:fixed;inset:0;z-index:2147483647;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%);
+    color:#0f766e;font:950 1.15rem/1 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    letter-spacing:.48em;text-indent:.48em;
+  }
+  html.arika-v356-boot body::after{
+    content:'';position:fixed;left:50%;top:50%;transform:translate(-50%,2.15rem);z-index:2147483647;
+    width:112px;height:5px;border-radius:999px;background:linear-gradient(90deg,#10b981,#06b6d4);
+    box-shadow:0 14px 35px rgba(20,184,166,.18);opacity:.65;
+  }
+  html.arika-v356-ready body{overflow-x:hidden!important;}
+}
+@media (max-width:720px){html.arika-v356-boot body::before,html.arika-v356-boot body::after{display:none!important;}}
+</style>
+
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>ARIKA - Portal Jurnal Harian &amp; Lembur BPOM Ambon</title>
@@ -9597,6 +9634,80 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
   window.addEventListener('resize', boot);
   window.arikaV292EnsureWfhMobileOption=ensureWfhMobileOption;
   setTimeout(boot,300);setTimeout(boot,1200);setTimeout(boot,2600);
+})();
+</script>
+
+
+<script id="arika-v356-pc-reload-guard-release">
+(function(){
+  if(window.__ARIKA_V356_RELEASE_INSTALLED__) return;
+  window.__ARIKA_V356_RELEASE_INSTALLED__ = true;
+  var started = window.__ARIKA_V356_BOOT_TS__ || Date.now();
+  function isMobile(){ return window.matchMedia && window.matchMedia('(max-width:720px)').matches; }
+  function qs(id){ return document.getElementById(id); }
+  function visible(el){ return !!(el && !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'); }
+  function cleanTransient(){
+    try{
+      var panel = qs('arika-reminder-center-panel');
+      if(panel){ panel.classList.add('hidden'); panel.classList.remove('arika-open-from-card','open','active'); panel.style.display='none'; }
+      var modalIds=['survey-modal','announcement-modal','agenda-detail-modal','arika-mobile-modal'];
+      modalIds.forEach(function(id){ var el=qs(id); if(el){ el.classList.add('hidden'); el.style.display='none'; }});
+      document.documentElement.classList.remove('arika-v317-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
+      var oldVeil=qs('arika-v317-reload-veil'); if(oldVeil){ oldVeil.style.display='none'; oldVeil.style.opacity='0'; oldVeil.style.pointerEvents='none'; }
+      if(window.scrollX){ try{ window.scrollTo(0, window.scrollY || 0); }catch(_){} }
+    }catch(e){}
+  }
+  function appLooksStable(){
+    try{
+      if(isMobile()) return true;
+      var loaded = window.__ARIKA_APP_LOADED__ === true || typeof window.nav === 'function';
+      if(!loaded) return false;
+      var views = Array.prototype.slice.call(document.querySelectorAll('.view-section'));
+      var shown = views.filter(function(v){ return visible(v); });
+      if(shown.length === 1) return true;
+      var loginUser = qs('view-login-user');
+      var loginAdmin = qs('view-login-admin');
+      if(visible(loginUser) || visible(loginAdmin)) return true;
+      var nav = qs('main-nav');
+      if(nav && visible(nav) && window.currentUser) return true;
+    }catch(e){}
+    return false;
+  }
+  function release(reason){
+    if(isMobile()){ document.documentElement.classList.remove('arika-v356-boot'); return; }
+    try{
+      cleanTransient();
+      document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot');
+      document.documentElement.classList.add('arika-v356-ready');
+      document.body && document.body.classList.add('arika-v356-ready');
+      window.__ARIKA_V356_READY_REASON__ = reason || 'ready';
+      setTimeout(cleanTransient,80);
+    }catch(e){}
+  }
+  function scheduleCheck(){
+    if(isMobile()) { release('mobile-bypass'); return; }
+    var minDelay = 1250;
+    var elapsed = Date.now() - started;
+    if(elapsed < minDelay){ setTimeout(scheduleCheck, minDelay-elapsed); return; }
+    if(appLooksStable()){
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ release('stable'); }); });
+      return;
+    }
+    if(elapsed < 6500){ setTimeout(scheduleCheck, 180); return; }
+    release('safe-fallback');
+  }
+  if(!isMobile()){
+    window.addEventListener('beforeunload', function(){
+      try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){}
+    });
+    window.addEventListener('pagehide', function(){
+      try{ document.documentElement.classList.add('arika-v356-boot'); cleanTransient(); }catch(e){}
+    });
+    window.addEventListener('pageshow', function(){ setTimeout(scheduleCheck, 60); });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(scheduleCheck,120); });
+  else setTimeout(scheduleCheck,120);
+  window.addEventListener('load', function(){ setTimeout(scheduleCheck,120); });
 })();
 </script>
 
