@@ -30,9 +30,10 @@
     letter-spacing:.48em;text-indent:.48em;
   }
   html.arika-v356-boot body::after{
-    content:'';position:fixed;left:50%;top:50%;transform:translate(-50%,2.15rem);z-index:2147483647;
-    width:112px;height:5px;border-radius:999px;background:linear-gradient(90deg,#10b981,#06b6d4);
-    box-shadow:0 14px 35px rgba(20,184,166,.18);opacity:.65;
+    content:'Proses loading, tunggu sebentar ya';position:fixed;left:50%;top:50%;transform:translate(-50%,2.25rem);z-index:2147483647;
+    min-width:260px;text-align:center;color:#64748b;font:800 .78rem/1.4 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    letter-spacing:.06em;text-indent:0;background:rgba(255,255,255,.72);border:1px solid rgba(20,184,166,.12);border-radius:999px;padding:.55rem .85rem;
+    box-shadow:0 14px 35px rgba(20,184,166,.12);
   }
   html.arika-v356-ready body{overflow-x:hidden!important;}
 }
@@ -62,9 +63,68 @@
   html.arika-v317-boot #arika-v317-reload-veil{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
 }
 #arika-v317-reload-veil{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%);transition:opacity .18s ease;}
-#arika-v317-reload-veil .arika-v317-card{min-width:148px;border:1px solid rgba(20,184,166,.12);background:rgba(255,255,255,.84);box-shadow:0 22px 60px rgba(15,23,42,.08);border-radius:1.35rem;padding:1rem 1.3rem;text-align:center;font-weight:950;letter-spacing:.45em;color:#0f766e;font-size:1.1rem;}
+#arika-v317-reload-veil .arika-v317-card{min-width:230px;border:1px solid rgba(20,184,166,.12);background:rgba(255,255,255,.88);box-shadow:0 22px 60px rgba(15,23,42,.08);border-radius:1.35rem;padding:1rem 1.3rem;text-align:center;color:#0f766e;}#arika-v317-reload-veil .arika-v317-card strong{display:block;font-weight:950;letter-spacing:.45em;text-indent:.45em;font-size:1.1rem;}#arika-v317-reload-veil .arika-v317-card span{display:block;margin-top:.5rem;color:#64748b;font-weight:800;font-size:.76rem;letter-spacing:.04em;}
 @media (max-width:720px){#arika-v317-reload-veil{display:none!important;opacity:0!important;pointer-events:none!important;}html.arika-v317-boot body > *{visibility:visible!important;opacity:1!important;}}
 </style>
+
+<style id="arika-v375-pc-reload-cover-style">
+/* v376: loading cover memakai pesan ramah untuk pengguna. */
+/* v375: PC reload cover singkat agar potongan halaman kiri tidak muncul, tetapi tidak menahan loading terlalu lama. */
+@media (min-width:721px){
+  html.arika-v375-boot, html.arika-v375-boot body{background:#f8fafc!important;overflow:hidden!important;}
+  html.arika-v375-boot body > *:not(script):not(style){visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  html.arika-v375-boot body::before{
+    content:'ARIKA';position:fixed;inset:0;z-index:2147483647;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#f8fafc 0%,#eefaf7 100%);
+    color:#0f766e;font:950 1.1rem/1 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    letter-spacing:.46em;text-indent:.46em;
+  }
+  html.arika-v375-boot body::after{
+    content:'Proses loading, tunggu sebentar ya';position:fixed;left:50%;top:50%;transform:translate(-50%,2.25rem);z-index:2147483647;
+    min-width:260px;text-align:center;color:#64748b;font:800 .78rem/1.4 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    letter-spacing:.06em;text-indent:0;background:rgba(255,255,255,.72);border:1px solid rgba(20,184,166,.12);border-radius:999px;padding:.55rem .85rem;
+    box-shadow:0 14px 34px rgba(20,184,166,.12);
+  }
+  html.arika-v375-ready body{overflow-x:hidden!important;}
+}
+@media (max-width:720px){html.arika-v375-boot body::before,html.arika-v375-boot body::after{display:none!important;}}
+</style>
+<script id="arika-v375-pc-reload-cover-head">
+(function(){
+  try{
+    var isMobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+    if(isMobile) return;
+    document.documentElement.classList.add('arika-v375-boot');
+    window.__ARIKA_V375_BOOT_TS__ = Date.now();
+    function cleanTransient(){
+      try{
+        var p=document.getElementById('arika-reminder-center-panel');
+        if(p){ p.classList.add('hidden'); p.style.display='none'; }
+        var oldVeil=document.getElementById('arika-v317-reload-veil');
+        if(oldVeil){ oldVeil.style.display='none'; oldVeil.style.opacity='0'; oldVeil.style.pointerEvents='none'; }
+        var loader=document.getElementById('global-loader');
+        if(loader){ loader.style.display='none'; loader.style.opacity='0'; loader.style.pointerEvents='none'; }
+      }catch(e){}
+    }
+    function release(){
+      try{
+        cleanTransient();
+        document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot','arika-v375-boot');
+        document.documentElement.classList.add('arika-v375-ready');
+        document.body && document.body.classList.remove('arika-boot-open','arika-session-restoring');
+      }catch(e){}
+    }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', function(){ setTimeout(release, 220); }, {once:true});
+    } else {
+      setTimeout(release, 220);
+    }
+    window.addEventListener('load', function(){ setTimeout(release, 80); }, {once:true});
+    setTimeout(release, 1300);
+  }catch(e){}
+})();
+</script>
 
 <style id="arika-critical-boot-style">
         html, body { min-height: 100%; background: #f8fafc; }
@@ -2141,7 +2201,7 @@
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v365.js" as="script"/>
+<link rel="preload" href="./app-v377.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -6165,7 +6225,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col overflow-x-hidden text-sm md:text-base">
-<div id="arika-v317-reload-veil" aria-hidden="true"><div class="arika-v317-card">ARIKA</div></div>
+<div id="arika-v317-reload-veil" aria-hidden="true"><div class="arika-v317-card"><strong>ARIKA</strong><span>Proses loading, tunggu sebentar ya</span></div></div>
 <div aria-live="polite" id="global-loader">
 <div class="arika-boot-card">
 <div class="arika-boot-mark">A</div>
@@ -7613,9 +7673,9 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <p class="admin-overtime-note">Hanya jurnal bertanda lembur</p>
 </div>
 <div class="admin-overtime-kpi-card ot-kpi-hours">
-<p class="admin-overtime-label">Total Jam</p>
+<p class="admin-overtime-label">Total Jam Lembur Klaim</p>
 <p class="admin-overtime-value" id="admin-ot-hours">0</p>
-<p class="admin-overtime-note">Akumulasi estimasi durasi lembur</p>
+<p class="admin-overtime-note">Berdasarkan aturan klaim lembur</p>
 </div>
 <div class="admin-overtime-kpi-card ot-kpi-people">
 <p class="admin-overtime-label">Personil</p>
@@ -7657,7 +7717,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <div class="admin-overtime-chart-grid grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
 <div class="admin-chart-card admin-overtime-chart-card p-5">
 <div class="admin-chart-head">
-<h4 class="admin-chart-title">Jam Lembur per Fungsi</h4>
+<h4 class="admin-chart-title">Jam Lembur Klaim per Fungsi</h4>
 <span class="admin-chart-badge">Fungsi/Lab</span>
 </div>
 <div class="admin-chart-canvas-wrap admin-overtime-chart-wrap"><canvas id="admin-chart-overtime-lab"></canvas></div>
@@ -7687,7 +7747,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <tr>
 <th class="text-left">Personil</th>
 <th class="text-center">Entri</th>
-<th class="text-center">Jam</th>
+<th class="text-center">Jam Lembur Klaim</th>
 </tr>
 </thead>
 <tbody class="divide-y text-slate-600" id="admin-ot-person-body"></tbody>
@@ -7709,7 +7769,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <th class="text-left">Tanggal</th>
 <th class="text-left">Pegawai</th>
 <th class="text-left">Uraian &amp; Dokumen</th>
-<th class="text-center">Jam</th>
+<th class="text-center">Jam Lembur Klaim</th>
 <th class="text-center">Status</th>
 <th class="text-center">Aksi</th>
 </tr>
@@ -8105,7 +8165,7 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v365.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v377.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -8155,7 +8215,22 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 })();
 </script>
 
-<script src="./app-v365.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+
+<script id="arika-v368-before-app-release">
+(function(){
+  try{
+    var isMobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+    if(isMobile) return;
+    document.documentElement.classList.remove('arika-v356-boot','arika-v317-boot','arika-v315-boot','arika-v300-boot','arika-v311-boot','arika-v312-boot','arika-v313-boot');
+    document.documentElement.classList.add('arika-v368-ready');
+    document.body && document.body.classList.remove('arika-boot-open','arika-session-restoring');
+    var veil=document.getElementById('arika-v317-reload-veil'); if(veil){veil.style.display='none';veil.style.opacity='0';veil.style.pointerEvents='none';}
+    var panel=document.getElementById('arika-reminder-center-panel'); if(panel){panel.classList.add('hidden');panel.style.display='none';}
+    var loader=document.getElementById('global-loader'); if(loader){loader.style.display='none';loader.style.opacity='0';loader.style.pointerEvents='none';}
+  }catch(e){}
+})();
+</script>
+<script src="./app-v377.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
@@ -9697,6 +9772,100 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', schedule); else schedule();
   window.addEventListener('load', function(){ setTimeout(schedule,40); });
   setTimeout(function(){ release('hard-failsafe-1500'); }, isMobile()?700:1500);
+})();
+</script>
+
+
+
+<!-- v377: Dashboard Lembur admin chart kanan-kiri + akses WFH/WFA untuk administrator -->
+<style id="arika-v377-admin-lembur-chart-side-by-side">
+/* Khusus PC: grafik Dashboard Lembur admin/verifikator/ketua tim dibuat berdampingan. */
+@media (min-width: 1024px){
+  #admin-content-lembur .admin-overtime-chart-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:1rem!important;
+    align-items:stretch!important;
+  }
+  #admin-content-lembur .admin-overtime-chart-card{
+    min-width:0!important;
+    height:100%!important;
+  }
+  #admin-content-lembur .admin-overtime-chart-wrap{
+    height:220px!important;
+    min-height:220px!important;
+    max-height:220px!important;
+  }
+  #admin-content-lembur .admin-overtime-chart-wrap canvas{
+    max-height:220px!important;
+  }
+}
+@media (min-width: 1280px){
+  #admin-content-lembur .admin-overtime-chart-wrap{
+    height:235px!important;
+    min-height:235px!important;
+    max-height:235px!important;
+  }
+  #admin-content-lembur .admin-overtime-chart-wrap canvas{
+    max-height:235px!important;
+  }
+}
+@media (max-width: 1023px){
+  #admin-content-lembur .admin-overtime-chart-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+}
+/* Pastikan tab WFH/WFA tidak tersembunyi untuk admin/verifikator/ketua tim. */
+#btn-wfh{display:inline-flex!important;}
+#mobile-nav-select option[value="wfh"]{display:block!important;}
+</style>
+<script id="arika-v377-admin-wfh-access">
+(function(){
+  if(window.__ARIKA_V377_ADMIN_WFH_ACCESS__) return;
+  window.__ARIKA_V377_ADMIN_WFH_ACCESS__ = true;
+  function hasAdminOrRoleAccess(){
+    try { if (window.isAdmin) return true; } catch(e) {}
+    try { if (typeof window.canAccessAdminPanel === 'function' && window.canAccessAdminPanel()) return true; } catch(e) {}
+    try {
+      var role = String(window.userRole || (window.currentUser && (window.currentUser.role || window.currentUser.Role || window.currentUser.peran)) || '').toLowerCase();
+      return role.indexOf('admin') > -1 || role.indexOf('ketua') > -1 || role.indexOf('verifikator') > -1;
+    } catch(e) { return false; }
+  }
+  function openWfhAccess(){
+    try {
+      var btn = document.getElementById('btn-wfh');
+      if(btn){
+        btn.classList.remove('hidden');
+        btn.style.display = 'inline-flex';
+        btn.removeAttribute('aria-hidden');
+      }
+      var sel = document.getElementById('mobile-nav-select');
+      if(sel && !Array.prototype.some.call(sel.options, function(o){ return o.value === 'wfh'; })){
+        var opt = document.createElement('option');
+        opt.value = 'wfh';
+        opt.textContent = '🏡 WFH/WFA';
+        var adminOpt = Array.prototype.find.call(sel.options, function(o){ return o.value === 'admin'; });
+        if(adminOpt) sel.insertBefore(opt, adminOpt); else sel.appendChild(opt);
+      }
+      var optOld = document.querySelector('#mobile-nav-select option[value="wfh"]');
+      if(optOld) optOld.style.display = 'block';
+    } catch(e) {}
+  }
+  function sync(){
+    // WFH/WFA aman dibuka untuk pegawai dan juga admin/role panel.
+    openWfhAccess();
+    if(hasAdminOrRoleAccess()) openWfhAccess();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else sync();
+  window.addEventListener('load', sync);
+  window.addEventListener('focus', sync);
+  document.addEventListener('click', function(ev){
+    if(ev.target && ev.target.closest && ev.target.closest('#btn-admin-config,#btn-wfh,#btn-panduan,#btn-beranda')) setTimeout(sync, 80);
+  }, true);
+  setTimeout(sync, 250);
+  setTimeout(sync, 1200);
+  setTimeout(sync, 3000);
 })();
 </script>
 
