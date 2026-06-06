@@ -95,6 +95,15 @@
 .mobile-lembur-claim{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;color:#334155;}
 .mobile-lembur-claim b{color:#0f766e;}
 </style>
+
+
+<style id="arika-v385-mobile-password-eye-style">
+.mobile-pass-wrap{position:relative;display:flex;align-items:center;}
+.mobile-pass-wrap .input{width:100%;padding-right:54px;}
+.mobile-pass-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:16px;background:#ecfeff;color:#0f766e;font-size:18px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(20,184,166,.18);z-index:2;}
+.mobile-pass-eye:active{transform:translateY(-50%) scale(.96);}
+.mobile-pass-eye[aria-pressed="true"]{background:#ccfbf1;color:#065f46;}
+</style>
 </head>
 <body>
   <div id="toast" class="toast hidden"></div><div id="loader" class="loader"><div class="loader-box" id="loaderText">Memuat...</div></div>
@@ -105,7 +114,7 @@
       <p class="sub" style="text-align:center;margin-bottom:16px">Versi ringan untuk HP. Data tetap terhubung dengan versi PC.</p>
       <form id="loginForm" class="grid" autocomplete="off">
         <div><label class="label">Username</label><input id="loginName" class="input" placeholder="Ketik minimal 2 huruf" autocomplete="off" required><input id="loginHidden" type="hidden"><div id="loginSuggest" class="suggestions hidden"></div></div>
-        <div><label class="label">Kata Sandi</label><input id="loginPass" class="input" placeholder="Masukkan kata sandi" type="password" required autocomplete="current-password"></div>
+        <div><label class="label">Kata Sandi</label><div class="mobile-pass-wrap"><input id="loginPass" class="input" placeholder="Masukkan kata sandi" type="password" required autocomplete="current-password"><button id="toggleLoginPass" class="mobile-pass-eye" type="button" aria-label="Tampilkan kata sandi" aria-pressed="false">👁</button></div></div>
         <button class="btn btn-primary btn-block" type="submit">Masuk Mobile</button>
       </form>
       <p id="loginMsg" class="sub small" style="text-align:center;margin-top:12px">Memuat daftar pegawai...</p>
@@ -126,6 +135,6 @@
     <footer class="mobile-footer">© 2026 <strong>ARIKA</strong> BPOM AMBON.</footer>
   </section>
   <div id="modal" class="modal hidden"><div class="modal-card"><div id="modalContent"></div><button class="btn btn-light btn-block" onclick="ARIKA.closeModal()">Tutup</button></div></div>
-  <script src="mobile-v372.js" defer></script>
+  <script src="mobile-v385.js" defer></script>
 </body>
 </html>
