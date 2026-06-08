@@ -2245,7 +2245,7 @@ html.arika-v379-boot,html.arika-v379-boot body{background:#f8fafc!important;over
 </style>
 
 <link rel="preload" href="./assets/arika-logo.webp" as="image" type="image/webp"/>
-<link rel="preload" href="./app-v404.js" as="script"/>
+<link rel="preload" href="./app-v408.js" as="script"/>
 <link href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%23059669%27/%3E%3Cpath d=%27M18 46 32 12l14 34h-8l-3-8H29l-3 8h-8Zm14-25-5 12h10l-5-12Z%27 fill=%27white%27/%3E%3C/svg%3E" rel="icon"/>
 <script>
         window.__ARIKA_BOOT_TS = Date.now();
@@ -6396,9 +6396,9 @@ html body #view-panduan #panduan-top h1 .arika-panduan-title-word{
 <button class="nav-pill" id="btn-rekap" onclick="window.nav('rekap')"><span class="nav-icon">📊</span><span>Riwayat Kegiatan</span></button>
 <button class="nav-pill" id="btn-lembur" onclick="window.nav('lembur')"><span class="nav-icon">⏰</span><span>Laporan Lembur</span></button>
 <button class="nav-pill" id="btn-dashboard-pegawai" onclick="window.nav('dashboard-pegawai')"><span class="nav-icon">📈</span><span>Dashboard Saya</span></button>
-<button class="nav-pill" id="btn-keamanan" onclick="window.nav('keamanan')"><span class="nav-icon">🔐</span><span>Keamanan</span></button>
 <button class="nav-pill" id="btn-wfh" onclick="window.nav('wfh')"><span class="nav-icon">🏡</span><span>WFH/WFA</span></button>
 <button class="nav-pill hidden" id="btn-admin-config" onclick="window.nav('admin')"><span class="nav-icon">⚙️</span><span>Admin</span></button>
+<button class="nav-pill" id="btn-keamanan" onclick="window.nav('keamanan')"><span class="nav-icon">🔐</span><span>Keamanan</span></button>
 <button class="nav-logout" onclick="window.logout()">Keluar</button>
 </div>
 <div class="mobile-nav-wrap">
@@ -7556,15 +7556,15 @@ Password baru wajib minimal 8 karakter serta memuat huruf besar, huruf kecil, an
 <div>
 <span class="inline-flex px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase tracking-[0.2em] mb-2">🔐 Manajemen Akun</span>
 <h2 class="text-lg font-black text-slate-900 uppercase tracking-tight">Reset Password Pegawai</h2>
-<p class="text-xs text-slate-500 leading-relaxed font-semibold mt-1">Gunakan jika pegawai lupa password. Password akan direset menjadi <b>Admin123!@#</b> dan pegawai wajib mengganti password melalui PC saat login.</p>
+<p class="text-xs text-slate-500 leading-relaxed font-semibold mt-1">Gunakan tombol <b>Reset Permintaan</b> pada daftar permintaan lupa kata sandi. Pilihan pegawai target di bawah hanya untuk reset manual jika pegawai belum mengajukan permintaan.</p>
 </div>
 <button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-black uppercase tracking-widest" onclick="window.arikaFillAdminAccountTargetOptions && window.arikaFillAdminAccountTargetOptions()" type="button">Muat Daftar Akun</button>
 </div>
 <div class="grid lg:grid-cols-3 gap-3">
 <div><label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">NIP Admin Pelaku</label><input id="admin-account-admin-nip" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-center text-xs font-bold outline-none input-focus" placeholder="NIP Admin / ADMIN"/></div>
-<div class="lg:col-span-2"><label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">Pegawai Target</label><select id="admin-account-target" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold outline-none input-focus"><option value="">Muat daftar pegawai...</option></select></div>
+<div class="lg:col-span-2"><label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2">Pegawai Target Manual</label><select id="admin-account-target" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold outline-none input-focus"><option value="">Muat daftar pegawai...</option></select></div>
 </div>
-<p class="mt-2 text-[10px] font-semibold text-slate-400 leading-relaxed">Jika login memakai akun Administrator utama, gunakan NIP <b>ADMIN</b> setelah backend v33 dipasang. Jika memakai admin pegawai, isi NIP pegawai dengan Peran Admin/Administrator di sheet Pegawai.</p>
+<p class="mt-2 text-[10px] font-semibold text-slate-400 leading-relaxed">Permintaan lupa kata sandi akan menampilkan nama dan NIP pegawai secara otomatis. Kolom target manual hanya dipakai jika admin ingin mereset pegawai yang tidak muncul pada daftar permintaan.</p>
 <div class="flex flex-col sm:flex-row gap-3 mt-4">
 <button class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg" onclick="window.arikaAdminResetPassword && window.arikaAdminResetPassword()" type="button">Reset Password</button>
 <button class="flex-1 py-3 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-100 rounded-xl text-xs font-black uppercase tracking-widest" onclick="window.arikaAdminUnlockAccount && window.arikaAdminUnlockAccount()" type="button">Buka Kunci Akun</button>
@@ -7574,7 +7574,7 @@ Password baru wajib minimal 8 karakter serta memuat huruf besar, huruf kecil, an
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 <div>
 <h3 class="text-xs font-black text-amber-800 uppercase tracking-widest">Permintaan Lupa Kata Sandi</h3>
-<p class="text-[11px] text-slate-500 font-semibold leading-relaxed mt-1">Klik Muat Permintaan untuk melihat daftar permintaan lupa kata sandi yang belum diproses.</p>
+<p class="text-[11px] text-slate-500 font-semibold leading-relaxed mt-1">Klik Muat Permintaan untuk melihat nama, NIP, dan waktu pengajuan. Jika ada beberapa pegawai, proses reset dilakukan langsung dari kartu masing-masing pegawai.</p>
 </div>
 <div class="flex items-center gap-2">
 <span class="px-3 py-2 rounded-xl bg-white text-amber-700 text-[10px] font-black uppercase tracking-widest border border-amber-100"><b id="admin-password-request-count">0</b> Pending</span>
@@ -8378,7 +8378,7 @@ Password baru wajib minimal 8 karakter serta memuat huruf besar, huruf kecil, an
       if (!window.__ARIKA_APP_LOADED__ && !window.loginSetup && !window.nav) {
         var box = document.createElement('div');
         box.style.cssText = 'position:fixed;left:16px;right:16px;bottom:16px;z-index:99999;background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:16px;padding:14px 16px;font:700 13px/1.5 system-ui,Segoe UI,Arial;box-shadow:0 14px 35px rgba(15,23,42,.16)';
-        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v404.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
+        box.innerHTML = 'ARIKA belum memuat file pendamping. Jika dibuka dari ZIP/Temp, extract ZIP dulu lalu buka <b>index.html</b>. Untuk GitHub Pages, upload semua file termasuk <b>app-v408.js</b>, folder <b>assets</b>, <b>alarm_reminder.mp3</b>, dan <b>.nojekyll</b>.';
         document.body.appendChild(box);
       }
     }, 900);
@@ -8443,7 +8443,7 @@ Password baru wajib minimal 8 karakter serta memuat huruf besar, huruf kecil, an
   }catch(e){}
 })();
 </script>
-<script src="./app-v404.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
+<script src="./app-v408.js" onload="window.__ARIKA_APP_LOADED__=true" onerror="window.__ARIKA_APP_LOADED__=false"></script>
 <script id="arika-v167-google-sites-scroll-fix-script">
 (function(){
   var start = Date.now();
